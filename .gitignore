@@ -1,0 +1,10 @@
+*.exe
+*.obj
+*.mod
+*.lib
+run
+.vscode
+.cfile
+.msg
+udf_debug_result
+.stackdump
