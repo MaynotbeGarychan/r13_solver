@@ -284,14 +284,10 @@ c     Update the Cauchy stress tensor
 !------------------------------------------------------------ 
 c     calculate the rotation rate for further rotation
       call cal_We_We1(Wv,Wp,We,We1)
-      call matIdentity(3,idm)
       if(We1==0.) then
-            do j=1,3
-                  do i=1,3
-                        exp_we(i,j)=idm(i,j)
-                  enddo
-            enddo
+            call matIdentity(3,exp_we)
       else
+            call matIdentity(3,idm)
             do j=1,3
                   do i=1,3
                   exp_we(i,j)=idm(i,j)+(sin(We1*dt1)/We1)*We(i,j)
