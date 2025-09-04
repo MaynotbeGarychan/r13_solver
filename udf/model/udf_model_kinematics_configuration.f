@@ -17,7 +17,7 @@
       double precision s11e(3,num_ss),m11e(3,num_ss)
       integer l,i
 
-      call matrix_inverse(fe,3,fe_inv)
+      call matInverse(fe,3,fe_inv)
       do l=1,num_ss
         do i=1,3
             s11e(i,l)=dot_product(fe(i,:),s11(:,l))

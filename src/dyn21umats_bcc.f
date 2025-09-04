@@ -80,8 +80,8 @@ c     Solid element variables
 ! Note:
 !------------------------------------------------------------
       integer array_maxidx,ss2sp_fcc
-      double precision cal_sig_eq,cal_sig_m,cal_st,cal_lode
-      double precision cal_peeq
+      double precision calSigEq,calSigMean,calSigTri,cal_lode
+      double precision calPeeq
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
@@ -232,9 +232,9 @@ c     elastic deformation gradient tensor
 c     calculate deformation gradient rate
       call deformation_gradient_rate(f,f_n1,dt1,df_n1)
 c     calculate the inverse of deformation gradient
-      call matrix_inverse(f_n1,3,f_n1_inv)
+      call matInverse(f_n1,3,f_n1_inv)
 c     calculate velocity gradient
-      call matrix_inner_product(df_n1,f_n1_inv,3,3,3,L_n1)
+      call matInnProd(df_n1,f_n1_inv,3,3,3,L_n1)
 c     decompose velocity gradient
       call velocity_gradient_decompose(L_n1,Dv,Wv)
 
@@ -267,7 +267,7 @@ c     Transform elastic tensor to material coordinate
       call ROTMAT4ORD(r,RL)
       call ELASTENLOCAL2GLOBAL(L_ela_cry,RL,L_ela)
 c     Update the Cauchy stress tensor
-      call matrix33_det(f,f_det)
+      call mat33Det(f,f_det)
       call update_stress_by_jau(sig,eschmid,wschmid,dgamma,Wv,
      1     Dv,L_ela,f_det,num_ss,dt1,sig_n1)
 
@@ -278,8 +278,8 @@ c     Update the Cauchy stress tensor
 !------------------------------------------------------------ 
 c      call deformation_gradient_plastic(dgamma,s11,m11,
 c     1     num_ss,fp)
-c      call matrix_inverse(fp,3,fp_inv)
-c      call matrix_inner_product(f_n1,fp_inv,3,3,3,fe_n1)
+c      call matInverse(fp,3,fp_inv)
+c      call matInnProd(f_n1,fp_inv,3,3,3,fe_n1)
 
 !============================================================
 ! Rotation model
@@ -288,7 +288,7 @@ c      call matrix_inner_product(f_n1,fp_inv,3,3,3,fe_n1)
 !------------------------------------------------------------ 
 c     calculate the rotation rate for further rotation
       call cal_We_We1(Wv,Wp,We,We1)
-      call matrix_identity(3,idm)
+      call matIdentity(3,idm)
       if(We1==0.) then
             do j=1,3
                   do i=1,3

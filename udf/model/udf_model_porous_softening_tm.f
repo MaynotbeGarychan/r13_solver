@@ -32,7 +32,7 @@
                   enddo
             enddo
 
-            call matrix_inverse(geomat,6,geomat)
+            call matInverse(geomat,6,geomat)
             do i=1,6
                   do j=1,6
                         geomat(i,j)=geomat(i,j)*vf
@@ -43,7 +43,7 @@
                   geomat(i,i)=geomat(i,i)+mf
             enddo
 
-            call matrix_inverse(geomat,6,geomat)
+            call matInverse(geomat,6,geomat)
 
       end subroutine tm_geometric_tensor
 

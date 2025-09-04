@@ -177,9 +177,9 @@
          double precision mat_trans(n,n)
          double precision temp(n,n)
 
-         call matrix_inner_product(rl,mat,n,n,n,temp)
-         call matrix_transpose(rl,n,n,rlt)
-         call matrix_inner_product(temp,rlt,n,n,n,mat_trans)
+         call matInnProd(rl,mat,n,n,n,temp)
+         call matTranspose(rl,n,n,rlt)
+         call matInnProd(temp,rlt,n,n,n,mat_trans)
 
       end subroutine trans_fourth_order_tensor
 

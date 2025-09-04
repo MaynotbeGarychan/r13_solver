@@ -103,8 +103,8 @@ c     Strain variables
 ! Note:
 !------------------------------------------------------------
       integer array_maxidx,ss2sp_fcc
-      double precision cal_sig_eq,cal_sig_m,cal_st,cal_lode
-      double precision cal_peeq,cal_peeqr
+      double precision calSigEq,calSigMean,calSigTri,cal_lode
+      double precision calPeeq,calPeeqr
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
@@ -288,9 +288,9 @@ c
 c     calculate deformation gradient rate
       call deformation_gradient_rate(f,f_n1,dt1,df_n1)
 c     calculate the inverse of deformation gradient
-      call matrix_inverse(f_n1,3,f_n1_inv)
+      call matInverse(f_n1,3,f_n1_inv)
 c     calculate velocity gradient
-      call matrix_inner_product(df_n1,f_n1_inv,3,3,3,L_n1)
+      call matInnProd(df_n1,f_n1_inv,3,3,3,L_n1)
 c     decompose velocity gradient
       call velocity_gradient_decompose(L_n1,Dv,Wv)
 
@@ -325,12 +325,12 @@ c     Project the slip deformation into macro deformation and spin
 ! Note:
 !------------------------------------------------------------ 
 c     Calculate stress state and strain
-      sig_m=cal_sig_m(sig(1:6))
-      sig_eq=cal_sig_eq(sig(1:6))
-      st=cal_st(sig_m,sig_eq)
+      sig_m=calSigMean(sig(1:6))
+      sig_eq=calSigEq(sig(1:6))
+      st=calSigTri(sig_m,sig_eq)
       lode=cal_lode(sig,sig_m,sig_eq)
-      eeqr=cal_peeqr(Dv(1:6))
-      peeqr=cal_peeqr(Dp(1:6))
+      eeqr=calPeeqr(Dv(1:6))
+      peeqr=calPeeqr(Dp(1:6))
       eeq_n1=eeq+eeqr*dt1
       peeq_n1=peeq+peeqr*dt1
 c     Damage evolution
@@ -359,18 +359,18 @@ c     Fourth-order elastic tensor at crystal coordinate
       call ELASTENISO(ym,pr,cmat_cry)
 c     tm scheme - damage
       mf=1.0-vf
-      call matrix_multipy_coeff(cmat_cry,mf,6,6,cdmat)
+      call matMulCoeff(cmat_cry,mf,6,6,cdmat)
 c     tm scheme -geometry
       call esbsmat_iso_sphere(pr,esbsmat)
       call tm_geometric_tensor(esbsmat,vf,geomat)
 c     tm scheme - combine all effects
-      call matrix_inner_product(cdmat,geomat,6,6,6,
+      call matInnProd(cdmat,geomat,6,6,6,
      1 cdgeomat)
 c     Transform elastic tensor to material coordinate
       call ROTMAT4ORD(r,RL)
       call ELASTENLOCAL2GLOBAL(cdgeomat,RL,cmat)
 c     Update the Cauchy stress tensor
-      call matrix33_det(f,f_det)
+      call mat33Det(f,f_det)
       call strain_rate_tensor_porous(vf,vfr,Dvv)
       call update_stress_by_jau(sig,eschmid,wschmid,dgamma,Wv,
      1     Dv,cmat,f_det,num_ss,dt1,sig_n1)
@@ -384,8 +384,8 @@ c     Update the Cauchy stress tensor
 !------------------------------------------------------------ 
       call deformation_gradient_plastic(dgamma,s11,m11,
      1     num_ss,fp)
-      call matrix_inverse(fp,3,fp_inv)
-      call matrix_inner_product(f_n1,fp_inv,3,3,3,fe_n1)
+      call matInverse(fp,3,fp_inv)
+      call matInnProd(f_n1,fp_inv,3,3,3,fe_n1)
 !============================================================
 ! Rotation model
 !------------------------------------------------------------
@@ -393,7 +393,7 @@ c     Update the Cauchy stress tensor
 !------------------------------------------------------------ 
 c     calculate the rotation rate for further rotation
       call cal_We_We1(Wv,Wp,We,We1)
-      call matrix_identity(3,idm)
+      call matIdentity(3,idm)
       if(We1==0.) then
             do j=1,3
                   do i=1,3

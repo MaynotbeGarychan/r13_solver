@@ -119,7 +119,7 @@
 
     !   end function cal_rr_ss_ut
 
-      function cal_sig_eq(sig) result(sig_eq)
+      function calSigEq(sig) result(sig_eq)
         !============================================================
         ! Calculate the equivalent stress
         !------------------------------------------------------------
@@ -136,9 +136,9 @@
      1     (sig(2)-sig(3))**2+(sig(3)-sig(1))
      2            **2+(sig(4)**2+sig(5)**2+sig(6)**2)*6.))
         
-      end function cal_sig_eq
+      end function calSigEq
 
-      function cal_sig_m(sig) result(sig_m)
+      function calSigMean(sig) result(sig_m)
         !============================================================
         ! Calculate the mean hydrostatic stress
         !------------------------------------------------------------
@@ -153,7 +153,7 @@
 
         sig_m=(sig(1)+sig(2)+sig(3))/3
 
-       end function cal_sig_m
+       end function calSigMean
 
        subroutine cal_sig_dev(sig,sig_d)
         !============================================================
@@ -168,10 +168,10 @@
         double precision sig(6)
         double precision sig_d(6)
         double precision sig_m
-        double precision cal_sig_m
+        double precision calSigMean
         integer i
 
-        sig_m=cal_sig_m
+        sig_m=calSigMean
         do i=1,6
           sig_d(i)=sig(i)
         enddo
@@ -181,7 +181,7 @@
 
        end subroutine cal_sig_dev
 
-       function cal_st(sig_m,sig_eq) result(st)
+       function calSigTri(sig_m,sig_eq) result(st)
         !============================================================
         ! Calculate the mean hydrostatic stress
         !------------------------------------------------------------
@@ -198,7 +198,7 @@
 
         st=sig_m/sig_eq
 
-       end function cal_st
+       end function calSigTri
 
        function cal_lode(sig,sig_m,sig_eq) result(lode)
         !============================================================

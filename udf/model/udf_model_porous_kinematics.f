@@ -13,8 +13,8 @@
         double precision coeff
         
         coeff=((1.-fv_0)/(1.-fv))**(1./3.)
-        call matrix_identity(3,fvmat)
-        call matrix_multipy_coeff(fvmat,coeff,3,3,fvmat)
+        call matIdentity(3,fvmat)
+        call matMulCoeff(fvmat,coeff,3,3,fvmat)
 
       end subroutine defomration_gradient_porous
 

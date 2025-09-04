@@ -133,9 +133,9 @@ c     esbmat
         double precision r(3,3)
         double precision rl(6,6)
 
-        call matrix_inverse(rv,3,rvi)
-        call matrix_inverse(rc,3,rci)
-        call matrix_inner_product(rvi,rci,3,3,3,r)
+        call matInverse(rv,3,rvi)
+        call matInverse(rc,3,rci)
+        call matInnProd(rvi,rci,3,3,3,r)
         call ROTMAT4ORD(r,rl)
         call trans_fourth_order_tensor(esbmat,rl,6,esbmat_cry)
 

@@ -1,4 +1,4 @@
-       function cal_peeq(Dp,peeq,dt1) result(peeq_n1)
+       function calPeeq(Dp,peeq,dt1) result(peeq_n1)
         !============================================================
         ! Calculate the peeq based on increament
         !------------------------------------------------------------
@@ -22,9 +22,9 @@
      2            1.5*(Dp(4)**2+Dp(5)**2+Dp(6)**2))
         peeq_n1=peeq+dpeeq*dt1
 
-       end function cal_peeq
+       end function calPeeq
 
-       function cal_peeqr(Dp) result(peeqr)
+       function calPeeqr(Dp) result(peeqr)
         !============================================================
         ! Calculate the peeqr
         !------------------------------------------------------------
@@ -42,7 +42,7 @@
      1            **2+(Dp(2)-Dp(3))**2+(Dp(3)-Dp(1))**2+
      2            1.5*(Dp(4)**2+Dp(5)**2+Dp(6)**2))
 
-       end function cal_peeqr
+       end function calPeeqr
          
 
 

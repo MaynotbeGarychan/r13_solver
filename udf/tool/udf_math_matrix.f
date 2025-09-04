@@ -1,4 +1,4 @@
-        subroutine matrix_inverse(in_mat,n,c)
+        subroutine matInverse(in_mat,n,c)
         !============================================================
         ! Inverse matrix
         !-----------------------------------------------------------
@@ -78,9 +78,9 @@
             b(k)=0.0
             end do
 
-        end subroutine matrix_inverse
+        end subroutine matInverse
 
-        subroutine matrix_identity(num,idm)
+        subroutine matIdentity(num,idm)
         !============================================================
         ! Return an identity matrix
         !------------------------------------------------------------
@@ -104,9 +104,9 @@
               idm(i,i)=1.
             enddo
             
-        end subroutine matrix_identity
+        end subroutine matIdentity
 
-        subroutine matrix_zero(d1,d2,mat)
+        subroutine matZero(d1,d2,mat)
         !============================================================
         ! Return an zero matrix
         !------------------------------------------------------------
@@ -126,9 +126,9 @@
             enddo
         enddo
 
-        end subroutine matrix_zero
+        end subroutine matZero
 
-        subroutine matrix_subtract(a,b,d1,d2,c)
+        subroutine matSubtract(a,b,d1,d2,c)
         !============================================================
         ! c = a - b , pos-to-pos substract
         !------------------------------------------------------------
@@ -149,9 +149,9 @@
             enddo
         enddo
         
-        end subroutine matrix_subtract
+        end subroutine matSubtract
 
-        subroutine matrix_add(a,b,d1,d2,c)
+        subroutine matAdd(a,b,d1,d2,c)
         !============================================================
         ! c = a + b , pos-to-pos add
         !------------------------------------------------------------
@@ -172,9 +172,9 @@
                 enddo
             enddo
 
-        end subroutine matrix_add
+        end subroutine matAdd
 
-        subroutine matrix_multipy_coeff(a,coeff,d1,d2,b)
+        subroutine matMulCoeff(a,coeff,d1,d2,b)
         !============================================================
         ! c = a(i,j)*coeff 
         !------------------------------------------------------------
@@ -197,10 +197,10 @@
                 enddo
             enddo
 
-        end subroutine matrix_multipy_coeff
+        end subroutine matMulCoeff
 
 
-        subroutine matrix_inner_product(a,b,d1,d2,d3,c)
+        subroutine matInnProd(a,b,d1,d2,d3,c)
         !============================================================
         ! a:b = c
         !------------------------------------------------------------
@@ -222,9 +222,9 @@
             enddo
         enddo
         
-        end subroutine matrix_inner_product
+        end subroutine matInnProd
 
-        subroutine matrix_transpose(a,d1,d2,a_t)
+        subroutine matTranspose(a,d1,d2,a_t)
         !============================================================
         ! transpose the matrix
         !------------------------------------------------------------
@@ -245,9 +245,9 @@
             enddo
         enddo
 
-        end subroutine matrix_transpose
+        end subroutine matTranspose
 
-        subroutine matrix33_det(a,det)
+        subroutine mat33Det(a,det)
         !============================================================
         ! calculate the determinant of the matrix 3*3
         !------------------------------------------------------------
@@ -264,7 +264,7 @@
      1      a(1,2)*(a(2,1)*a(3,3)-a(2,3)*a(3,1))+
      2      a(1,3)*(a(2,1)*a(3,2)-a(2,2)*a(3,1))
 
-        end subroutine matrix33_det
+        end subroutine mat33Det
 
 
 

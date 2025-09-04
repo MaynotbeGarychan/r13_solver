@@ -89,8 +89,8 @@ c     Others
 ! Note:
 !------------------------------------------------------------
       integer array_maxidx,ss2sp_fcc
-      double precision cal_sig_eq,cal_sig_m,cal_st,cal_lode
-      double precision cal_peeq
+      double precision calSigEq,calSigMean,calSigTri,cal_lode
+      double precision calPeeq
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
@@ -232,16 +232,16 @@ c     Obtain slip volume from hsv
 ! Note:
 !------------------------------------------------------------   
 c      call cal_deform_grad_ten(f,f_n1,dt1,df_n1)
-c      call matrix_inverse(f_n1,3,f_n1_inv)
+c      call matInverse(f_n1,3,f_n1_inv)
 c      call cal_velocity_grad_ten(df_n1,f_n1_inv,L_n1)
-c      call cal_strain_spin_rate_ten(L_n1,Dv,Wv)
+c      call calSigTrirain_spin_rate_ten(L_n1,Dv,Wv)
 
 c     calculate deformation gradient rate
       call deformation_gradient_rate(f,f_n1,dt1,df_n1)
 c     calculate the inverse of deformation gradient
-      call matrix_inverse(f_n1,3,f_n1_inv)
+      call matInverse(f_n1,3,f_n1_inv)
 c     calculate velocity gradient
-      call matrix_inner_product(df_n1,f_n1_inv,3,3,3,L_n1)
+      call matInnProd(df_n1,f_n1_inv,3,3,3,L_n1)
 c     decompose velocity gradient
       call velocity_gradient_decompose(L_n1,Dv,Wv)
 
@@ -273,7 +273,7 @@ c     Transform elastic tensor to material coordinate
       call ROTMAT4ORD(r,RL)
       call ELASTENLOCAL2GLOBAL(L_ela_cry,RL,L_ela)
 c     Update the Cauchy stress tensor
-      call matrix33_det(f,f_det)
+      call mat33Det(f,f_det)
       call update_stress_by_jau(sig,eschmid,wschmid,dgamma,Wv,
      1     Dv,L_ela,f_det,num_ss,dt1,sig_n1)
 
@@ -284,7 +284,7 @@ c     Update the Cauchy stress tensor
 !------------------------------------------------------------ 
 c     calculate the rotation rate for further rotation
       call cal_We_We1(Wv,Wp,We,We1)
-      call matrix_identity(3,idm)
+      call matIdentity(3,idm)
       if(We1==0.) then
             do j=1,3
                   do i=1,3
@@ -325,19 +325,11 @@ c     Extract the euler angle from the tranformation matrix
 ! Note:
 !------------------------------------------------------------ 
 c     Calculate stress state
-      sig_m=cal_sig_m(sig(1:6))
-      sig_eq=cal_sig_eq(sig(1:6))
-      st=cal_st(sig_m,sig_eq)
-      lode=cal_lode(sig(1:6),sig_m,sig_eq)
-      call normal_tensor(m11,num_sp,num_ss,Na,nschmid)
-      call cal_rns(sig(1:6),nschmid,num_sp,rns)
-      call cal_rr(num_sp,num_ss,rns,tau,rr)
-      act_ss=array_maxidx(gamma_slip,num_ss)
-      act_rr=rr(act_ss)
-      act_gamma=gamma_slip(act_ss)
+      sig_m=calSigMean(sig(1:6))
+      sig_eq=calSigEq(sig(1:6))
+      st=calSigTri(sig_m,sig_eq)
 c     Calculate strain state
-      eeq=cal_peeq(Dv(1:6),hsv(207),dt1)
-      peeq=cal_peeq(Dp(1:6),hsv(208),dt1)
+      peeq=calPeeq(Dp(1:6),hsv(208),dt1)
 !============================================================
 ! Give constitutive variables to hsv
 !------------------------------------------------------------
@@ -409,18 +401,11 @@ c     rr(12)            <- hsv(211 ~ 222)
       hsv(202)=lphi
       hsv(203)=phi2
       hsv(204)=st
-      hsv(205)=lode
       hsv(206)=sig_eq
-      hsv(207)=eeq
       hsv(208)=peeq
       do l=1,12
             hsv(208+l)=tau(l)
       enddo
-      do l=1,12
-            hsv(210+l)=rr(l)
-      enddo
-      hsv(223)=act_rr
-      hsv(224)=act_gamma
       endif
       endif
 !============================================================

@@ -1148,8 +1148,8 @@ C     DDEMSD
          DOUBLE PRECISION DGRAD(3,3),DGRADT(3,3),STRAINMAT(3,3)
          DOUBLE PRECISION STRAIN(6)
 
-         call matrix_transpose(DGRAD,3,3,DGRADT)
-         call matrix_inner_product(DGRAD,DGRADT,3,3,3,STRAINMAT)
+         call matTranspose(DGRAD,3,3,DGRADT)
+         call matInnProd(DGRAD,DGRADT,3,3,3,STRAINMAT)
 
 
          STRAIN(1)=0.5*(STRAINMAT(1,1)-1.)

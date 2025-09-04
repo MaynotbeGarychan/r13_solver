@@ -72,7 +72,7 @@
       double precision m11(3,num_ss)
       double precision fp(3,3)
 
-      call matrix_identity(3,fp)
+      call matIdentity(3,fp)
       do l=1,num_ss
             do i=1,3
                   do j=1,3
