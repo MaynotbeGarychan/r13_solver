@@ -259,6 +259,7 @@ c     decompose velocity gradient
       call update_ccs(dgamma,num_ss,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
 c     Project the slip deformation into macro deformation and spin
+c     as plastic corrector
       call strain_rate_tensor_plastic(dgamma,eschmid,num_ss,Dp)
       call spin_rate_tensor_plastic(dgamma,wschmid,num_ss,Wp)
 
@@ -283,27 +284,8 @@ c     Update the Cauchy stress tensor
 ! Note:
 !------------------------------------------------------------ 
 c     calculate the rotation rate for further rotation
-      call cal_We_We1(Wv,Wp,We,We1)
-      if(We1==0.) then
-            call matIdentity(3,exp_we)
-      else
-            call matIdentity(3,idm)
-            do j=1,3
-                  do i=1,3
-                  exp_we(i,j)=idm(i,j)+(sin(We1*dt1)/We1)*We(i,j)
-                  do k=1,3
-                        exp_we(i,j)=exp_we(i,j)
-     1                     +((1-cos(We1*dt1))/(We1**2))
-     2                     *We(i,k)*We(k,j)
-                  enddo
-                  enddo
-            enddo
-      endif
-c     Rotate the tranformation matrix
-      call rot_tran_mat(r,exp_we,r_n1)
-c     Rotate the slip systsme vectors
-      call rot_slip_vec(s11,m11,exp_we,num_ss,
-     1     s11_n1,m11_n1)
+      call updateOrientation(Wv,Wp,s11,m11,r,num_ss,dt1,
+     1  s11_n1,m11_n1,r_n1)
 c     Extract the euler angle from the tranformation matrix
       call euler_angle_from_trans_matrix(r_n1,pi,
      1     phi1,lphi,phi2)
