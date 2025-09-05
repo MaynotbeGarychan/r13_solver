@@ -1,4 +1,4 @@
-      subroutine schmid_tensor(s11e,m11e,num_ss,
+      subroutine calSchmidTensor(s11e,m11e,num_ss,
      1     sfmate,wfmate,sfve,wfve)
       !============================================================
       ! Calculate Schmid tensor its Vogit notation
@@ -37,7 +37,7 @@
             wfve(3,l)=wfmate(3,1,l)
       enddo
 
-      end subroutine schmid_tensor
+      end subroutine calSchmidTensor
 
       subroutine normal_tensor(m11,num_sp,num_ss,nfmat,nfv)
       !============================================================

@@ -56,7 +56,7 @@
 
       end subroutine ROTMATBYEULER
 
-      subroutine euler_angle_from_trans_matrix(r,pi,phi1,lphi,phi2)
+      subroutine calEulerbyTransMat(r,pi,phi1,lphi,phi2)
          !============================================================
          ! Calculate the tranformation matrix 
          ! to tranform the slip system vectors to local based on 
@@ -92,9 +92,9 @@
             phi2=phi2+2.*pi
          endif
 
-      end subroutine euler_angle_from_trans_matrix
+      end subroutine calEulerbyTransMat
 
-      subroutine ROTMAT4ORD(r,RL)
+      subroutine calTransMatFourthOrd(r,RL)
         !============================================================
         ! Calculate the tranformation matrix for four-order
         ! tensor
@@ -156,7 +156,7 @@
          RL(6,5)=r(1,2)*r(3,3)+r(3,2)*r(1,3)
          RL(6,6)=r(1,1)*r(3,3)+r(3,1)*r(1,3)
 
-      end subroutine ROTMAT4ORD
+      end subroutine calTransMatFourthOrd
 
       subroutine trans_fourth_order_tensor(mat,rl,n,mat_trans)
       !============================================================

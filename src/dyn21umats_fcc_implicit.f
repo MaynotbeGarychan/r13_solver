@@ -71,10 +71,10 @@ c 17~24 --- slip system constitutive model coeff.
 
 C-----  Elastic matrix in local cubic crystal system: DLOCAL
 C       and its elastic matrix in global crystal systtem: D
-      CALL ELASTENISO(CM(1),CM(2),DLOCAL)
+      CALL calElasIsoTensor(CM(1),CM(2),DLOCAL)
       CALL ROTMATBYEULER(CM(3),CM(4),CM(5),ROTATE)
-      CALL ROTMAT4ORD(ROTATE,ROTD)
-      CALL ELASTENLOCAL2GLOBAL(DLOCAL,ROTD,D)
+      CALL calTransMatFourthOrd(ROTATE,ROTD)
+      CALL tranElasTensorLocal2Global(DLOCAL,ROTD,D)
 
 C-----  Init the iteration
       NITRTN=-1
@@ -148,7 +148,7 @@ CFIX--  Initial value of cumulative shear strain in each slip systems
         GAMTOL=0.
         HSV(121)=GAMTOL
 C-----  Initial value of the resolved shear stress in slip systems
-        CALL CALRSS(SIG(1:6),SLPDEF,ND,TAU)
+        CALL calSigRss(SIG(1:6),SLPDEF,ND,TAU)
         HSV(25:36)=TAU(1:12)
 C-----  Number of slip system     
         HSV(NHSV)=FLOAT(NSLPTL)

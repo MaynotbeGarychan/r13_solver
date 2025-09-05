@@ -1,4 +1,27 @@
-      subroutine ELASTENLOCAL2GLOBAL(ela_ten_cry,rl,ela_ten_glb)
+      subroutine calElasIsoTensorCrystalGlobal(ym,pr,r,L_ela)
+        !============================================================
+        ! Calculate the global elasticity tensor of the crystal
+        ! based on its transformation matrix
+        !------------------------------------------------------------
+        ! input: 
+        ! ym,pr    - young's modulus, possion's ratio
+        ! r(3,3)   - transformation matrix representing orientation
+        ! output: 
+        ! L_ela(6,6) - elastic tensor at the global coordinates
+        !------------------------------------------------------------
+      implicit none
+      double precision ym,pr
+      double precision r(3,3),RL(6,6)
+      double precision L_ela(6,6),L_ela_cry(6,6)
+c     calculate elastic tensor
+      call calElasIsoTensor(ym,pr,L_ela_cry)
+c     Transform elastic tensor to material coordinate
+      call calTransMatFourthOrd(r,RL)
+      call tranElasTensorLocal2Global(L_ela_cry,RL,L_ela)
+      end subroutine calElasIsoTensorCrystalGlobal
+      
+      
+      subroutine tranElasTensorLocal2Global(ela_ten_cry,rl,ela_ten_glb)
         !============================================================
         ! Transform the elastic tensor from crystal to global coor
         !------------------------------------------------------------
@@ -15,9 +38,9 @@
 
         call trans_fourth_order_tensor(ela_ten_cry,rl,n,ela_ten_glb)
 
-      end subroutine ELASTENLOCAL2GLOBAL
+      end subroutine tranElasTensorLocal2Global
       
-      subroutine ELASTENISO(ym,pr,ela_ten)
+      subroutine calElasIsoTensor(ym,pr,ela_ten)
         !============================================================
         ! Calculate the four-order elastic tensor
         !------------------------------------------------------------
@@ -58,7 +81,7 @@
             ela_ten(i,i)=sm
         enddo
 
-      end subroutine ELASTENISO
+      end subroutine calElasIsoTensor
 
       subroutine compliance_tensor_otp(ym,pr,cmp_ten)
         !============================================================

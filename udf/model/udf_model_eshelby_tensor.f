@@ -136,7 +136,7 @@ c     esbmat
         call matInverse(rv,3,rvi)
         call matInverse(rc,3,rci)
         call matInnProd(rvi,rci,3,3,3,r)
-        call ROTMAT4ORD(r,rl)
+        call calTransMatFourthOrd(r,rl)
         call trans_fourth_order_tensor(esbmat,rl,6,esbmat_cry)
 
       end subroutine esbmat_to_crystal

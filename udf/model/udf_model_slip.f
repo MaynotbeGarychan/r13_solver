@@ -1,4 +1,4 @@
-      subroutine cal_slip_pl(tau,g_crss,mval,dgamma_0,
+      subroutine calSlipRate(tau,g_crss,mval,dgamma_0,
      1   dgamma_lim,num_ss,dgamma)
         !============================================================
         ! A power-law style visco-plasticity slip model 
@@ -37,10 +37,10 @@
         enddo
 
 
-      end subroutine cal_slip_pl
+      end subroutine calSlipRate
 
 
-      subroutine update_ccs(dgamma,num_ss,dt1,
+      subroutine updateCss(dgamma,num_ss,dt1,
      1      dgamma_tol,gamma_slip,gamma_n1)
         !============================================================
         ! Update of the slip deformation volume
@@ -73,41 +73,5 @@
             gamma_n1=gamma_n1+val
         enddo
 
-      end subroutine update_ccs
+      end subroutine updateCss
 
-!       subroutine cal_slip_thm_act(tau,g_crss,rho_ssdm,vec_b,eng_act,k_bolz
-!      1   num_ss,dgamma)
-!         !============================================================
-!         ! A power-law style visco-plasticity slip model 
-!         !------------------------------------------------------------
-!         ! input: 
-!         ! tau(num_ss)     - RSS at each slip system
-!         ! g_crss(num_ss)  - CRSS at each slip system
-!         ! num_ss          - Num of slip system
-!         ! output:
-!         ! dgamma(num_ss)  - Slip rate at current step
-!         !------------------------------------------------------------
-!         implicit none
-!         integer l
-!         integer num_ss
-!         double precision dgamma_0
-!         double precision tau(num_ss)
-!         double precision g_crss(num_ss)
-!         double precision mval
-!         double precision dgamma_lim
-!         double precision dgamma(num_ss)
-
-!         do l=1,12
-!             dgamma(l)=dgamma_0*(tau(l)/g_crss(l))
-!      1         *abs(tau(l)/g_crss(l))**((1/mval)-1)
-!         enddo
-
-!         do l=1,12
-!             if(dgamma(l) .gt. dgamma_lim) then
-!                   dgamma(l)=dgamma_lim
-!             elseif(dgamma(l) .lt. -dgamma_lim) then
-!                   dgamma(l)=-dgamma_lim
-!             endif
-!         enddo
-
-!       end subroutine cal_slip_thm_act

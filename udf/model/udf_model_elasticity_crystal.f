@@ -35,8 +35,8 @@ c       construct transformation matrix
         angle=45
         angle=dge_to_rad(angle)
         call trans_matrix_by_axis_angle(axis,angle,r)
-        call ROTMAT4ORD(r,rl)
-        call ELASTENLOCAL2GLOBAL(ela_ten_cry,rl,ela_ten_rot)
+        call calTransMatFourthOrd(r,rl)
+        call tranElasTensorLocal2Global(ela_ten_cry,rl,ela_ten_rot)
         sm_arr(1)=ela_ten_rot(4,4)
         sm_arr(4)=ela_ten_rot(4,4)
         sm_arr(7)=ela_ten_rot(6,6)
@@ -61,8 +61,8 @@ c       1,0,1  & -1,0,1
         angle=45
         angle=dge_to_rad(angle)
         call trans_matrix_by_axis_angle(axis,angle,r)
-        call ROTMAT4ORD(r,rl)
-        call ELASTENLOCAL2GLOBAL(ela_ten_cry,rl,ela_ten_rot)
+        call calTransMatFourthOrd(r,rl)
+        call tranElasTensorLocal2Global(ela_ten_cry,rl,ela_ten_rot)
         sm_arr(2)=ela_ten_rot(4,4)
         sm_arr(8)=ela_ten_rot(4,4)
         sm_arr(5)=ela_ten_rot(5,5)
@@ -75,8 +75,8 @@ c       1,1,0  &  -1,1,0
         angle=45
         angle=dge_to_rad(angle)
         call trans_matrix_by_axis_angle(axis,angle,r)
-        call ROTMAT4ORD(r,rl)
-        call ELASTENLOCAL2GLOBAL(ela_ten_cry,rl,ela_ten_rot)
+        call calTransMatFourthOrd(r,rl)
+        call tranElasTensorLocal2Global(ela_ten_cry,rl,ela_ten_rot)
         sm_arr(3)=ela_ten_rot(5,5)
         sm_arr(12)=ela_ten_rot(5,5)
         sm_arr(6)=ela_ten_rot(6,6)
@@ -104,7 +104,7 @@ c       0,-1,1  & 0,1,1
         axis(2)=0.0
         axis(3)=0.0
         call trans_matrix_by_axis_angle(axis,angle,r)
-        call ROTMAT4ORD(r,rl)
+        call calTransMatFourthOrd(r,rl)
         smid=4
         val=shear_modulus_ss_fast_func(ela_ten_cry,rl,smid)
         sm_arr(1)=val
@@ -118,7 +118,7 @@ c       1,0,1  & -1,0,1
         axis(2)=1.0
         axis(3)=0.0
         call trans_matrix_by_axis_angle(axis,angle,r)
-        call ROTMAT4ORD(r,rl)
+        call calTransMatFourthOrd(r,rl)
         smid=4
         val=shear_modulus_ss_fast_func(ela_ten_cry,rl,smid)
         sm_arr(2)=val
@@ -132,7 +132,7 @@ c       1,1,0  &  -1,1,0
         axis(2)=0.0
         axis(3)=1.0
         call trans_matrix_by_axis_angle(axis,angle,r)
-        call ROTMAT4ORD(r,rl)
+        call calTransMatFourthOrd(r,rl)
         smid=5
         val=shear_modulus_ss_fast_func(ela_ten_cry,rl,smid)
         sm_arr(3)=val

@@ -23,8 +23,32 @@ c     calculate velocity gradient
       call matInnProd(df_n1,f_n1_inv,3,3,3,L_n1)
 c     decompose velocity gradient
       call velocity_gradient_decompose(L_n1,Dv,Wv)
+      end subroutine calDeforSpinRateByDispGrad
 
-      end subroutine
+      subroutine getDispGradfromHsv(hsv,nhsv,f,f_n1)
+      implicit none
+      integer nhsv
+      double precision f(3,3),f_n1(3,3)
+      double precision hsv(*)
+      f(1,1)=hsv(1)
+      f(2,1)=hsv(2)
+      f(3,1)=hsv(3)
+      f(1,2)=hsv(4)
+      f(2,2)=hsv(5)
+      f(3,2)=hsv(6)
+      f(1,3)=hsv(7)
+      f(2,3)=hsv(8)
+      f(3,3)=hsv(9)
+      f_n1(1,1)=hsv(nhsv+1)
+      f_n1(2,1)=hsv(nhsv+2)
+      f_n1(3,1)=hsv(nhsv+3)
+      f_n1(1,2)=hsv(nhsv+4)
+      f_n1(2,2)=hsv(nhsv+5)
+      f_n1(3,2)=hsv(nhsv+6)
+      f_n1(1,3)=hsv(nhsv+7)
+      f_n1(2,3)=hsv(nhsv+8)
+      f_n1(3,3)=hsv(nhsv+9)
+      end subroutine getDispGradfromHsv
       
       subroutine deformation_gradient_rate(f,f_n1,dt1,df_n1)
       !============================================================
@@ -111,7 +135,7 @@ c     decompose velocity gradient
 
       end subroutine deformation_gradient_plastic
 
-      subroutine strain_rate_tensor_plastic(dgamma,eschmid,num_ss,
+      subroutine calStrainRateBySlip(dgamma,eschmid,num_ss,
      1     Dpv)
       !============================================================
       ! Calculate strain tensor, plastic part
@@ -137,9 +161,9 @@ c     decompose velocity gradient
             enddo
       enddo
 
-      end subroutine strain_rate_tensor_plastic
+      end subroutine calStrainRateBySlip
 
-      subroutine spin_rate_tensor_plastic(dgamma,wschmid,num_ss,
+      subroutine calSpinRateBySlip(dgamma,wschmid,num_ss,
      1     Wpv)
       !============================================================
       ! Calculate spin tensor, plastic part
@@ -165,4 +189,4 @@ c     decompose velocity gradient
             enddo
       enddo
 
-      end subroutine spin_rate_tensor_plastic
+      end subroutine calSpinRateBySlip

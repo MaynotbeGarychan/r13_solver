@@ -277,22 +277,22 @@ c     decompose velocity gradient
 !------------------------------------------------------------  
       call ss_vec_to_configuration(fe,s11,m11,num_ss,
      1   s11e,m11e)
-      call schmid_tensor(s11e,m11e,num_ss,
+      call calSchmidTensor(s11e,m11e,num_ss,
      1     Pa,Wa,eschmid,wschmid)
 
-      call CALRSS(sig(1:6),eschmid,num_ss,tau)
+      call calSigRss(sig(1:6),eschmid,num_ss,tau)
 
       call edge_dsl_line_vec(m11,s11,num_ss,l11)
       call cal_crss_by_dsl_Lee(ga,sm,bv,rho,m11,s11,l11,
      1     num_ss,g_crss)
 
-      call cal_slip_pl(tau,g_crss,mval,dgamma_0,
+      call calSlipRate(tau,g_crss,mval,dgamma_0,
      1   dgamma_lim,num_ss,dgamma)
-      call update_ccs(dgamma,num_ss,dt1,
+      call updateCss(dgamma,num_ss,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
 c     Project the slip deformation into macro deformation and spin
-      call strain_rate_tensor_plastic(dgamma,eschmid,num_ss,Dp)
-      call spin_rate_tensor_plastic(dgamma,wschmid,num_ss,Wp)
+      call calStrainRateBySlip(dgamma,eschmid,num_ss,Dp)
+      call calSpinRateBySlip(dgamma,wschmid,num_ss,Wp)
 
 !============================================================
 ! Update cauchy stress
@@ -300,10 +300,10 @@ c     Project the slip deformation into macro deformation and spin
 ! Note:
 !------------------------------------------------------------ 
 c     Fourth-order elastic tensor at crystal coordinate
-      call ELASTENISO(ym,pr,L_ela_cry)
+      call calElasIsoTensor(ym,pr,L_ela_cry)
 c     Transform elastic tensor to material coordinate
-      call ROTMAT4ORD(r,RL)
-      call ELASTENLOCAL2GLOBAL(L_ela_cry,RL,L_ela)
+      call calTransMatFourthOrd(r,RL)
+      call tranElasTensorLocal2Global(L_ela_cry,RL,L_ela)
 c     Update the Cauchy stress tensor
       call mat33Det(f,f_det)
       call updateSigJaum(sig,eschmid,wschmid,dgamma,Wv,
@@ -360,7 +360,7 @@ c     Rotate the slip systsme vectors
       call rot_slip_vec(s11,m11,exp_we,num_ss,
      1     s11_n1,m11_n1)
 c     Extract the euler angle from the tranformation matrix
-      call euler_angle_from_trans_matrix(r_n1,pi,
+      call calEulerbyTransMat(r_n1,pi,
      1     phi1,lphi,phi2)
 
 !============================================================

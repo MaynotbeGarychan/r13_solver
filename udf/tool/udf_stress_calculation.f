@@ -1,4 +1,4 @@
-      subroutine CALRSS(sig,sf_v,num_ss,tau)
+      subroutine calSigRss(sig,sf_v,num_ss,tau)
         !============================================================
         ! Calculate the resolved shear stress array
         !------------------------------------------------------------
@@ -21,7 +21,7 @@
             tau(i)=dot_product(sf_v(:,i),sig)
         enddo
 
-      end subroutine CALRSS
+      end subroutine calSigRss
 
       function most_active_ss(tau,num_ss) result(idx)
         !============================================================

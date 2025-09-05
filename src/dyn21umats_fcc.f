@@ -5,8 +5,6 @@
 !============================================================
 ! Declaration of constitutive variables
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------
       implicit none
       include 'nlqparm'
       include 'bk06.inc'
@@ -70,31 +68,16 @@ c     Solid element variables
 !============================================================
 ! Declaration of non-constitutive variables
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------
 c     Stress state vaiables
-      double precision sig_m,sig_eq,st,lode
-      double precision Na(3,3,4),nschmid(6,4)
-      double precision rns(4)
-      double precision rr(12)
-      double precision act_rr
+      double precision sig_m,sig_eq,st
 c     Strain variables
-      double precision eeq,peeq
-      double precision act_gamma
-c     Others
-      integer act_ss,act_sp
+      double precision peeq
 !============================================================
 ! Declaration of utilized functions
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------
-      integer array_maxidx,ss2sp_fcc
-      double precision calSigEq,calSigMean,calSigTri,cal_lode
-      double precision calPeeq
+      double precision calSigEq,calSigMean,calSigTri,calPeeq
 !============================================================
 ! Obtain variables from materials constants
-!------------------------------------------------------------
-! Note:
 !------------------------------------------------------------
 c     cm(1 ~ 8)   Constitutive parameters
       ym=cm(1)
@@ -119,9 +102,7 @@ c     cm(25 ~ 32) hardening
 
 !============================================================
 ! Initialize Hsv list
-!------------------------------------------------------------
-! Note:
-!------------------------------------------------------------     
+!------------------------------------------------------------   
       if (.not.failel) then
       if(ncycle==0) then
             call INITCRY(ori_type,cry_type,euler,
@@ -165,9 +146,7 @@ c     Cauchy stress tensor
       else
 !============================================================
 ! Calculation begins
-!------------------------------------------------------------
-! Note:
-!------------------------------------------------------------   
+!------------------------------------------------------------ 
 c     Initialize crystal orientation
 C     Obtain crystal orientation from hsv
 c     f(3,3)            <- hsv(1 ~ 9)
@@ -178,24 +157,7 @@ c     m11(3,12)         <- hsv(67 ~ 102)
 c     gamma_slip(12)    <- hsv(103 ~ 114)
 c     gamma_n1          <- hsv(115)
 c     Obtain defromation gradient from hsv
-      f(1,1)=hsv(1)
-      f(2,1)=hsv(2)
-      f(3,1)=hsv(3)
-      f(1,2)=hsv(4)
-      f(2,2)=hsv(5)
-      f(3,2)=hsv(6)
-      f(1,3)=hsv(7)
-      f(2,3)=hsv(8)
-      f(3,3)=hsv(9)
-      f_n1(1,1)=hsv(nhsv+1)
-      f_n1(2,1)=hsv(nhsv+2)
-      f_n1(3,1)=hsv(nhsv+3)
-      f_n1(1,2)=hsv(nhsv+4)
-      f_n1(2,2)=hsv(nhsv+5)
-      f_n1(3,2)=hsv(nhsv+6)
-      f_n1(1,3)=hsv(nhsv+7)
-      f_n1(2,3)=hsv(nhsv+8)
-      f_n1(3,3)=hsv(nhsv+9)
+      call getDispGradfromHsv(hsv,nhsv,f,f_n1)
 c     Obtain CRSS from hsv
       do l=1,num_ss
             g_crss(l)=hsv(9+l)
@@ -229,37 +191,28 @@ c     Obtain slip volume from hsv
 !============================================================
 ! Kinetic model
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------   
       call calDeforSpinRateByDispGrad(f,f_n1,dt1,Dv,Wv)
 
 !============================================================
 ! Constitutive model for slip at slip system
-!------------------------------------------------------------
-! Note:
-!------------------------------------------------------------  
-      call schmid_tensor(s11,m11,num_ss,
+!------------------------------------------------------------ 
+      call calSchmidTensor(s11,m11,num_ss,
      1     Pa,Wa,eschmid,wschmid)
-      call CALRSS(sig(1:6),eschmid,num_ss,tau)
-      call cal_slip_pl(tau,g_crss,mval,dgamma_0,
+      call calSigRss(sig(1:6),eschmid,num_ss,tau)
+      call calSlipRate(tau,g_crss,mval,dgamma_0,
      1   dgamma_lim,num_ss,dgamma)
-      call update_ccs(dgamma,num_ss,dt1,
+      call updateCss(dgamma,num_ss,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
 c     Project the slip deformation into macro deformation and spin
 c     as plastic corrector
-      call strain_rate_tensor_plastic(dgamma,eschmid,num_ss,Dp)
-      call spin_rate_tensor_plastic(dgamma,wschmid,num_ss,Wp)
+      call calStrainRateBySlip(dgamma,eschmid,num_ss,Dp)
+      call calSpinRateBySlip(dgamma,wschmid,num_ss,Wp)
 
 !============================================================
 ! Update cauchy stress
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------ 
 c     Fourth-order elastic tensor at crystal coordinate
-      call ELASTENISO(ym,pr,L_ela_cry)
-c     Transform elastic tensor to material coordinate
-      call ROTMAT4ORD(r,RL)
-      call ELASTENLOCAL2GLOBAL(L_ela_cry,RL,L_ela)
+      call calElasIsoTensorCrystalGlobal(ym,pr,r,L_ela)
 c     Update the Cauchy stress tensor
       call mat33Det(f,f_det)
       call updateSigJaum(sig,eschmid,wschmid,dgamma,Wv,
@@ -268,27 +221,20 @@ c     Update the Cauchy stress tensor
 !============================================================
 ! Rotation model
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------ 
 c     calculate the rotation rate for further rotation
       call updateOrientation(Wv,Wp,s11,m11,r,num_ss,dt1,
      1  s11_n1,m11_n1,r_n1)
 c     Extract the euler angle from the tranformation matrix
-      call euler_angle_from_trans_matrix(r_n1,pi,
-     1     phi1,lphi,phi2)
+      call calEulerbyTransMat(r_n1,pi,phi1,lphi,phi2)
 
 !============================================================
 ! Hardening model
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------ 
       call updateCrssFcc(g0,gs,h0,hs,q,gamma_n1,dgamma,
      1           dt1,g_crss)
 !============================================================
 ! Calculation of non-constitutive variables
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------ 
 c     Calculate stress state
       sig_m=calSigMean(sig(1:6))
       sig_eq=calSigEq(sig(1:6))
@@ -358,8 +304,8 @@ c
 ! Note:
 !------------------------------------------------------------ 
 c     phi1,lphi,phi2    <- hsv(201 ~ 203)
-c     st,lode,sig_eq    <- hsv(204 ~ 206)
-c     eeq,peeq          <- hsv(207,208)
+c     st,sig_eq         <- hsv(204, 206)
+c     peeq              <- hsv(208)
 c     tau(12)           <- hsv(209 ~ 210)
 c     rr(12)            <- hsv(211 ~ 222)
       hsv(201)=phi1
