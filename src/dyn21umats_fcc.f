@@ -231,20 +231,7 @@ c     Obtain slip volume from hsv
 !------------------------------------------------------------
 ! Note:
 !------------------------------------------------------------   
-c      call cal_deform_grad_ten(f,f_n1,dt1,df_n1)
-c      call matInverse(f_n1,3,f_n1_inv)
-c      call cal_velocity_grad_ten(df_n1,f_n1_inv,L_n1)
-c      call calSigTrirain_spin_rate_ten(L_n1,Dv,Wv)
-
-c     calculate deformation gradient rate
-      call deformation_gradient_rate(f,f_n1,dt1,df_n1)
-c     calculate the inverse of deformation gradient
-      call matInverse(f_n1,3,f_n1_inv)
-c     calculate velocity gradient
-      call matInnProd(df_n1,f_n1_inv,3,3,3,L_n1)
-c     decompose velocity gradient
-      call velocity_gradient_decompose(L_n1,Dv,Wv)
-
+      call calDeforSpinRateByDispGrad(f,f_n1,dt1,Dv,Wv)
 
 !============================================================
 ! Constitutive model for slip at slip system
@@ -275,7 +262,7 @@ c     Transform elastic tensor to material coordinate
       call ELASTENLOCAL2GLOBAL(L_ela_cry,RL,L_ela)
 c     Update the Cauchy stress tensor
       call mat33Det(f,f_det)
-      call update_stress_by_jau(sig,eschmid,wschmid,dgamma,Wv,
+      call updateSigJaum(sig,eschmid,wschmid,dgamma,Wv,
      1     Dv,L_ela,f_det,num_ss,dt1,sig_n1)
 
 !============================================================
@@ -295,7 +282,7 @@ c     Extract the euler angle from the tranformation matrix
 !------------------------------------------------------------
 ! Note:
 !------------------------------------------------------------ 
-      call hardening_fcc(g0,gs,h0,hs,q,gamma_n1,dgamma,
+      call updateCrssFcc(g0,gs,h0,hs,q,gamma_n1,dgamma,
      1           dt1,g_crss)
 !============================================================
 ! Calculation of non-constitutive variables

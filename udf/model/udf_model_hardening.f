@@ -1,4 +1,4 @@
-      subroutine hardening_fcc(g0,gs,h0,hs,q,gamma_n1,dgamma,dt1,
+      subroutine updateCrssFcc(g0,gs,h0,hs,q,gamma_n1,dgamma,dt1,
      1      g_crss)
         !============================================================
         ! Hardening model specifically for aluminum alloy
@@ -69,7 +69,7 @@ c   renew CRSS
                 endif
             enddo
         enddo
-        end subroutine hardening_fcc
+        end subroutine updateCrssFcc
 
         subroutine hardening_bcc(g0,gs,h0,hs,q,gamma_n1,dgamma,dt1,
      1      g_crss)

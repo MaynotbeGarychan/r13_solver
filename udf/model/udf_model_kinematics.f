@@ -1,3 +1,31 @@
+      subroutine calDeforSpinRateByDispGrad(f,f_n1,dt1,Dv,Wv)
+      !============================================================
+      ! Main program to calculate the deformation and spin rate
+      ! tensor from displacement gradient
+      !------------------------------------------------------------
+      ! input: 
+      ! f(3,3) - deformation gradient tensor at current step
+      ! f_n1(3,3) - deformation gradient tensor at next step
+      ! dt1       - time step
+      ! output: 
+      ! Dv(6)     - strain rate tensor in Vogit notation
+      ! Wv(3)     - spin rate tensor in Vogit notation
+      !============================================================
+      implicit none
+      double precision f(3,3),f_n1(3,3),df_n1(3,3),f_n1_inv(3,3)
+      double precision L_n1(3,3),Dv(6),Wv(6)
+      double precision dt1
+c     calculate the deformation gradieent rate from disp grad
+      call deformation_gradient_rate(f,f_n1,dt1,df_n1)
+c     calculate the inverse of deformation gradient
+      call matInverse(f_n1,3,f_n1_inv)
+c     calculate velocity gradient
+      call matInnProd(df_n1,f_n1_inv,3,3,3,L_n1)
+c     decompose velocity gradient
+      call velocity_gradient_decompose(L_n1,Dv,Wv)
+
+      end subroutine
+      
       subroutine deformation_gradient_rate(f,f_n1,dt1,df_n1)
       !============================================================
       ! calculate the deformation gradient

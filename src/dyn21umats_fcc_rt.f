@@ -279,7 +279,7 @@ c     Transform elastic tensor to material coordinate
       call ELASTENLOCAL2GLOBAL(L_ela_cry,RL,L_ela)
 c     Update the Cauchy stress tensor
       call mat33Det(f,f_det)
-      call update_stress_by_jau(sig,eschmid,wschmid,dgamma,Wv,
+      call updateSigJaum(sig,eschmid,wschmid,dgamma,Wv,
      1     Dv,L_ela,f_det,num_ss,dt1,sig_n1)
 
 !============================================================
@@ -322,7 +322,7 @@ c     Extract the euler angle from the tranformation matrix
 !------------------------------------------------------------
 ! Note:
 !------------------------------------------------------------ 
-      call hardening_fcc(g0,gs,h0,hs,q,gamma_n1,dgamma,
+      call updateCrssFcc(g0,gs,h0,hs,q,gamma_n1,dgamma,
      1           dt1,g_crss)
 !============================================================
 ! Calculation of non-constitutive variables

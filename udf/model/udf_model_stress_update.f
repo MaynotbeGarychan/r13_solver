@@ -1,4 +1,4 @@
-        subroutine update_stress_by_jau(sig,eschmid,wschmid,dgamma,
+        subroutine updateSigJaum(sig,eschmid,wschmid,dgamma,
      1    Wv,Dv,L_ela,f_det,num_ss,dt1,sig_n1)
        !============================================================
        ! update the stress by jaumann method
@@ -48,7 +48,7 @@
             sig_n1(i)=sig(i)+(sig_jau(i)+sig_r(i))*dt1
         enddo
 
-        end subroutine update_stress_by_jau
+        end subroutine updateSigJaum
 
         subroutine vp_stress_rate_map_tensor(sig,L_ela,eschmid,
      1   wschmid,f_det,num_ss,Ra)

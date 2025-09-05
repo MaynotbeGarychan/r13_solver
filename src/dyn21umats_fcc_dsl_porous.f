@@ -372,9 +372,9 @@ c     Transform elastic tensor to material coordinate
 c     Update the Cauchy stress tensor
       call mat33Det(f,f_det)
       call strain_rate_tensor_porous(vf,vfr,Dvv)
-      call update_stress_by_jau(sig,eschmid,wschmid,dgamma,Wv,
+      call updateSigJaum(sig,eschmid,wschmid,dgamma,Wv,
      1     Dv,cmat,f_det,num_ss,dt1,sig_n1)
-!       call update_stress_by_jau_porous(sig,eschmid,wschmid,
+!       call updateSigJaum_porous(sig,eschmid,wschmid,
 !      1     dgamma,Wv,Dv,cmat,f_det,num_ss,dt1,Dvv,sig_n1)
 
 !============================================================

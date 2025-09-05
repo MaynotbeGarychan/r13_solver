@@ -1,4 +1,4 @@
-      subroutine update_stress_by_jau_porous(sig,eschmid,wschmid,dgamma,
+      subroutine updateSigJaum_porous(sig,eschmid,wschmid,dgamma,
      1    Wv,Dv,L_ela,f_det,num_ss,dt1,Dvv,sig_n1)
       !============================================================
       ! update the stress by jaumann method
@@ -56,4 +56,4 @@
            sig_n1(i)=sig(i)+(sig_jau(i)+sig_r(i))*dt1
        enddo
 
-       end subroutine update_stress_by_jau_porous
+       end subroutine updateSigJaum_porous
