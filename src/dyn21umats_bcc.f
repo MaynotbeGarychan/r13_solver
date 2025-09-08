@@ -20,12 +20,12 @@ c     UMAT variables
       character*5 etype
       logical failel,reject
       INTEGER idele
-      integer umat_type
+      integer umatType
 c     IO
-      integer ori_type
+      integer oriType
 c     Define the crystal
-      integer,parameter:: num_ss=48
-      integer,parameter:: cry_type=1
+      integer,parameter:: numSys=48
+      integer,parameter:: cryType=1
 c     Intermedia variables
       integer i,j,k,l
       double precision, parameter :: pi=acos(-1.0d0)
@@ -42,28 +42,28 @@ c     Kinetic model variables
       double precision We1
       double precision exp_we(3,3)
 c     Kinematic variables
-      double precision s11(3,num_ss),m11(3,num_ss)
-      double precision s11e(3,num_ss),m11e(3,num_ss)
-      double precision s11_n1(3,num_ss),m11_n1(3,num_ss)
+      double precision s11(3,numSys),m11(3,numSys)
+      double precision s11e(3,numSys),m11e(3,numSys)
+      double precision s11_n1(3,numSys),m11_n1(3,numSys)
       double precision r(3,3),RL(6,6),r_n1(3,3)
-      double precision Pa(3,3,num_ss),eschmid(6,num_ss)
-      double precision Wa(3,3,num_ss),wschmid(3,num_ss)
+      double precision Pa(3,3,numSys),eschmid(6,numSys)
+      double precision Wa(3,3,numSys),wschmid(3,numSys)
       double precision euler(3)
       double precision phi1,lphi,phi2
       double precision Dp(6),Wp(3)
 c     Slip system constitutive model variables
-      double precision tau(num_ss),dgamma(num_ss)
-      double precision tau_abs(num_ss)
-      double precision gamma_slip(num_ss)
+      double precision tau(numSys),dgamma(numSys)
+      double precision tau_abs(numSys)
+      double precision gamma_slip(numSys)
       double precision dgamma_tol,gamma_n1
-      double precision g_crss(num_ss)
+      double precision g_crss(numSys)
       double precision dgamma_0,mval,dgamma_lim
 c     Stress Update model variables
       double precision ym,pr,bk,sm
       double precision L_ela(6,6),L_ela_cry(6,6)
       double precision dsig_0(6),sig_jau(6),sig_r(6),sig_n1(6)
 c     Hardening model variable
-      integer hard_type
+      integer hardType
       double precision g0,gs,h0,hs,q
 c     Solid element variables
       double precision g,g2,gc,q1,q3,davg,p,deti,c22i,c23i,fac
@@ -94,15 +94,15 @@ c     cm(1 ~ 8)   Constitutive parameters
       bk=cm(3)
       sm=cm(4)       ! Shear modulus
 c     cm(9 ~ 16) basic crystal plasticity model
-      umat_type=cm(9)
+      umatType=cm(9)
       dgamma_0=cm(10)
       mval=cm(11)
       dgamma_lim=cm(12)
 c     cm(17 ~ 24) orientation information
-      ori_type=cm(17)
+      oriType=cm(17)
       euler=cm(18:20)
 c     cm(25 ~ 32) hardening 
-      hard_type=cm(25)
+      hardType=cm(25)
       g0=cm(26)
       gs=cm(27)
       h0=cm(28)
@@ -115,8 +115,8 @@ c     cm(25 ~ 32) hardening
 !------------------------------------------------------------     
       if (.not.failel) then
       if(ncycle==0) then
-            call initCrystal(ori_type,cry_type,euler,
-     1           num_ss,r,s11,m11)
+            call initCrystal(oriType,cryType,euler,
+     1           numSys,r,s11,m11)
 c     Cauchy stress tensor
             do i=1,6
                   sig(i)=0.
@@ -130,7 +130,7 @@ c     Diagonal part of deformation gradient
             hsv(5)=1.
             hsv(9)=1.
 c     CRSS
-            do l=1,num_ss
+            do l=1,numSys
                   hsv(9+l)=g0
             enddo
 c     
@@ -143,7 +143,7 @@ c
             hsv(64)=r(1,3)
             hsv(65)=r(2,3)
             hsv(66)=r(3,3)
-            do l=1,num_ss
+            do l=1,numSys
                   k=(l-1)*3
                   hsv(67+k)=s11(1,l)
                   hsv(68+k)=s11(2,l)
@@ -186,7 +186,7 @@ c     Obtain defromation gradient from hsv
       f_n1(2,3)=hsv(nhsv+8)
       f_n1(3,3)=hsv(nhsv+9)
 c     Obtain CRSS from hsv
-      do l=1,num_ss
+      do l=1,numSys
             g_crss(l)=hsv(9+l)
       enddo
 c     
@@ -199,7 +199,7 @@ c
       r(1,3)=hsv(64)
       r(2,3)=hsv(65)
       r(3,3)=hsv(66)
-      do l=1,num_ss
+      do l=1,numSys
             k=(l-1)*3
             s11(1,l)=hsv(67+k)
             s11(2,l)=hsv(68+k)
@@ -210,7 +210,7 @@ c
       enddo
 c     Obtain slip volume from hsv
       gamma_n1=hsv(403)
-      do l=1,num_ss
+      do l=1,numSys
             gamma_slip(l)=hsv(354+l)
       enddo
 c     elastic deformation gradient tensor
@@ -243,18 +243,18 @@ c     decompose velocity gradient
 !------------------------------------------------------------
 ! Note:
 !------------------------------------------------------------  
-c      call ss_vec_to_configuration(fe,s11,m11,num_ss,
+c      call ss_vec_to_configuration(fe,s11,m11,numSys,
 c     1   s11e,m11e)
-      call calSchmidTensor(s11,m11,num_ss,
+      call calSchmidTensor(s11,m11,numSys,
      1     Pa,Wa,eschmid,wschmid)
-      call calSigRss(sig(1:6),eschmid,num_ss,tau)
+      call calSigRss(sig(1:6),eschmid,numSys,tau)
       call calSlipRate(tau,g_crss,mval,dgamma_0,
-     1   dgamma_lim,num_ss,dgamma)
-      call updateCss(dgamma,num_ss,dt1,
+     1   dgamma_lim,numSys,dgamma)
+      call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
 c     Project the slip deformation into macro deformation and spin
-      call calStrainRateBySlip(dgamma,eschmid,num_ss,Dp)
-      call calSpinRateBySlip(dgamma,wschmid,num_ss,Wp)
+      call calStrainRateBySlip(dgamma,eschmid,numSys,Dp)
+      call calSpinRateBySlip(dgamma,wschmid,numSys,Wp)
 
 !============================================================
 ! Update cauchy stress
@@ -269,7 +269,7 @@ c     Transform elastic tensor to material coordinate
 c     Update the Cauchy stress tensor
       call mat33Det(f,f_det)
       call updateSigJaum(sig,eschmid,wschmid,dgamma,Wv,
-     1     Dv,L_ela,f_det,num_ss,dt1,sig_n1)
+     1     Dv,L_ela,f_det,numSys,dt1,sig_n1)
 
 !============================================================
 ! Calculate elastic deformation gradient
@@ -277,7 +277,7 @@ c     Update the Cauchy stress tensor
 ! Note:
 !------------------------------------------------------------ 
 c      call deformation_gradient_plastic(dgamma,s11,m11,
-c     1     num_ss,fp)
+c     1     numSys,fp)
 c      call matInverse(fp,3,fp_inv)
 c      call matInnProd(f_n1,fp_inv,3,3,3,fe_n1)
 
@@ -310,7 +310,7 @@ c     calculate the rotation rate for further rotation
 c     Rotate the tranformation matrix
       call rot_tran_mat(r,exp_we,r_n1)
 c     Rotate the slip systsme vectors
-      call rot_slip_vec(s11,m11,exp_we,num_ss,
+      call rot_slip_vec(s11,m11,exp_we,numSys,
      1     s11_n1,m11_n1)
 c     Extract the euler angle from the tranformation matrix
       call calEulerbyTransMat(r_n1,pi,
@@ -353,7 +353,7 @@ c
       hsv(8)=f_n1(2,3)
       hsv(9)=f_n1(3,3)
 c     
-      do l=1,num_ss
+      do l=1,numSys
             hsv(9+l)=g_crss(l)
       enddo
 c     
@@ -367,7 +367,7 @@ c
       hsv(65)=r_n1(2,3)
       hsv(66)=r_n1(3,3)
 c     
-      do l=1,num_ss
+      do l=1,numSys
             k=(l-1)*3
             hsv(67+k)=s11_n1(1,l)
             hsv(68+k)=s11_n1(2,l)
@@ -377,7 +377,7 @@ c
             hsv(213+k)=m11_n1(3,l)
       enddo
 c
-      do l=1,num_ss
+      do l=1,numSys
             hsv(354+l)=gamma_slip(l)
       enddo
       hsv(403)=gamma_n1

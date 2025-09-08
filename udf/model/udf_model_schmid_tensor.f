@@ -1,23 +1,23 @@
-      subroutine calSchmidTensor(s11e,m11e,num_ss,
+      subroutine calSchmidTensor(s11e,m11e,numSys,
      1     sfmate,wfmate,sfve,wfve)
       !============================================================
       ! Calculate Schmid tensor its Vogit notation
       ! based on slip systems vectors in reference scheme
       !------------------------------------------------------------
       ! input: 
-      ! m11e(3,num_ss),s11e(3,num_ss) - local slip system vectors
-      ! num_ss        - num of slip systems
+      ! m11e(3,numSys),s11e(3,numSys) - local slip system vectors
+      ! numSys        - num of slip systems
       ! output: 
-      ! sfmate(3,3,num_ss),wfmate(3,3,num_ss) - Schmid tensor
-      ! sfve(6,num_ss),wfve(3,num_ss) - Schmid tensor in Vog
+      ! sfmate(3,3,numSys),wfmate(3,3,numSys) - Schmid tensor
+      ! sfve(6,numSys),wfve(3,numSys) - Schmid tensor in Vog
       !============================================================
       implicit none
       integer l,i,j
-      integer num_ss
-      double precision m11e(3,num_ss),s11e(3,num_ss)
-      double precision sfmate(3,3,num_ss),wfmate(3,3,num_ss)
-      double precision sfve(6,num_ss),wfve(3,num_ss)
-      do l=1,num_ss
+      integer numSys
+      double precision m11e(3,numSys),s11e(3,numSys)
+      double precision sfmate(3,3,numSys),wfmate(3,3,numSys)
+      double precision sfve(6,numSys),wfve(3,numSys)
+      do l=1,numSys
             do i=1,3
                   do j=1,3
                       sfmate(i,j,l)=(s11e(i,l)*m11e(j,l)+
@@ -39,14 +39,14 @@
 
       end subroutine calSchmidTensor
 
-      subroutine normal_tensor(m11,num_sp,num_ss,nfmat,nfv)
+      subroutine normal_tensor(m11,num_sp,numSys,nfmat,nfv)
       !============================================================
       ! Calculate non-Schmid tensor Na its vogit 
       ! based on local slip systems vectors
       !------------------------------------------------------------
       ! input: 
-      ! m11(3,num_ss) - local slip plane vectors
-      ! num_ss        - num of slip systems
+      ! m11(3,numSys) - local slip plane vectors
+      ! numSys        - num of slip systems
       ! num_sp        - num of slip plane
       ! output: 
       ! nfmat(3,3,num_sp) - Nomral tensor
@@ -54,8 +54,8 @@
       !------------------------------------------------------------
       implicit none
       integer i,j,l,k
-      integer num_ss,num_sp
-      double precision m11(3,num_ss)
+      integer numSys,num_sp
+      double precision m11(3,numSys)
       double precision nfmat(3,3,num_sp)
       double precision nfv(6,num_sp)
 

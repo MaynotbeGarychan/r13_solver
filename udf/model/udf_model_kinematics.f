@@ -103,29 +103,29 @@ c     decompose velocity gradient
 
       end subroutine velocity_gradient_decompose
 
-      subroutine deformation_gradient_plastic(dgamma,s11,m11,num_ss,
+      subroutine deformation_gradient_plastic(dgamma,s11,m11,numSys,
      1     fp)
       !============================================================
       ! calculate the deformation gradient plastic part
       !------------------------------------------------------------
       ! input: 
-      ! dgamma(num_ss) - slip rate at current step
-      ! s11(3,num_ss)  - slip system vectors
-      ! m11(3,num_ss)  - slip plane normal vectors
-      ! num_ss
+      ! dgamma(numSys) - slip rate at current step
+      ! s11(3,numSys)  - slip system vectors
+      ! m11(3,numSys)  - slip plane normal vectors
+      ! numSys
       ! output: 
       ! fp(3,3)     - deformation gradient plastic part
       !============================================================
       implicit none
       integer l,i,j
-      integer num_ss
-      double precision dgamma(num_ss)
-      double precision s11(3,num_ss)
-      double precision m11(3,num_ss)
+      integer numSys
+      double precision dgamma(numSys)
+      double precision s11(3,numSys)
+      double precision m11(3,numSys)
       double precision fp(3,3)
 
       call matIdentity(3,fp)
-      do l=1,num_ss
+      do l=1,numSys
             do i=1,3
                   do j=1,3
                         fp(i,j)=fp(i,j)+s11(i,l)*m11(j,l)*dgamma(l)
@@ -135,56 +135,56 @@ c     decompose velocity gradient
 
       end subroutine deformation_gradient_plastic
 
-      subroutine calStrainRateBySlip(dgamma,eschmid,num_ss,
+      subroutine calStrainRateBySlip(dgamma,eschmid,numSys,
      1     Dpv)
       !============================================================
       ! Calculate strain tensor, plastic part
       !------------------------------------------------------------
       ! input: 
-      ! dgamma(num_ss)      - slip rate at current step
-      ! eschmid(6,num_ss)   - schmid tensor in vogit for each sys
-      ! num_ss              - number of slip system
+      ! dgamma(numSys)      - slip rate at current step
+      ! eschmid(6,numSys)   - schmid tensor in vogit for each sys
+      ! numSys              - number of slip system
       ! output: 
       ! Dpv(6)              - strain tensor in vogit
       !============================================================
       implicit none
       integer l,i
-      integer num_ss
-      double precision dgamma(num_ss)
-      double precision eschmid(6,num_ss)
+      integer numSys
+      double precision dgamma(numSys)
+      double precision eschmid(6,numSys)
       double precision Dpv(6)
 
       do i=1,6
             Dpv(i)=0.
-            do l=1,num_ss
+            do l=1,numSys
                   Dpv(i)=Dpv(i)+eschmid(i,l)*dgamma(l)
             enddo
       enddo
 
       end subroutine calStrainRateBySlip
 
-      subroutine calSpinRateBySlip(dgamma,wschmid,num_ss,
+      subroutine calSpinRateBySlip(dgamma,wschmid,numSys,
      1     Wpv)
       !============================================================
       ! Calculate spin tensor, plastic part
       !------------------------------------------------------------
       ! input: 
-      ! dgamma(num_ss)      - slip rate at current step
-      ! eschmid(6,num_ss)   - schmid tensor in vogit for each sys
-      ! num_ss              - number of slip system
+      ! dgamma(numSys)      - slip rate at current step
+      ! eschmid(6,numSys)   - schmid tensor in vogit for each sys
+      ! numSys              - number of slip system
       ! output: 
       ! Dpv(6)              - strain tensor in vogit
       !============================================================
       implicit none
       integer l,i
-      double precision dgamma(num_ss)
-      double precision wschmid(3,num_ss)
-      integer num_ss
+      double precision dgamma(numSys)
+      double precision wschmid(3,numSys)
+      integer numSys
       double precision Wpv(3)
 
       do i=1,3
             Wpv(i)=0.
-            do l=1,num_ss
+            do l=1,numSys
                   Wpv(i)=Wpv(i)+wschmid(i,l)*dgamma(l)
             enddo
       enddo

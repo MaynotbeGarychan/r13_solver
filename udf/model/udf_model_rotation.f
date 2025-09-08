@@ -1,30 +1,30 @@
-       SUBROUTINE updateOrientation(Wv,Wp,s11,m11,r,num_ss,dt1,
+       SUBROUTINE updateOrientation(Wv,Wp,s11,m11,r,numSys,dt1,
      1  s11_n1,m11_n1,r_n1)
         !============================================================
         ! Major subroutine to update the orientation
         !------------------------------------------------------------
         ! input: 
         ! Wv(3),Wp(3)    - Spin rate tensor
-        ! s11(3,num_ss)  - Unit vector slip plane at this step
-        ! m11(3,num_ss)  - Unit vector slip direction at this step
+        ! s11(3,numSys)  - Unit vector slip plane at this step
+        ! m11(3,numSys)  - Unit vector slip direction at this step
         ! r(3,3)         - Trans. matrix for orientation this step
-        ! num_ss         - Number of the slip systems
+        ! numSys         - Number of the slip systems
         ! dt1            - Time step length
         ! output:
-        ! s11_n1(3,num_ss) - Unit vector slip plane at next step
-        ! m11_n1(3,num_ss) - Unit vector slip direction at next step
+        ! s11_n1(3,numSys) - Unit vector slip plane at next step
+        ! m11_n1(3,numSys) - Unit vector slip direction at next step
         ! r_n1(3,3)        - Trans. matrix for orientation next step
         !------------------------------------------------------------
         implicit none
-        integer num_ss
+        integer numSys
         double precision dt1
         double precision Wv(3),Wp(3)
-        double precision s11(3,num_ss),m11(3,num_ss)
-        double precision s11_n1(3,num_ss),m11_n1(3,num_ss)
+        double precision s11(3,numSys),m11(3,numSys)
+        double precision s11_n1(3,numSys),m11_n1(3,numSys)
         double precision r(3,3),r_n1(3,3),exp_we(3,3)
         call calWeExp(Wv,Wp,dt1,exp_we)
         call rot_tran_mat(r,exp_we,r_n1)
-        call rot_slip_vec(s11,m11,exp_we,num_ss,s11_n1,m11_n1)
+        call rot_slip_vec(s11,m11,exp_we,numSys,s11_n1,m11_n1)
         END SUBROUTINE updateOrientation
 
        SUBROUTINE calWeExp(Wv,Wp,dt1,exp_we)
@@ -32,13 +32,13 @@
         ! Calculate spin exponent
         !------------------------------------------------------------
         ! input: 
-        ! s11(3,num_ss)  - Unit vector slip plane at this step
-        ! m11(3,num_ss)  - Unit vector slip direction at this step
+        ! s11(3,numSys)  - Unit vector slip plane at this step
+        ! m11(3,numSys)  - Unit vector slip direction at this step
         ! exp_we         - Matrix for rotation calculation (expW*dt)
-        ! num_ss         - Number of the slip systems
+        ! numSys         - Number of the slip systems
         ! output:
-        ! s11_n1(3,num_ss) - Unit vector slip plane at next step
-        ! m11_n1(3,num_ss) - Unit vector slip direction at next step
+        ! s11_n1(3,numSys) - Unit vector slip plane at next step
+        ! m11_n1(3,numSys) - Unit vector slip direction at next step
         !------------------------------------------------------------
         implicit none
         integer i,j,k
@@ -76,31 +76,31 @@
       END SUBROUTINE calWeExp
        
        
-       subroutine rot_slip_vec(s11,m11,exp_we,num_ss,
+       subroutine rot_slip_vec(s11,m11,exp_we,numSys,
      1   s11_n1,m11_n1)
         !============================================================
         ! Rotate the slip system vectors for next step
         !------------------------------------------------------------
         ! input: 
-        ! s11(3,num_ss)  - Unit vector slip plane at this step
-        ! m11(3,num_ss)  - Unit vector slip direction at this step
+        ! s11(3,numSys)  - Unit vector slip plane at this step
+        ! m11(3,numSys)  - Unit vector slip direction at this step
         ! exp_we         - Matrix for rotation calculation (expW*dt)
-        ! num_ss         - Number of the slip systems
+        ! numSys         - Number of the slip systems
         ! output:
-        ! s11_n1(3,num_ss) - Unit vector slip plane at next step
-        ! m11_n1(3,num_ss) - Unit vector slip direction at next step
+        ! s11_n1(3,numSys) - Unit vector slip plane at next step
+        ! m11_n1(3,numSys) - Unit vector slip direction at next step
         !------------------------------------------------------------
 
         implicit none
         integer i,k,l
-        integer num_ss
-        double precision s11(3,num_ss)
-        double precision m11(3,num_ss)
+        integer numSys
+        double precision s11(3,numSys)
+        double precision m11(3,numSys)
         double precision exp_we(3,3)
-        double precision s11_n1(3,num_ss)
-        double precision m11_n1(3,num_ss)
+        double precision s11_n1(3,numSys)
+        double precision m11_n1(3,numSys)
 
-        do l=1,num_ss
+        do l=1,numSys
             do i=1,3
                 s11_n1(i,l)=0.
                 m11_n1(i,l)=0.

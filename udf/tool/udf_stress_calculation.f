@@ -1,51 +1,51 @@
-      subroutine calSigRss(sig,sf_v,num_ss,tau)
+      subroutine calSigRss(sig,sf_v,numSys,tau)
         !============================================================
         ! Calculate the resolved shear stress array
         !------------------------------------------------------------
         ! input: 
         ! sig(6)          - array of the stress tensor
-        ! sf_v(6,num_ss)  - schmid tensor in vogit notation for each
+        ! sf_v(6,numSys)  - schmid tensor in vogit notation for each
         !                   slip system
-        ! num_ss          - num of slip system
+        ! numSys          - num of slip system
         ! output:
         ! tau             - array of the resolved shear stress
         !------------------------------------------------------------
         implicit none
         integer i
-        integer num_ss
+        integer numSys
         double precision sig(6)
-        double precision sf_v(6,num_ss)
-        double precision tau(num_ss)
+        double precision sf_v(6,numSys)
+        double precision tau(numSys)
 
-        do i=1,num_ss
+        do i=1,numSys
             tau(i)=dot_product(sf_v(:,i),sig)
         enddo
 
       end subroutine calSigRss
 
-      function most_active_ss(tau,num_ss) result(idx)
+      function most_active_ss(tau,numSys) result(idx)
         !============================================================
         ! Calculate the most activated slip system by tau
         !------------------------------------------------------------
         ! input: 
-        ! tau(num_ss)     - array of resolved shear stress
-        ! num_ss          - num of slip plane
+        ! tau(numSys)     - array of resolved shear stress
+        ! numSys          - num of slip plane
         ! output:
         ! idx             - index of the most activated slip system
         !------------------------------------------------------------
         implicit none
-        double precision tau(num_ss)
-        double precision arr(num_ss)
-        integer num_ss
+        double precision tau(numSys)
+        double precision arr(numSys)
+        integer numSys
         integer idx
         integer l
         integer array_maxidx
 
-        do l=1,num_ss
+        do l=1,numSys
           arr(l)=abs(tau(l))
         enddo
 
-        idx=array_maxidx(tau,num_ss)
+        idx=array_maxidx(tau,numSys)
 
       end function most_active_ss
 
@@ -55,9 +55,9 @@
         !------------------------------------------------------------
         ! input: 
         ! sig(6)          - array of the stress tensor
-        ! nf_v(6,num_ss)  - normal schmid tensor in vogit notation 
+        ! nf_v(6,numSys)  - normal schmid tensor in vogit notation 
         !                   for each slip plane
-        ! num_ss          - num of slip plane
+        ! numSys          - num of slip plane
         ! output:
         ! rns             - array of the resolved normal stress
         !------------------------------------------------------------
@@ -74,24 +74,24 @@
 
       end subroutine cal_rns
 
-      subroutine cal_rr(num_sp,num_ss,rns,tau,rr)
+      subroutine cal_rr(num_sp,numSys,rns,tau,rr)
         !============================================================
         ! Calculate the resolved ratio array
         !------------------------------------------------------------
         ! input: 
         ! rns(num_sp)     - array of the resolved normal stress
-        ! tau(num_ss)     - array of the resolved shear stress 
+        ! tau(numSys)     - array of the resolved shear stress 
         ! num_sp          - num of slip plane
-        ! num_ss          - num of slip system
+        ! numSys          - num of slip system
         ! output:
-        ! rr(num_ss)      - array of the resolved ratio
+        ! rr(numSys)      - array of the resolved ratio
         !------------------------------------------------------------
         implicit none
         integer i,j,l
-        integer num_sp,num_ss
+        integer num_sp,numSys
         double precision rns(num_sp)
-        double precision tau(num_ss)
-        double precision rr(num_ss)
+        double precision tau(numSys)
+        double precision rr(numSys)
 
         do i=1,4
           do j=1,3

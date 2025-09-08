@@ -468,7 +468,7 @@ c     Solid element variables
       double precision g,g2,gc,q1,q3,davg,p,deti,c22i,c23i,fac
       double precision temper,elsiz,epsp,capa,tt
 c     Euler angles
-      integer ori_type,umat_type
+      integer oriType,umatType
       double precision euler(3),euler_f(1000,3)
       character*50 fname
       character*5 fidxchar
@@ -483,9 +483,9 @@ c      endif
 ! Note:
 !------------------------------------------------------------  
 c     Obtain euler angles if fine grains
-      ori_type=cm(17)
+      oriType=cm(17)
       if(ncycle.eq.0)then
-      if(ori_type.eq.1)then
+      if(oriType.eq.1)then
             ridx=mod(idele,1000)+1
             fidx=idele/1000+1
             write(fidxchar,"(I4)") fidx ! character index to integer
@@ -503,15 +503,15 @@ c     Obtain euler angles if fine grains
       endif
 c
       if (.not.failel) then
-            if(umat_type.eq.0)then
+            if(umatType.eq.0)then
                   call umatFcc(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
-            elseif(umat_type.eq.1)then
+            elseif(umatType.eq.1)then
                   call umat_fcc_dsl(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
-            elseif(umat_type.eq.3)then
+            elseif(umatType.eq.3)then
                   call umat_bcc(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)

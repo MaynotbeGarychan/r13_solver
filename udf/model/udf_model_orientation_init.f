@@ -1,4 +1,4 @@
-      subroutine initCrystal(io_type,cry_type,ori_arr,num_ss,
+      subroutine initCrystal(io_type,cryType,ori_arr,numSys,
      1       r,s11,m11)
         !============================================================
         ! Initialize the crystal orientation, and calculate the
@@ -6,29 +6,29 @@
         !------------------------------------------------------------
         ! input: 
         ! io_type        - approach to init the ori, 0-cm, 1-csv
-        ! cry_type       - type of crystal, 0-fcc, 1-bcc
+        ! cryType       - type of crystal, 0-fcc, 1-bcc
         ! ori_arr(3)     - array (phi1,lphi,phi2) in radian
         ! output:
-        ! m1(3,num_ss),s1(3,num_ss)  - normalized sp, ss vectors
-        ! m11(3,num_ss),s11(3,num_ss)- normalized sp, ss vectors in 
+        ! m1(3,numSys),s1(3,numSys)  - normalized sp, ss vectors
+        ! m11(3,numSys),s11(3,numSys)- normalized sp, ss vectors in 
         !                              local coordinates
         !------------------------------------------------------------
 c       declare variables
         implicit none
         integer i,j,l
-        integer io_type,cry_type
-        integer num_ss
-        double precision m1(3,num_ss),s1(3,num_ss) ! normalized vec
-        double precision m11(3,num_ss),s11(3,num_ss) ! normalized local vec
+        integer io_type,cryType
+        integer numSys
+        double precision m1(3,numSys),s1(3,numSys) ! normalized vec
+        double precision m11(3,numSys),s11(3,numSys) ! normalized local vec
         double precision ori_arr(3)
         double precision phi1,lphi,phi2
         double precision r(3,3) ! tranformation matrix
 c       declare functions
 
 c       init slip system vectors
-        if(cry_type.eq.0)then
+        if(cryType.eq.0)then
                 call ss_vec_fcc(m1,s1)
-        elseif(cry_type.eq.1)then
+        elseif(cryType.eq.1)then
                 call ss_vec_bcc(m1,s1)
         endif
 c       Obtain orientation from ori array
@@ -41,7 +41,7 @@ c       calculate the tranformation matrix
         call ROTMATBYEULER(phi1,lphi,phi2,r)
 
 c       transform the ss,sp vector to materials coordinates
-        call ss_vec_to_global(s1,m1,r,num_ss,s11,m11)
+        call ss_vec_to_global(s1,m1,r,numSys,s11,m11)
 
         end subroutine initCrystal
 
