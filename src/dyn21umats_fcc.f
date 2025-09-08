@@ -49,7 +49,6 @@ c     Kinematic variables
       double precision Dp(6),Wp(3)
 c     Slip system constitutive model variables
       double precision tau(numSys),dgamma(numSys)
-      double precision tau_abs(numSys)
       double precision gamma_slip(numSys)
       double precision dgamma_tol,gamma_n1
       double precision g_crss(numSys)
