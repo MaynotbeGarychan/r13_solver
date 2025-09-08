@@ -48,8 +48,7 @@ c     Kinematic variables
       double precision r(3,3),RL(6,6),r_n1(3,3)
       double precision Pa(3,3,numSys),eschmid(6,numSys)
       double precision Wa(3,3,numSys),wschmid(3,numSys)
-      double precision euler(3)
-      double precision phi1,lphi,phi2
+      double precision euler(3),euler_n1(3)
       double precision Dp(6),Wp(3)
 c     Slip system constitutive model variables
       double precision tau(numSys),dgamma(numSys)
@@ -313,8 +312,7 @@ c     Rotate the slip systsme vectors
       call rot_slip_vec(s11,m11,exp_we,numSys,
      1     s11_n1,m11_n1)
 c     Extract the euler angle from the tranformation matrix
-      call calEulerbyTransMat(r_n1,pi,
-     1     phi1,lphi,phi2)
+      call calEulerbyTransMat(r_n1,pi,euler_n1)
 
 !============================================================
 ! Hardening model
@@ -396,10 +394,9 @@ c
 !------------------------------------------------------------
 ! Note:
 !------------------------------------------------------------ 
-c     phi1,lphi,phi2    <- hsv(201 ~ 203)
-      hsv(501)=phi1
-      hsv(502)=lphi
-      hsv(503)=phi2
+      hsv(501)=euler_n1(1)
+      hsv(502)=euler_n1(2)
+      hsv(503)=euler_n1(3)
       endif
       endif
 !============================================================

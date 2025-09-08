@@ -56,7 +56,7 @@
 
       end subroutine ROTMATBYEULER
 
-      subroutine calEulerbyTransMat(r,pi,phi1,lphi,phi2)
+      subroutine calEulerbyTransMat(r,pi,euler)
          !============================================================
          ! Calculate the tranformation matrix 
          ! to tranform the slip system vectors to local based on 
@@ -66,32 +66,30 @@
          ! r(3,3)          - tranformation matrix
          ! pi              - constant of pi
          ! output:
-         ! phi1,lphi,phi2  - euler angle of the crystal (element
+         ! euler(3)  - euler angle of the crystal (element
          !------------------------------------------------------------
-
          implicit none
          double precision r(3,3)
          double precision pi
-         double precision phi1,lphi,phi2
+         double precision euler(3)
 
-         lphi=acos(r(3,3))
-         if(lphi==0.) then
-            phi1=atan2(-r(1,2),r(1,1))
-            phi2=0.
-         else if(lphi==pi) then
-            phi1=atan2(r(1,2),r(1,1))
-            phi2=0.
+         euler(2)=acos(r(3,3))
+         if(euler(2)==0.) then
+            euler(1)=atan2(-r(1,2),r(1,1))
+            euler(2)=0.
+         else if(euler(2)==pi) then
+            euler(1)=atan2(r(1,2),r(1,1))
+            euler(2)=0.
          else
-            phi1=atan2(r(1,3),-r(2,3))
-            phi2=atan2(r(3,1),r(3,2))
+            euler(1)=atan2(r(1,3),-r(2,3))
+            euler(2)=atan2(r(3,1),r(3,2))
          endif
-         if(phi1 < 0.) then
-            phi1=phi1+2.*pi
+         if(euler(1) < 0.) then
+            euler(1)=euler(1)+2.*pi
          endif
-         if(phi2 < 0.) then
-            phi2=phi2+2.*pi
+         if(euler(2) < 0.) then
+            euler(2)=euler(2)+2.*pi
          endif
-
       end subroutine calEulerbyTransMat
 
       subroutine calTransMatFourthOrd(r,RL)
