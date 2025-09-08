@@ -20,7 +20,6 @@ c     Transform elastic tensor to material coordinate
       call tranElasTensorLocal2Global(L_ela_cry,RL,L_ela)
       end subroutine calElasIsoTensorCrystalGlobal
       
-      
       subroutine tranElasTensorLocal2Global(ela_ten_cry,rl,ela_ten_glb)
         !============================================================
         ! Transform the elastic tensor from crystal to global coor

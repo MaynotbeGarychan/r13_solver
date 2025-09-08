@@ -129,7 +129,7 @@ c----- Current strength of slip sys.
         HSV(1:12)=CRSS(1:12)
 c----- rotation matrix, slip direciton, slip normals
 c       Schmid factor and spin schmid factor
-        CALL INITCRY(0,0,CM(3:5),ND,ROTATE,SLPDIR,SLPNOR)
+        CALL initCrystal(0,0,CM(3:5),ND,ROTATE,SLPDIR,SLPNOR)
         CALL CALSF(SLPDIR,SLPNOR,ND,SLPDEF)
         ID=0
         DO J=1,ND

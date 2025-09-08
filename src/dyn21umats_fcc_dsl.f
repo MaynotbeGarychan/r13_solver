@@ -130,7 +130,7 @@ c     Processing the prameters
 !------------------------------------------------------------     
       if (.not.failel) then
       if(ncycle==0) then
-            call INITCRY(ori_type,cry_type,euler,
+            call initCrystal(ori_type,cry_type,euler,
      1           num_ss,r,s11,m11)
 c     Initialize the hsv list
             do i=1,nhsv

@@ -1,6 +1,6 @@
 #include "define.inc"
 #include "define2.inc"
-      subroutine umat_fcc(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
+      subroutine umatFcc(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
      1   temper,failel,crv,nnpcrv,cma,qmat,elsiz,idele,reject)
 !============================================================
 ! Declaration of constitutive variables
@@ -105,7 +105,7 @@ c     cm(25 ~ 32) hardening
 !------------------------------------------------------------   
       if (.not.failel) then
       if(ncycle==0) then
-            call INITCRY(ori_type,cry_type,euler,
+            call initCrystal(ori_type,cry_type,euler,
      1           num_ss,r,s11,m11)
 c     Initialize the hsv list
             do i=1,nhsv
@@ -244,8 +244,6 @@ c     Calculate strain state
 !============================================================
 ! Give constitutive variables to hsv
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------ 
 c     f(3,3)            <- hsv(1 ~ 9)
 c     g_crss(12)        <- hsv(10 ~ 21)
 c     r(3,3)            <- hsv(22 ~ 30)
@@ -301,8 +299,6 @@ c
 !============================================================
 ! Give non-constitutive variables to hsv
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------ 
 c     phi1,lphi,phi2    <- hsv(201 ~ 203)
 c     st,sig_eq         <- hsv(204, 206)
 c     peeq              <- hsv(208)
@@ -322,6 +318,6 @@ c     rr(12)            <- hsv(211 ~ 222)
 !============================================================
 ! End of cpfem
 !------------------------------------------------------------
-! Note:
-!------------------------------------------------------------ 
-      end subroutine umat_fcc
+      end subroutine umatFcc
+
+      

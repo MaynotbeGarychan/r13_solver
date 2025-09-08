@@ -38,14 +38,6 @@ send_bcc:
 	scp ./src/lsdyna_bcc.exe $(SOLVER_DIR)
 clean_bcc:
 	cd ./src && $(MAKE) clean TARGET=lsdyna_bcc.exe
-# FCC model_old
-build_fcc_old: 
-	cd ./src && $(MAKE) UDFMATOBJ=dyn21umats_fcc_old.obj TARGET=lsdyna_fcc_old.exe
-send_fcc_old:
-	scp ./src/lsdyna_fcc_old.exe $(SOLVER_DIR)
-clean_fcc_old:
-	cd ./src && $(MAKE) clean TARGET=lsdyna_fcc_old.exe
-
 
 # Dislocation based FCC: International Journal of Plasticity, M.G. Lee, 2010
 # A dislocation density-based single crystal constitutive equation
@@ -55,14 +47,6 @@ send_fcc_dsl:
 	scp ./src/lsdyna_fcc_dsl.exe $(SOLVER_DIR)
 clean_fcc_dsl:
 	cd ./src && $(MAKE) clean TARGET=lsdyna_fcc_dsl.exe
-
-# Currently developping models for porous dislocation-based fcc model
-build_fcc_dsl_porous:
-	cd ./src && $(MAKE) UDFMATOBJ=dyn21umats_fcc_dsl_porous.obj TARGET=lsdyna_fcc_dsl_porous.exe
-send_fcc_dsl_porous:
-	scp ./src/lsdyna_fcc_dsl_porous.exe $(SOLVER_DIR)
-clean_fcc_dsl_porous:
-	cd ./src && $(MAKE) clean TARGET=lsdyna_fcc_dsl_porous.exe
 
 # clean function
 #clean:

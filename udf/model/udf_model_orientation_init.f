@@ -1,4 +1,4 @@
-      subroutine INITCRY(io_type,cry_type,ori_arr,num_ss,
+      subroutine initCrystal(io_type,cry_type,ori_arr,num_ss,
      1       r,s11,m11)
         !============================================================
         ! Initialize the crystal orientation, and calculate the
@@ -43,7 +43,7 @@ c       calculate the tranformation matrix
 c       transform the ss,sp vector to materials coordinates
         call ss_vec_to_global(s1,m1,r,num_ss,s11,m11)
 
-        end subroutine INITCRY
+        end subroutine initCrystal
 
 !         subroutine read_angle_fg(idele,phi1,lphi,phi2)
 !         !============================================================

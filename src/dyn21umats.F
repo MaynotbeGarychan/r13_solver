@@ -504,23 +504,15 @@ c     Obtain euler angles if fine grains
 c
       if (.not.failel) then
             if(umat_type.eq.0)then
-                  call umat_fcc(cm,eps,sig,
+                  call umatFcc(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
             elseif(umat_type.eq.1)then
                   call umat_fcc_dsl(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
-            elseif(umat_type.eq.2)then
-                  call umat_fcc_dsl_porous(cm,eps,sig,
-     1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
-     2   nnpcrv,cma,qmat,elsiz,idele,reject)
             elseif(umat_type.eq.3)then
                   call umat_bcc(cm,eps,sig,
-     1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
-     2   nnpcrv,cma,qmat,elsiz,idele,reject)
-            elseif(umat_type.eq.4)then
-                  call umat_fcc_rt(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
             endif
