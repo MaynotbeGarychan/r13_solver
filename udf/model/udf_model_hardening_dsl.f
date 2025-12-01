@@ -78,3 +78,19 @@
         enddo
 
         end subroutine dsl_evolution_kocks
+
+!         subroutine dsl_evolution_hama(dgamma,gab,kval,bv,numSys,
+!      1   rho,drho)
+
+!             implicit none
+!             integer numSys
+!             double precision dgamma(numSys),drho(numSys),l(numSys)
+!             double precision bv
+!             double precision gab(numSys,numSys)
+!             double precision rho(numSys)
+
+!             do i=1,numSys
+!                   l(i)=kval*()
+!             enddo
+
+!         end subroutine

@@ -36,9 +36,42 @@
             endif
         enddo
 
-
       end subroutine calSlipRate
+      
+      subroutine calSlipRateHeatAct(tau,g_crss,tau0110,tau0112,
+     1   dgk0,dgamma_0,pval,qval,tval,kb,numSys,dgamma)
 
+        implicit none
+        integer i,numSys
+        double precision tau(numSys),g_crss(numSys)
+        double precision tauEff(numSys),dgk(numSys)
+        double precision dgamma(numSys)
+        double precision tau0110,tau0112
+        double precision dgk0,pval,qval,tval,dgamma_0
+        double precision kb
+
+        do i=1,numSys
+            tauEff(i)=abs(tau(i))-g_crss(i)
+        enddo
+
+c       1~12
+        do i=1,12
+            dgk(i)=dgk0*(1.-(tauEff(i)/tau0110)**pval)**qval
+        enddo
+c       13~24
+        do i=13,24
+            dgk(i)=dgk0*(1.-(tauEff(i)/tau0112)**pval)**qval
+        enddo
+
+        do i=1,numSys
+            if(tauEff(i).gt.0)then
+                dgamma(i)=dgamma_0*exp(0.-dgk(i)/(kb*tval))
+            else
+                dgamma(i)=0.
+            endif
+        enddo
+
+        end subroutine
 
       subroutine updateCss(dgamma,numSys,dt1,
      1      dgamma_tol,gamma_slip,gamma_n1)

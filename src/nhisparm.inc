@@ -1,6 +1,6 @@
 c
       integer    NHISVAR
-      parameter (NHISVAR=500)
+      parameter (NHISVAR=1000)
 c
 c     NHISVAR - maximum number of history variables
 c               for user materials (/aux14loc/)

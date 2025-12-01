@@ -474,18 +474,20 @@ c     Euler angles
       character*5 fidxchar
       integer fidx,ridx
 c
-c      if (ncycle.eq.1) then
-c        call usermsg('mat43')
-c      endif
+      if (ncycle.eq.1) then
+        call usermsg('mat43')
+      endif
+c     
+      typeOri=cm(17)
+      typeUmat=cm(9)
 !============================================================
 ! Initialize Crystal orientation here, if fine grain model
 !------------------------------------------------------------
 ! Note:
 !------------------------------------------------------------  
 c     Obtain euler angles if fine grains
-      oriType=cm(17)
       if(ncycle.eq.0)then
-      if(oriType.eq.1)then
+      if(typeOri.eq.1)then
             ridx=mod(idele,1000)+1
             fidx=idele/1000+1
             write(fidxchar,"(I4)") fidx ! character index to integer
@@ -503,18 +505,22 @@ c     Obtain euler angles if fine grains
       endif
 c
       if (.not.failel) then
-            if(umatType.eq.0)then
+            if(typeUmat.eq.0)then
                   call umatFcc(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
-            elseif(umatType.eq.1)then
-                  call umat_fcc_dsl(cm,eps,sig,
+            elseif(typeUmat.eq.1)then
+                  call umatFccDsl(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
-            elseif(umatType.eq.3)then
-                  call umat_bcc(cm,eps,sig,
+            elseif(typeUmat.eq.3)then
+                  call umatBcc(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
+!             elseif(typeUmat.eq.4)then
+!                   call umatBccHama(cm,eps,sig,
+!      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
+!      2   nnpcrv,cma,qmat,elsiz,idele,reject)
             endif
       endif
       return

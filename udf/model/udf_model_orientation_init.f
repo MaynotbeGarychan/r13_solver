@@ -30,6 +30,8 @@ c       init slip system vectors
                 call ss_vec_fcc(m1,s1)
         elseif(cryType.eq.1)then
                 call ss_vec_bcc(m1,s1)
+        elseif(cryType.eq.2)then
+                call ss_vec_bcc_24(m1,s1)
         endif
 c       Obtain orientation from ori array
         phi1=ori_arr(1)

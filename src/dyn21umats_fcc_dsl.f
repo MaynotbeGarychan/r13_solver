@@ -1,4 +1,4 @@
-      subroutine umat_fcc_dsl(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
+      subroutine umatFccDsl(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
      1   temper,failel,crv,nnpcrv,cma,qmat,elsiz,idele,reject)
 !============================================================
 ! Declaration of constitutive variables
@@ -492,4 +492,4 @@ c     rr(12)            <- hsv(211 ~ 222)
 !------------------------------------------------------------
 ! Note:
 !------------------------------------------------------------ 
-      end subroutine umat_fcc_dsl
+      end subroutine umatFccDsl

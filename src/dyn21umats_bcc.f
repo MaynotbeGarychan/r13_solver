@@ -1,6 +1,6 @@
 #include "define.inc"
 #include "define2.inc"
-      subroutine umat_bcc(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
+      subroutine umatBcc(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
      1   temper,failel,crv,nnpcrv,cma,qmat,elsiz,idele,reject)
 !============================================================
 ! Declaration of constitutive variables
@@ -404,4 +404,4 @@ c
 !------------------------------------------------------------
 ! Note:
 !------------------------------------------------------------ 
-      end subroutine umat_bcc
+      end subroutine umatBcc

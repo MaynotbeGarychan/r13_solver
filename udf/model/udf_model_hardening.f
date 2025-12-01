@@ -129,14 +129,4 @@ c       compute hardening
                 enddo
         enddo
 
-        ! if(ncycle.eq.5) then
-                ! open(17,file='hsv.txt',status='old')
-                ! do i=1,48
-                !         do j=1,48
-                !                 write(17,*) h_mat(i,j)
-                !         enddo
-                ! enddo
-                ! close(17)
-        !   endif
-
         end subroutine hardening_bcc
