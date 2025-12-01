@@ -27,11 +27,11 @@ c       declare functions
 
 c       init slip system vectors
         if(cryType.eq.0)then
-                call ss_vec_fcc(m1,s1)
+                call getSlipSysVecFcc(m1,s1)
         elseif(cryType.eq.1)then
-                call ss_vec_bcc(m1,s1)
+                call getSlipSysVecBcc(m1,s1)
         elseif(cryType.eq.2)then
-                call ss_vec_bcc_24(m1,s1)
+                call getSlipSysVecBcc_24(m1,s1)
         endif
 c       Obtain orientation from ori array
         phi1=ori_arr(1)
@@ -43,7 +43,7 @@ c       calculate the tranformation matrix
         call ROTMATBYEULER(phi1,lphi,phi2,r)
 
 c       transform the ss,sp vector to materials coordinates
-        call ss_vec_to_global(s1,m1,r,numSys,s11,m11)
+        call calSlipSys2Global(s1,m1,r,numSys,s11,m11)
 
         end subroutine initCrystal
 

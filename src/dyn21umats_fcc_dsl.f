@@ -359,7 +359,7 @@ c     Rotate the slip systsme vectors
       call rot_slip_vec(s11,m11,exp_we,numSys,
      1     s11_n1,m11_n1)
 c     Extract the euler angle from the tranformation matrix
-      call calEulerbyTransMat(r_n1,pi,euler_n1)
+      call calEulerbyTransMat(r_n1,euler_n1)
 
 !============================================================
 ! Dislocation evolution model

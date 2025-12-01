@@ -19,17 +19,15 @@ c     UMAT variables
       logical failel,reject
       INTEGER idele
 c     
-      integer umatType
+      integer typeUmat
 c     IO
-      integer oriType
+      integer typeOri
 c     Define the crystal
       integer,parameter:: cryType=0
       integer,parameter:: numSys=12
-      integer,parameter:: num_sp=4
 c     Intermedia variables
       integer i,j,k,l
       double precision, parameter :: pi=acos(-1.0d0)
-      double precision idm(3,3)
 c     Kinetic model variables
       double precision f(3,3),f_n1(3,3),df_n1(3,3),f_n1_inv(3,3)
       double precision f_det
@@ -78,8 +76,8 @@ c     Strain variables
 ! Obtain variables from materials constants
 !------------------------------------------------------------
       call      umatFccGetMc(cm,ym,pr,bk,sm,
-     1       umatType,dgamma_0,mval,dgamma_lim,
-     2       oriType,euler,
+     1       typeUmat,dgamma_0,mval,dgamma_lim,
+     2       typeOri,euler,
      3       hardType,g0,gs,h0,hs,q)
 !============================================================
 ! Initial step: ncrycle = 0
@@ -87,7 +85,7 @@ c     Strain variables
       if (.not.failel) then
       if(ncycle==0) then
 c     Init crystal orientation, slip system vectors
-            call initCrystal(oriType,cryType,euler,
+            call initCrystal(typeOri,cryType,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
             call umatFccInitHsv(g0,r,s11,m11,numSys,nhsv,
@@ -138,7 +136,7 @@ c     calculate the rotation rate for further rotation
       call updateOrientation(Wv,Wp,s11,m11,r,numSys,dt1,
      1  s11_n1,m11_n1,r_n1)
 c     Extract the euler angle from the tranformation matrix
-      call calEulerbyTransMat(r_n1,pi,euler_n1)
+      call calEulerbyTransMat(r_n1,euler_n1)
 !============================================================
 ! Hardening model
 !------------------------------------------------------------
@@ -171,14 +169,14 @@ c     Calculate strain state
       end subroutine umatFcc
 
       subroutine umatFccGetMc(cm,ym,pr,bk,sm,
-     1       umatType,dgamma_0,mval,dgamma_lim,
-     2       oriType,euler,
+     1       typeUmat,dgamma_0,mval,dgamma_lim,
+     2       typeOri,euler,
      3       hardType,g0,gs,h0,hs,q)
       implicit none
       double precision cm(*)
       double precision ym,pr,bk,sm
-      double precision umatType,dgamma_0,mval,dgamma_lim
-      double precision oriType,euler(3)
+      double precision typeUmat,dgamma_0,mval,dgamma_lim
+      double precision typeOri,euler(3)
       double precision hardType,g0,gs,h0,hs,q
 c     cm(1 ~ 8)   Constitutive parameters
       ym=cm(1)
@@ -186,12 +184,12 @@ c     cm(1 ~ 8)   Constitutive parameters
       bk=cm(3)
       sm=cm(4)
 c     cm(9 ~ 16) basic crystal plasticity model
-      umatType=cm(9)
+      typeUmat=cm(9)
       dgamma_0=cm(10)
       mval=cm(11)
       dgamma_lim=cm(12)
 c     cm(17 ~ 24) orientation information
-      oriType=cm(17)
+      typeOri=cm(17)
       euler=cm(18:20)
 c     cm(25 ~ 32) hardening 
       hardType=cm(25)

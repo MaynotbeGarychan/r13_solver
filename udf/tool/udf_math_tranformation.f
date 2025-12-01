@@ -56,7 +56,7 @@
 
       end subroutine ROTMATBYEULER
 
-      subroutine calEulerbyTransMat(r,pi,euler)
+      subroutine calEulerbyTransMat(r,euler)
          !============================================================
          ! Calculate the tranformation matrix 
          ! to tranform the slip system vectors to local based on 
@@ -70,8 +70,8 @@
          !------------------------------------------------------------
          implicit none
          double precision r(3,3)
-         double precision pi
          double precision euler(3)
+         double precision, parameter :: pi=acos(-1.0d0)
 
          euler(2)=acos(r(3,3))
          if(euler(2)==0.) then
@@ -107,29 +107,6 @@
          integer i,j
          double precision r(3,3)
          double precision RL(6,6)
-
-         ! do i=1,3
-         !    do j=1,3
-         !       RL(i,j)=r(i,j)**2
-         !    enddo
-         !       RL(i,4)=2.*r(i,2)*r(i,3)
-         !       RL(i,5)=2.*r(i,3)*r(i,1)
-         !       RL(i,6)=2.*r(i,1)*r(i,2)
-         ! enddo
-         ! do j=1,3
-         !    RL(4,j)=r(2,j)*r(3,j)
-         !    RL(5,j)=r(3,j)*r(1,j)
-         !    RL(6,j)=r(1,j)*r(2,j)
-         ! enddo
-         ! RL(4,4)=r(2,2)*r(3,3)+r(3,2)*r(2,3)
-         ! RL(4,5)=r(2,3)*r(3,1)+r(3,3)*r(2,1)
-         ! RL(4,6)=r(2,2)*r(3,1)+r(3,2)*r(2,1)
-         ! RL(5,4)=r(3,2)*r(1,3)+r(1,2)*r(3,3)
-         ! RL(5,5)=r(3,3)*r(1,1)+r(1,3)*r(3,1)
-         ! RL(5,6)=r(3,2)*r(1,1)+r(1,2)*r(3,1)
-         ! RL(6,4)=r(1,2)*r(2,3)+r(2,2)*r(1,3)
-         ! RL(6,5)=r(1,3)*r(2,1)+r(2,3)*r(1,1)
-         ! RL(6,6)=r(1,2)*r(2,1)+r(2,2)*r(1,1)
 
          do i=1,3
             do j=1,3

@@ -1,4 +1,4 @@
-      subroutine ss_vec_to_global(s1,m1,r,numSys,s11,m11)
+      subroutine calSlipSys2Global(s1,m1,r,numSys,s11,m11)
       !============================================================
       ! Transform slip system from global to local by tranformation
       ! matrix
@@ -28,4 +28,4 @@
             enddo
       enddo
 
-      end subroutine ss_vec_to_global
+      end subroutine calSlipSys2Global

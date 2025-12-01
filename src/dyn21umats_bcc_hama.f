@@ -143,7 +143,7 @@ c     calculate the rotation rate for further rotation
       call updateOrientation(Wv,Wp,s11,m11,r,numSys,dt1,
      1  s11_n1,m11_n1,r_n1)
 c     Extract the euler angle from the tranformation matrix
-      call calEulerbyTransMat(r_n1,pi,euler_n1)
+      call calEulerbyTransMat(r_n1,euler_n1)
 
 !============================================================
 ! Hardening model

@@ -1,4 +1,4 @@
-      subroutine ss_vec_fcc(m1,s1)
+      subroutine getSlipSysVecFcc(m1,s1)
 
             implicit none
             integer i,l
@@ -26,7 +26,7 @@
 
       end subroutine
 
-      subroutine ss_vec_bcc(m1,s1)
+      subroutine getSlipSysVecBcc(m1,s1)
 
             implicit none
             integer l
@@ -92,7 +92,7 @@
       end subroutine
 
 
-      subroutine ss_vec_bcc_24(m1,s1)
+      subroutine getSlipSysVecBcc_24(m1,s1)
             implicit none
             integer l
             double precision m(3,24),s(3,24)
