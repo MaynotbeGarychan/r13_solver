@@ -1,5 +1,25 @@
 #include "define.inc"
 #include "define2.inc"
+      subroutine getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
+     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+      
+      implicit none
+      integer numSys
+      integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
+      integer OFF_GS, OFF_GN, OFF_EUL
+
+c    compute offsets (1-based indexing)
+      OFF_F   = 1
+      OFF_CRSS= OFF_F + 9
+      OFF_R   = OFF_CRSS + numSys
+      OFF_S11 = OFF_R + 9
+      OFF_M11 = OFF_S11 + 3*numSys
+      OFF_GS  = OFF_M11 + 3*numSys
+      OFF_GN  = OFF_GS + numSys
+      OFF_EUL = OFF_GN + 1
+      
+      end subroutine
+
       subroutine umatBcc(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
      1   temper,failel,crv,nnpcrv,cma,qmat,elsiz,idele,reject)
 !============================================================
@@ -13,7 +33,7 @@ c     UMAT variables
       double precision cm(*),eps(*),sig(*),hsv(*),crv(lq1,2,*)
       double precision cma(*),qmat(3,3)
       integer nnpcrv(*)
-      integer ::nhsv=600
+      integer ::nhsv=300
       double precision dt1
       character*5 etype
       logical failel,reject
@@ -23,8 +43,8 @@ c
 c     IO
       integer typeOri
 c     Define the crystal
-      integer,parameter:: typeCry=1
-      integer,parameter:: numSys=48
+      integer,parameter:: cryType=0
+      integer,parameter:: numSys=12
 c     Intermedia variables
       integer i,j,k,l
 c     Kinetic model variables
@@ -60,31 +80,31 @@ c     Hardening model variables
 c     Solid element variables
       double precision g,g2,gc,q1,q3,davg,p,deti,c22i,c23i,fac
       double precision temper,elsiz,epsp,capa,tt
-!============================================================
-! Declaration of non-constitutive variables
-!------------------------------------------------------------
-c     Stress state vaiables
-      double precision sig_m,sig_eq,st
-c     Strain variables
-      double precision peeq
-!============================================================
-! Declaration of utilized functions
-!------------------------------------------------------------
-      double precision calSigEq,calSigMean,calSigTri,calPeeq
+c Declaration of offset hsv indices
+      integer OFF_F,OFF_CRSS,OFF_R,OFF_S11
+      integer OFF_M11,OFF_GS,OFF_GN,OFF_EUL
+      integer nhsv_min
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
-      call      umatBccGetMc(cm,ym,pr,bk,sm,
+      call  umatBccGetMc(cm,ym,pr,bk,sm,
      1       typeUmat,dgamma_0,mval,dgamma_lim,
      2       typeOri,euler,
      3       hardType,g0,gs,h0,hs,q)
+      if(ncycle==0)then
+      if(idele==1)then
+      call getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
+     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+      print *,OFF_CRSS,OFF_GS,OFF_EUL
+      endif
+      endif
 !============================================================
 ! Initial step: ncrycle = 0
 !------------------------------------------------------------   
       if (.not.failel) then
       if(ncycle==0) then
 c     Init crystal orientation, slip system vectors
-            call initCrystal(typeOri,typeCry,euler,
+            call initCrystal(typeOri,cryType,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
             call umatBccInitHsv(g0,r,s11,m11,numSys,nhsv,
@@ -142,24 +162,11 @@ c     Extract the euler angle from the tranformation matrix
       call updateCrssFcc(g0,gs,h0,hs,q,gamma_n1,dgamma,
      1           dt1,g_crss)
 !============================================================
-! Calculation of non-constitutive variables
-!------------------------------------------------------------
-c     Calculate stress state
-      sig_m=calSigMean(sig(1:6))
-      sig_eq=calSigEq(sig(1:6))
-      st=calSigTri(sig_m,sig_eq)
-c     Calculate strain state
-      peeq=calPeeq(Dp(1:6),hsv(208),dt1)
-!============================================================
-! Give constitutive variables to hsv
+! Give constitutive and non-constitutive variables to hsv
 !------------------------------------------------------------
       call umatBccUpdateHsv(numSys,sig_n1,f_n1,g_crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
-     2       hsv,sig)
-!============================================================
-! Give non-constitutive variables to hsv
-!------------------------------------------------------------
-      call umatBccUpdateVar(euler_n1,st,peeq,hsv) 
+     2       hsv,sig,euler_n1)
       endif
       endif
 !============================================================
@@ -205,37 +212,43 @@ c     cm(25 ~ 32) hardening
       integer i,l,k
       double precision g0,hsv(nhsv),r(3,3),sig(6)
       double precision s11(3,numSys),m11(3,numSys)
+
+      integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
+      integer OFF_GS, OFF_GN, OFF_EUL
+
+      call getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
+     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
 c     Initialize the hsv list
             do l=1,nhsv
                   hsv(l)=0.
             enddo
 c     Diagonal part of deformation gradient
-            hsv(1)=1.
-            hsv(5)=1.
-            hsv(9)=1.
+            hsv(OFF_F+0)=1.
+            hsv(OFF_F+4)=1.
+            hsv(OFF_F+8)=1.
 c     CRSS
             do l=1,numSys
-                  hsv(9+l)=g0
+                  hsv(OFF_CRSS+(l-1))=g0
             enddo
 c     Transformation matrix for orientation
-            hsv(22)=r(1,1)
-            hsv(23)=r(2,1)
-            hsv(24)=r(3,1)
-            hsv(25)=r(1,2)
-            hsv(26)=r(2,2)
-            hsv(27)=r(3,2)
-            hsv(28)=r(1,3)
-            hsv(29)=r(2,3)
-            hsv(30)=r(3,3)
+            hsv(OFF_R+0)=r(1,1)
+            hsv(OFF_R+1)=r(2,1)
+            hsv(OFF_R+2)=r(3,1)
+            hsv(OFF_R+3)=r(1,2)
+            hsv(OFF_R+4)=r(2,2)
+            hsv(OFF_R+5)=r(3,2)
+            hsv(OFF_R+6)=r(1,3)
+            hsv(OFF_R+7)=r(2,3)
+            hsv(OFF_R+8)=r(3,3)
 c     Slip system vectors
             do l=1,numSys
                   k=(l-1)*3
-                  hsv(31+k)=s11(1,l)
-                  hsv(32+k)=s11(2,l)
-                  hsv(33+k)=s11(3,l)
-                  hsv(67+k)=m11(1,l)
-                  hsv(68+k)=m11(2,l)
-                  hsv(69+k)=m11(3,l)
+                  hsv(OFF_S11 + k    ) = s11(1,l)
+                  hsv(OFF_S11 + k + 1) = s11(2,l)
+                  hsv(OFF_S11 + k + 2) = s11(3,l)
+                  hsv(OFF_M11 + k    ) = m11(1,l)
+                  hsv(OFF_M11 + k + 1) = m11(2,l)
+                  hsv(OFF_M11 + k + 2) = m11(3,l)
             enddo
 c     Cauchy stress tensor
             do i=1,6
@@ -261,40 +274,45 @@ c     gamma_n1          <- hsv(115)
       double precision s11(3,numSys),m11(3,numSys)
       double precision gamma_n1
       double precision gamma_slip(numSys)
+      integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
+      integer OFF_GS, OFF_GN, OFF_EUL
+c     Compute offsets
+      call getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
+     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
 c     Obtain CRSS from hsv
       do l=1,numSys
-            g_crss(l)=hsv(9+l)
+            g_crss(l)=hsv(OFF_CRSS + (l-1))
       enddo
 c     Obtain slip volume from hsv
 c     Obtain orientation info
-      r(1,1)=hsv(22)
-      r(2,1)=hsv(23)
-      r(3,1)=hsv(24)
-      r(1,2)=hsv(25)
-      r(2,2)=hsv(26)
-      r(3,2)=hsv(27)
-      r(1,3)=hsv(28)
-      r(2,3)=hsv(29)
-      r(3,3)=hsv(30)
-      do l=1,12
+      r(1,1)=hsv(OFF_R + 0)
+      r(2,1)=hsv(OFF_R + 1)
+      r(3,1)=hsv(OFF_R + 2)
+      r(1,2)=hsv(OFF_R + 3)
+      r(2,2)=hsv(OFF_R + 4)
+      r(3,2)=hsv(OFF_R + 5)
+      r(1,3)=hsv(OFF_R + 6)
+      r(2,3)=hsv(OFF_R + 7)
+      r(3,3)=hsv(OFF_R + 8)
+      do l=1,numSys
             k=(l-1)*3
-            s11(1,l)=hsv(31+k)
-            s11(2,l)=hsv(32+k)
-            s11(3,l)=hsv(33+k)
-            m11(1,l)=hsv(67+k)
-            m11(2,l)=hsv(68+k)
-            m11(3,l)=hsv(69+k)
+            s11(1,l)=hsv(OFF_S11 + k    )
+            s11(2,l)=hsv(OFF_S11 + k + 1)
+            s11(3,l)=hsv(OFF_S11 + k + 2)
+            m11(1,l)=hsv(OFF_M11 + k    )
+            m11(2,l)=hsv(OFF_M11 + k + 1)
+            m11(3,l)=hsv(OFF_M11 + k + 2)
       enddo
 c     Obtain slip volume from hsv
-      gamma_n1=hsv(115)
+      gamma_n1=hsv(OFF_GN)
       do l=1,numSys
-            gamma_slip(l)=hsv(102+l)
+            gamma_slip(l)=hsv(OFF_GS + (l-1))
       enddo
       end subroutine umatBccGetHsv
       
       subroutine umatBccUpdateHsv(numSys,sig_n1,f_n1,g_crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
-     2       hsv,sig)
+     2       hsv,sig,euler_n1)
       implicit none
       integer l,k
       integer numSys
@@ -303,60 +321,63 @@ c     Obtain slip volume from hsv
       double precision f_n1(3,3),g_crss(numSys),r_n1(3,3)
       double precision s11_n1(3,numSys),m11_n1(3,numSys)
       double precision gamma_slip(numSys),gamma_n1
+      double precision euler_n1(3)
+      integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
+      integer OFF_GS, OFF_GN, OFF_EUL
+c     Compute offsets
+      call getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
+     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
       sig(1)=sig_n1(1)
       sig(2)=sig_n1(2)
       sig(3)=sig_n1(3)
       sig(4)=sig_n1(4)
       sig(5)=sig_n1(5)
       sig(6)=sig_n1(6)
-c
-      hsv(1)=f_n1(1,1)
-      hsv(2)=f_n1(2,1)
-      hsv(3)=f_n1(3,1)
-      hsv(4)=f_n1(1,2)
-      hsv(5)=f_n1(2,2)
-      hsv(6)=f_n1(3,2)
-      hsv(7)=f_n1(1,3)
-      hsv(8)=f_n1(2,3)
-      hsv(9)=f_n1(3,3)
-c     
+c    update f_n1 into hsv
+      hsv(OFF_F + 0)=f_n1(1,1)
+      hsv(OFF_F + 1)=f_n1(2,1)
+      hsv(OFF_F + 2)=f_n1(3,1)
+      hsv(OFF_F + 3)=f_n1(1,2)
+      hsv(OFF_F + 4)=f_n1(2,2)
+      hsv(OFF_F + 5)=f_n1(3,2)
+      hsv(OFF_F + 6)=f_n1(1,3)
+      hsv(OFF_F + 7)=f_n1(2,3)
+      hsv(OFF_F + 8)=f_n1(3,3)
+
+c    update CRSS
       do l=1,numSys
-            hsv(9+l)=g_crss(l)
+            hsv(OFF_CRSS + (l-1)) = g_crss(l)
       enddo
-c     
-      hsv(22)=r_n1(1,1)
-      hsv(23)=r_n1(2,1)
-      hsv(24)=r_n1(3,1)
-      hsv(25)=r_n1(1,2)
-      hsv(26)=r_n1(2,2)
-      hsv(27)=r_n1(3,2)
-      hsv(28)=r_n1(1,3)
-      hsv(29)=r_n1(2,3)
-      hsv(30)=r_n1(3,3)
-c     
+
+c    update orientation r_n1
+      hsv(OFF_R + 0)=r_n1(1,1)
+      hsv(OFF_R + 1)=r_n1(2,1)
+      hsv(OFF_R + 2)=r_n1(3,1)
+      hsv(OFF_R + 3)=r_n1(1,2)
+      hsv(OFF_R + 4)=r_n1(2,2)
+      hsv(OFF_R + 5)=r_n1(3,2)
+      hsv(OFF_R + 6)=r_n1(1,3)
+      hsv(OFF_R + 7)=r_n1(2,3)
+      hsv(OFF_R + 8)=r_n1(3,3)
+
+c    update slip systems
       do l=1,numSys
             k=(l-1)*3
-            hsv(31+k)=s11_n1(1,l)
-            hsv(32+k)=s11_n1(2,l)
-            hsv(33+k)=s11_n1(3,l)
-            hsv(67+k)=m11_n1(1,l)
-            hsv(68+k)=m11_n1(2,l)
-            hsv(69+k)=m11_n1(3,l)
+            hsv(OFF_S11 + k    ) = s11_n1(1,l)
+            hsv(OFF_S11 + k + 1) = s11_n1(2,l)
+            hsv(OFF_S11 + k + 2) = s11_n1(3,l)
+            hsv(OFF_M11 + k    ) = m11_n1(1,l)
+            hsv(OFF_M11 + k + 1) = m11_n1(2,l)
+            hsv(OFF_M11 + k + 2) = m11_n1(3,l)
       enddo
-c
-      do l=1,numSys
-            hsv(102+l)=gamma_slip(l)
-      enddo
-      hsv(115)=gamma_n1
-      end subroutine umatBccUpdateHsv
 
-      subroutine umatBccUpdateVar(euler_n1,st,peeq,hsv)
-      implicit none
-      double precision hsv(*)
-      double precision euler_n1(3),st,peeq
-      hsv(201)=euler_n1(1)
-      hsv(202)=euler_n1(2)
-      hsv(203)=euler_n1(3)
-      hsv(204)=st
-      hsv(205)=peeq
-      end subroutine umatBccUpdateVar
+c    update gamma_slip and gamma_n1
+      do l=1,numSys
+            hsv(OFF_GS + (l-1)) = gamma_slip(l)
+      enddo
+      hsv(OFF_GN) = gamma_n1
+
+      hsv(OFF_EUL + 0)=euler_n1(1)
+      hsv(OFF_EUL + 1)=euler_n1(2)
+      hsv(OFF_EUL + 2)=euler_n1(3)
+      end subroutine umatBccUpdateHsv

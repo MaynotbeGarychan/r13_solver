@@ -474,9 +474,9 @@ c     Euler angles
       character*5 fidxchar
       integer fidx,ridx
 c
-      if (ncycle.eq.1) then
-        call usermsg('mat43')
-      endif
+c      if (ncycle.eq.1) then
+c        call usermsg('mat43')
+c      endif
 c     
       typeOri=cm(17)
       typeUmat=cm(9)
