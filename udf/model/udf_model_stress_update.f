@@ -20,6 +20,7 @@
        ! sig_n1(6)   - cauchy stress tensor in next step
        !============================================================
        implicit none
+       include 'define_cp.inc'
        integer i
        integer numSys
        double precision sig(6)
@@ -29,12 +30,12 @@
        double precision sig_r(6)
        double precision Wv(3)
        double precision Dv(6)
-       double precision dgamma(numSys)
-       double precision eschmid(6,numSys)
-       double precision wschmid(3,numSys)
+       double precision dgamma(maxSys)
+       double precision eschmid(6,maxSys)
+       double precision wschmid(3,maxSys)
        double precision L_ela(6,6)
        double precision dsig_0(6)
-       double precision Ra(6,numSys)
+       double precision Ra(6,maxSys)
        double precision f_det
 
        call vp_stress_rate_map_tensor(sig,L_ela,eschmid,
@@ -67,12 +68,13 @@
         ! Ra(6,numSys)  - Mapping tensor
         !============================================================
         implicit none
+        include 'define_cp.inc'
         double precision sig(6)
         double precision L_ela(6,6)
-        double precision eschmid(6,numSys)
-        double precision wschmid(3,numSys)
+        double precision eschmid(6,maxSys)
+        double precision wschmid(3,maxSys)
         integer numSys
-        double precision Ra(6,numSys)
+        double precision Ra(6,maxSys)
         double precision f_det
         integer i,j,l
 
@@ -118,9 +120,10 @@ c                    Ra(i,l)=Ra(i,l)+L_ela(i,j)*eschmid(j,l)
         ! dsig_0(6)        - viscosoplastic stress rate
         !============================================================
         implicit none
-        double precision Ra(6,numSys)
+        include 'define_cp.inc'
+        double precision Ra(6,maxSys)
         integer numSys
-        double precision dgamma(numSys)
+        double precision dgamma(maxSys)
         double precision dsig_0(6)
         integer i,l
 

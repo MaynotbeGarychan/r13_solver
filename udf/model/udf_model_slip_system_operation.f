@@ -11,10 +11,11 @@
       ! m11(3,numSys),s11(3,numSys) - local slip system vectors
       !------------------------------------------------------------
       implicit none
+      include 'define_cp.inc'
       integer l,i
       integer numSys
-      double precision m1(3,numSys),s1(3,numSys)
-      double precision m11(3,numSys),s11(3,numSys)
+      double precision m1(3,maxSys),s1(3,maxSys)
+      double precision m11(3,maxSys),s11(3,maxSys)
       double precision r(3,3)
 
       do l=1,numSys

@@ -14,14 +14,15 @@
         ! dgamma(numSys)  - Slip rate at current step
         !------------------------------------------------------------
         implicit none
+        include 'define_cp.inc'
         integer l
         integer numSys
         double precision dgamma_0
-        double precision tau(numSys)
-        double precision g_crss(numSys)
+        double precision tau(maxSys)
+        double precision g_crss(maxSys)
         double precision mval
         double precision dgamma_lim
-        double precision dgamma(numSys)
+        double precision dgamma(maxSys)
 
         do l=1,numSys
             dgamma(l)=dgamma_0*(tau(l)/g_crss(l))
@@ -42,10 +43,11 @@
      1   dgk0,dgamma_0,pval,qval,tval,kb,numSys,dgamma)
 
         implicit none
+        include 'define_cp.inc'
         integer i,numSys
-        double precision tau(numSys),g_crss(numSys)
-        double precision tauEff(numSys),dgk(numSys)
-        double precision dgamma(numSys)
+        double precision tau(maxSys),g_crss(maxSys)
+        double precision tauEff(maxSys),dgk(maxSys)
+        double precision dgamma(maxSys)
         double precision tau0110,tau0112
         double precision dgk0,pval,qval,tval,dgamma_0
         double precision kb
@@ -89,11 +91,12 @@ c       13~24
         ! gamma_n1        - Cumulative slip deformation of all sysm
         !------------------------------------------------------------
         implicit none
+        include 'define_cp.inc'
         integer l
         integer numSys
         double precision dt1
-        double precision dgamma(numSys)
-        double precision gamma_slip(numSys)
+        double precision dgamma(maxSys)
+        double precision gamma_slip(maxSys)
         double precision dgamma_tol,gamma_n1
         double precision val
 

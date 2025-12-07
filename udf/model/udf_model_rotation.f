@@ -16,11 +16,12 @@
         ! r_n1(3,3)        - Trans. matrix for orientation next step
         !------------------------------------------------------------
         implicit none
+        include 'define_cp.inc'
         integer numSys
         double precision dt1
         double precision Wv(3),Wp(3)
-        double precision s11(3,numSys),m11(3,numSys)
-        double precision s11_n1(3,numSys),m11_n1(3,numSys)
+        double precision s11(3,maxSys),m11(3,maxSys)
+        double precision s11_n1(3,maxSys),m11_n1(3,maxSys)
         double precision r(3,3),r_n1(3,3),exp_we(3,3)
         call calWeExp(Wv,Wp,dt1,exp_we)
         call rot_tran_mat(r,exp_we,r_n1)
@@ -92,13 +93,14 @@
         !------------------------------------------------------------
 
         implicit none
+        include 'define_cp.inc'
         integer i,k,l
         integer numSys
-        double precision s11(3,numSys)
-        double precision m11(3,numSys)
+        double precision s11(3,maxSys)
+        double precision m11(3,maxSys)
         double precision exp_we(3,3)
-        double precision s11_n1(3,numSys)
-        double precision m11_n1(3,numSys)
+        double precision s11_n1(3,maxSys)
+        double precision m11_n1(3,maxSys)
 
         do l=1,numSys
             do i=1,3

@@ -12,11 +12,12 @@
       ! sfve(6,numSys),wfve(3,numSys) - Schmid tensor in Vog
       !============================================================
       implicit none
+      include 'define_cp.inc'
       integer l,i,j
       integer numSys
-      double precision m11e(3,numSys),s11e(3,numSys)
-      double precision sfmate(3,3,numSys),wfmate(3,3,numSys)
-      double precision sfve(6,numSys),wfve(3,numSys)
+      double precision m11e(3,maxSys),s11e(3,maxSys)
+      double precision sfmate(3,3,maxSys),wfmate(3,3,maxSys)
+      double precision sfve(6,maxSys),wfve(3,maxSys)
       do l=1,numSys
             do i=1,3
                   do j=1,3
@@ -38,44 +39,6 @@
       enddo
 
       end subroutine calSchmidTensor
-
-      subroutine normal_tensor(m11,num_sp,numSys,nfmat,nfv)
-      !============================================================
-      ! Calculate non-Schmid tensor Na its vogit 
-      ! based on local slip systems vectors
-      !------------------------------------------------------------
-      ! input: 
-      ! m11(3,numSys) - local slip plane vectors
-      ! numSys        - num of slip systems
-      ! num_sp        - num of slip plane
-      ! output: 
-      ! nfmat(3,3,num_sp) - Nomral tensor
-      ! nfv(6,num_sp) - Normal tensor based on vogit
-      !------------------------------------------------------------
-      implicit none
-      integer i,j,l,k
-      integer numSys,num_sp
-      double precision m11(3,numSys)
-      double precision nfmat(3,3,num_sp)
-      double precision nfv(6,num_sp)
-
-      do l=1,num_sp
-            do i=1,3
-               do j=1,3
-                     k=3*l
-                     nfmat(i,j,l)=m11(i,k)*m11(j,k)
-               enddo
-            enddo
-
-            nfv(1,l)=nfmat(1,1,l)
-            nfv(2,l)=nfmat(2,2,l)
-            nfv(3,l)=nfmat(3,3,l)
-            nfv(4,l)=nfmat(1,2,l)*2.
-            nfv(5,l)=nfmat(2,3,l)*2.
-            nfv(6,l)=nfmat(3,1,l)*2.
-      enddo
-
-      end subroutine normal_tensor
 
       SUBROUTINE CALSF(SLPDIR,SLPNOR,NUMSS,SLPDEF)
       !============================================================
