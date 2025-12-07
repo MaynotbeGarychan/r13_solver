@@ -43,8 +43,9 @@ c
 c     IO
       integer typeOri
 c     Define the crystal
-      integer,parameter:: cryType=0
-      integer,parameter:: numSys=12
+      integer,parameter:: typeCry=0
+      integer numSys
+    !   integer,parameter:: numSys=12
 c     Intermedia variables
       integer i,j,k,l
 c     Kinetic model variables
@@ -91,13 +92,15 @@ c Declaration of offset hsv indices
      1       typeUmat,dgamma_0,mval,dgamma_lim,
      2       typeOri,euler,
      3       hardType,g0,gs,h0,hs,q)
+
+      if (.not.failel) then
 !============================================================
 ! Initial step: ncrycle = 0
-!------------------------------------------------------------   
-      if (.not.failel) then
+!------------------------------------------------------------  
       if(ncycle==0) then
 c     Init crystal orientation, slip system vectors
-            call initCrystal(typeOri,cryType,euler,
+        call getSlipSysNum(typeCry,numSys)
+        call initCrystal(typeOri,typeCry,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
             call umatCpPhInitHsv(g0,r,s11,m11,numSys,nhsv,
@@ -106,6 +109,8 @@ c     Initialize the hsv list
 !============================================================
 ! Calculation begins: ncycle > 0
 !------------------------------------------------------------ 
+c     Obtain defromation gradient from hsv
+      call  getSlipSysNum(typeCry,numSys)
 c     Obtain defromation gradient from hsv
       call getDispGradfromHsv(hsv,nhsv,f,f_n1)
 c     Obtain CRSS from hsv

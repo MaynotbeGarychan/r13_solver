@@ -22,7 +22,7 @@ c     UMAT variables
 c     IO
       integer oriType
 c     Define the crystal
-      integer,parameter:: cryType=0
+      integer,parameter:: typeCry=0
       integer,parameter:: numSys=12
       integer,parameter:: num_sp=4
 c     Intermedia variables
@@ -129,7 +129,7 @@ c     Processing the prameters
 !------------------------------------------------------------     
       if (.not.failel) then
       if(ncycle==0) then
-            call initCrystal(oriType,cryType,euler,
+            call initCrystal(oriType,typeCry,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
             do i=1,nhsv

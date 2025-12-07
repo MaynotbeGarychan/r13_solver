@@ -43,7 +43,7 @@ c
 c     IO
       integer typeOri
 c     Define the crystal
-      integer,parameter:: cryType=1
+      integer,parameter:: typeCry=1
       integer,parameter:: numSys=48
 c     Intermedia variables
       integer i,j,k,l
@@ -104,7 +104,7 @@ c Declaration of offset hsv indices
       if (.not.failel) then
       if(ncycle==0) then
 c     Init crystal orientation, slip system vectors
-            call initCrystal(typeOri,cryType,euler,
+            call initCrystal(typeOri,typeCry,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
             call umatBccInitHsv(g0,r,s11,m11,numSys,nhsv,

@@ -1,3 +1,21 @@
+      subroutine getSlipSysNum(typeCry,numSys)
+            implicit none
+            integer typeCry
+            integer numSys
+            
+            if(typeCry.eq.0)then
+                  numSys=12
+            elseif(typeCry.eq.1)then
+                  numSys=48
+            elseif(typeCry.eq.2)then
+                  numSys=12
+            else
+                  numSys=12
+            endif
+
+      end subroutine
+      
+      
       subroutine getSlipSysVecFcc(m1,s1)
 
             implicit none

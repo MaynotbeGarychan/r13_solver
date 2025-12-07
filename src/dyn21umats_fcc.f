@@ -23,7 +23,7 @@ c
 c     IO
       integer typeOri
 c     Define the crystal
-      integer,parameter:: cryType=0
+      integer,parameter:: typeCry=0
       integer,parameter:: numSys=12
 c     Intermedia variables
       integer i,j,k,l
@@ -85,7 +85,7 @@ c     Strain variables
       if (.not.failel) then
       if(ncycle==0) then
 c     Init crystal orientation, slip system vectors
-            call initCrystal(typeOri,cryType,euler,
+            call initCrystal(typeOri,typeCry,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
             call umatFccInitHsv(g0,r,s11,m11,numSys,nhsv,
