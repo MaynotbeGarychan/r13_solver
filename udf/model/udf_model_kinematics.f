@@ -117,11 +117,12 @@ c     decompose velocity gradient
       ! fp(3,3)     - deformation gradient plastic part
       !============================================================
       implicit none
+      include 'define_cp.inc'
       integer l,i,j
       integer numSys
-      double precision dgamma(numSys)
-      double precision s11(3,numSys)
-      double precision m11(3,numSys)
+      double precision dgamma(maxSys)
+      double precision s11(3,maxSys)
+      double precision m11(3,maxSys)
       double precision fp(3,3)
 
       call matIdentity(3,fp)
@@ -148,10 +149,11 @@ c     decompose velocity gradient
       ! Dpv(6)              - strain tensor in vogit
       !============================================================
       implicit none
+      include 'define_cp.inc'
       integer l,i
       integer numSys
-      double precision dgamma(numSys)
-      double precision eschmid(6,numSys)
+      double precision dgamma(maxSys)
+      double precision eschmid(6,maxSys)
       double precision Dpv(6)
 
       do i=1,6
@@ -176,9 +178,10 @@ c     decompose velocity gradient
       ! Dpv(6)              - strain tensor in vogit
       !============================================================
       implicit none
+      include 'define_cp.inc'
       integer l,i
-      double precision dgamma(numSys)
-      double precision wschmid(3,numSys)
+      double precision dgamma(maxSys)
+      double precision wschmid(3,maxSys)
       integer numSys
       double precision Wpv(3)
 

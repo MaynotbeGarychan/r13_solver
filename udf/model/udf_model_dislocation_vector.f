@@ -10,10 +10,11 @@
       ! l11(3,numSys)   - dislocation line vector
       !============================================================
         implicit none
+        include 'define_cp.inc'
         integer numSys
         integer l
-        double precision m11(3,numSys),s11(3,numSys)
-        double precision l11(3,numSys)
+        double precision m11(3,maxSys),s11(3,maxSys)
+        double precision l11(3,maxSys)
         
         do l=1,numSys
             call vector_cross_product(m11(:,l),

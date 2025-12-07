@@ -8,7 +8,7 @@ FFLAGS=
 CLEAN=erase
 # object lists
 OBJS=udf_model_dislocation_vector.obj\
-	udf_model_elasticity.obj udf_model_elasticity_crystal.obj udf_model_eshelby_tensor.obj\
+	udf_model_elasticity.obj udf_model_eshelby_tensor.obj\
 	udf_model_hardening_dsl.obj udf_model_hardening.obj\
 	udf_model_kinematics_configuration.obj udf_model_kinematics.obj\
 	udf_model_rotation.obj\
@@ -25,7 +25,6 @@ user:
 #	cd build && $(CLEAN) *.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_dislocation_vector.f -o ./build/udf_model_dislocation_vector.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_elasticity.f -o ./build/udf_model_elasticity.obj
-	$(FC) $(FFLAGS) -c ./model/udf_model_elasticity_crystal.f -o ./build/udf_model_elasticity_crystal.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_eshelby_tensor.f -o ./build/udf_model_eshelby_tensor.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_hardening_dsl.f -o ./build/udf_model_hardening_dsl.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_hardening.f -o ./build/udf_model_hardening.obj
