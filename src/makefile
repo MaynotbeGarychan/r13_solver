@@ -18,12 +18,9 @@ OBJS= couple2other_user.obj dyn21cnt.obj dyn21ueos.obj dyn21umats.obj  dyn21ushl
       dyn21usld.obj  dynrfn_user.obj dyn21umat.obj init_dyn21.obj \
 	  dyn21umats_cp_ph.obj dyn21umats_fcc_implicit.obj
 UDFOBJS=udf_model_dislocation_vector.obj\
-	udf_model_elasticity.obj udf_model_elasticity_crystal.obj udf_model_eshelby_tensor.obj\
+	udf_model_elasticity.obj udf_model_eshelby_tensor.obj\
 	udf_model_hardening_dsl.obj udf_model_hardening.obj\
 	udf_model_kinematics_configuration.obj udf_model_kinematics.obj\
-	udf_model_porous_softening_tm.obj\
-	udf_model_porous_kinematics.obj udf_model_porous_stress_update.obj\
-	udf_model_porous_evolution_gtn.obj\
 	udf_model_rotation.obj\
 	udf_model_schmid_tensor.obj\
 	udf_model_slip_system_operation.obj udf_model_slip_system.obj\
