@@ -16,8 +16,7 @@ LFLAGS = -F:1610612736 -link -force -nodefaultlib:msvcrt.lib  \
 OBJS= couple2other_user.obj dyn21cnt.obj dyn21ueos.obj dyn21umats.obj  dyn21ushl.obj \
       dyn21utan.obj dyn21.obj dyn21tumat.obj  dyn21umatc.obj  dyn21umatv.obj \
       dyn21usld.obj  dynrfn_user.obj dyn21umat.obj init_dyn21.obj \
-	  dyn21umats_fcc.obj dyn21umats_bcc.obj dyn21umats_fcc_dsl.obj\
-	  dyn21umats_fcc_implicit.obj
+	  dyn21umats_cp_ph.obj dyn21umats_fcc_implicit.obj
 UDFOBJS=udf_model_dislocation_vector.obj\
 	udf_model_elasticity.obj udf_model_elasticity_crystal.obj udf_model_eshelby_tensor.obj\
 	udf_model_hardening_dsl.obj udf_model_hardening.obj\

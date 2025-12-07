@@ -20,7 +20,7 @@ c    compute offsets (1-based indexing)
       
       end subroutine
 
-      subroutine umatBcc(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
+      subroutine umatCpPh(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
      1   temper,failel,crv,nnpcrv,cma,qmat,elsiz,idele,reject)
 !============================================================
 ! Declaration of constitutive variables
@@ -43,8 +43,8 @@ c
 c     IO
       integer typeOri
 c     Define the crystal
-      integer,parameter:: cryType=1
-      integer,parameter:: numSys=48
+      integer,parameter:: cryType=0
+      integer,parameter:: numSys=12
 c     Intermedia variables
       integer i,j,k,l
 c     Kinetic model variables
@@ -87,7 +87,7 @@ c Declaration of offset hsv indices
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
-      call  umatBccGetMc(cm,ym,pr,bk,sm,
+      call  umatCpPhGetMc(cm,ym,pr,bk,sm,
      1       typeUmat,dgamma_0,mval,dgamma_lim,
      2       typeOri,euler,
      3       hardType,g0,gs,h0,hs,q)
@@ -107,7 +107,7 @@ c     Init crystal orientation, slip system vectors
             call initCrystal(typeOri,cryType,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
-            call umatBccInitHsv(g0,r,s11,m11,numSys,nhsv,
+            call umatCpPhInitHsv(g0,r,s11,m11,numSys,nhsv,
      1      hsv,sig)
       else
 !============================================================
@@ -116,7 +116,7 @@ c     Initialize the hsv list
 c     Obtain defromation gradient from hsv
       call getDispGradfromHsv(hsv,nhsv,f,f_n1)
 c     Obtain CRSS from hsv
-      call umatBccGetHsv(hsv,numSys,g_crss,r,s11,m11,
+      call umatCpPhGetHsv(hsv,numSys,g_crss,r,s11,m11,
      1       gamma_n1,gamma_slip)
 
 !============================================================
@@ -164,7 +164,7 @@ c     Extract the euler angle from the tranformation matrix
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv
 !------------------------------------------------------------
-      call umatBccUpdateHsv(numSys,sig_n1,f_n1,g_crss,
+      call umatCpPhUpdateHsv(numSys,sig_n1,f_n1,g_crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
      2       hsv,sig,euler_n1)
       endif
@@ -172,9 +172,9 @@ c     Extract the euler angle from the tranformation matrix
 !============================================================
 ! End of cpfem
 !------------------------------------------------------------
-      end subroutine umatBcc
+      end subroutine umatCpPh
 
-      subroutine umatBccGetMc(cm,ym,pr,bk,sm,
+      subroutine umatCpPhGetMc(cm,ym,pr,bk,sm,
      1       typeUmat,dgamma_0,mval,dgamma_lim,
      2       typeOri,euler,
      3       hardType,g0,gs,h0,hs,q)
@@ -204,9 +204,9 @@ c     cm(25 ~ 32) hardening
       h0=cm(28)
       hs=cm(29)
       q=cm(30)
-      end subroutine umatBccGetMc
+      end subroutine umatCpPhGetMc
 
-      subroutine umatBccInitHsv(g0,r,s11,m11,numSys,nhsv,hsv,sig)
+      subroutine umatCpPhInitHsv(g0,r,s11,m11,numSys,nhsv,hsv,sig)
       implicit none
       integer nhsv,numSys
       integer i,l,k
@@ -254,7 +254,7 @@ c     Cauchy stress tensor
             do i=1,6
                   sig(i)=0.
             enddo
-      end subroutine umatBccInitHsv
+      end subroutine umatCpPhInitHsv
 
 C     Hsv List
 c     f(3,3)            <- hsv(1 ~ 9)
@@ -264,7 +264,7 @@ c     s11(3,12)         <- hsv(31 ~ 66)
 c     m11(3,12)         <- hsv(67 ~ 102)
 c     gamma_slip(12)    <- hsv(103 ~ 114)
 c     gamma_n1          <- hsv(115)
-      subroutine umatBccGetHsv(hsv,numSys,g_crss,r,s11,m11,
+      subroutine umatCpPhGetHsv(hsv,numSys,g_crss,r,s11,m11,
      1       gamma_n1,gamma_slip)
       implicit none
       integer numSys
@@ -308,9 +308,9 @@ c     Obtain slip volume from hsv
       do l=1,numSys
             gamma_slip(l)=hsv(OFF_GS + (l-1))
       enddo
-      end subroutine umatBccGetHsv
+      end subroutine umatCpPhGetHsv
       
-      subroutine umatBccUpdateHsv(numSys,sig_n1,f_n1,g_crss,
+      subroutine umatCpPhUpdateHsv(numSys,sig_n1,f_n1,g_crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
      2       hsv,sig,euler_n1)
       implicit none
@@ -380,4 +380,4 @@ c    update gamma_slip and gamma_n1
       hsv(OFF_EUL + 0)=euler_n1(1)
       hsv(OFF_EUL + 1)=euler_n1(2)
       hsv(OFF_EUL + 2)=euler_n1(3)
-      end subroutine umatBccUpdateHsv
+      end subroutine umatCpPhUpdateHsv

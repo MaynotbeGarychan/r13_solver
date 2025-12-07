@@ -2,3 +2,5 @@
       parameter (nlq=136)
       integer nnlq,lq9,lq0,lq1
       common/newnlq/nnlq,lq9,lq0,lq1
+      integer maxSys
+      parameter (maxSys=48)
