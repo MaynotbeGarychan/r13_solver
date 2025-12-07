@@ -57,18 +57,18 @@ c     Kinetic model variables
       double precision We1
       double precision exp_we(3,3)
 c     Kinematic variables
-      double precision s11(3,numSys),m11(3,numSys)
-      double precision s11_n1(3,numSys),m11_n1(3,numSys)
+      double precision s11(3,maxSys),m11(3,maxSys)
+      double precision s11_n1(3,maxSys),m11_n1(3,maxSys)
       double precision r(3,3),RL(6,6),r_n1(3,3)
-      double precision Pa(3,3,numSys),eschmid(6,numSys)
-      double precision Wa(3,3,numSys),wschmid(3,numSys)
+      double precision Pa(3,3,maxSys),eschmid(6,maxSys)
+      double precision Wa(3,3,maxSys),wschmid(3,maxSys)
       double precision euler(3),euler_n1(3)
       double precision Dp(6),Wp(3)
 c     Slip system constitutive model variables
-      double precision tau(numSys),dgamma(numSys)
-      double precision gamma_slip(numSys)
+      double precision tau(maxSys),dgamma(maxSys)
+      double precision gamma_slip(maxSys)
       double precision dgamma_tol,gamma_n1
-      double precision g_crss(numSys)
+      double precision g_crss(maxSys)
       double precision dgamma_0,mval,dgamma_lim
 c     Stress Update model variables
       double precision ym,pr,bk,sm
@@ -91,13 +91,6 @@ c Declaration of offset hsv indices
      1       typeUmat,dgamma_0,mval,dgamma_lim,
      2       typeOri,euler,
      3       hardType,g0,gs,h0,hs,q)
-      if(ncycle==0)then
-      if(idele==1)then
-      call getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
-     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
-      print *,OFF_CRSS,OFF_GS,OFF_EUL
-      endif
-      endif
 !============================================================
 ! Initial step: ncrycle = 0
 !------------------------------------------------------------   

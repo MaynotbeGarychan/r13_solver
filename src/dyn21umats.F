@@ -509,18 +509,6 @@ c
                   call umatCpPh(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
-!             elseif(typeUmat.eq.1)then
-!                   call umatFccDsl(cm,eps,sig,
-!      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
-!      2   nnpcrv,cma,qmat,elsiz,idele,reject)
-!             elseif(typeUmat.eq.3)then
-!                   call umatBcc(cm,eps,sig,
-!      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
-!      2   nnpcrv,cma,qmat,elsiz,idele,reject)
-!             elseif(typeUmat.eq.4)then
-!                   call umatBccHama(cm,eps,sig,
-!      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
-!      2   nnpcrv,cma,qmat,elsiz,idele,reject)
             endif
       endif
       return

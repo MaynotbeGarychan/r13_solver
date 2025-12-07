@@ -11,9 +11,6 @@ OBJS=udf_model_dislocation_vector.obj\
 	udf_model_elasticity.obj udf_model_elasticity_crystal.obj udf_model_eshelby_tensor.obj\
 	udf_model_hardening_dsl.obj udf_model_hardening.obj\
 	udf_model_kinematics_configuration.obj udf_model_kinematics.obj\
-	udf_model_porous_softening_tm.obj\
-	udf_model_porous_kinematics.obj udf_model_porous_stress_update.obj\
-	udf_model_porous_evolution_gtn.obj\
 	udf_model_rotation.obj\
 	udf_model_schmid_tensor.obj\
 	udf_model_slip_system_operation.obj udf_model_slip_system.obj\
@@ -34,10 +31,6 @@ user:
 	$(FC) $(FFLAGS) -c ./model/udf_model_hardening.f -o ./build/udf_model_hardening.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_kinematics_configuration.f -o ./build/udf_model_kinematics_configuration.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_kinematics.f -o ./build/udf_model_kinematics.obj
-	$(FC) $(FFLAGS) -c ./model/udf_model_porous_softening_tm.f -o ./build/udf_model_porous_softening_tm.obj
-	$(FC) $(FFLAGS) -c ./model/udf_model_porous_kinematics.f -o ./build/udf_model_porous_kinematics.obj
-	$(FC) $(FFLAGS) -c ./model/udf_model_porous_stress_update.f -o ./build/udf_model_porous_stress_update.obj
-	$(FC) $(FFLAGS) -c ./model/udf_model_porous_evolution_gtn.f -o ./build/udf_model_porous_evolution_gtn.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_rotation.f -o ./build/udf_model_rotation.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_schmid_tensor.f -o ./build/udf_model_schmid_tensor.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_slip_system_operation.f -o ./build/udf_model_slip_system_operation.obj
