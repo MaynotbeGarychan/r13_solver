@@ -93,7 +93,7 @@ c     Others
 ! Note:
 !------------------------------------------------------------
       integer array_maxidx,ss2sp_fcc
-      double precision calSigEq,calSigMean,calSigTri,cal_lode
+      double precision calSigEq,calSigMean,calSigTri,calSigLode
       double precision calPeeq
 !============================================================
 ! Obtain variables from materials constants
@@ -378,7 +378,7 @@ c     Calculate stress state
       sig_m=calSigMean(sig(1:6))
       sig_eq=calSigEq(sig(1:6))
       st=calSigTri(sig_m,sig_eq)
-      lode=cal_lode(sig(1:6),sig_m,sig_eq)
+      lode=calSigLode(sig(1:6),sig_m,sig_eq)
       call normal_tensor(m11,num_sp,numSys,Na,nschmid)
       call cal_rns(sig(1:6),nschmid,num_sp,rns)
       call cal_rr(num_sp,numSys,rns,tau,rr)

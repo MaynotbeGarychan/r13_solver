@@ -11,113 +11,18 @@
         ! tau             - array of the resolved shear stress
         !------------------------------------------------------------
         implicit none
+        include './model/define_cp.inc'
         integer i
         integer numSys
         double precision sig(6)
-        double precision sf_v(6,numSys)
-        double precision tau(numSys)
+        double precision sf_v(6,maxSys)
+        double precision tau(maxSys)
 
         do i=1,numSys
             tau(i)=dot_product(sf_v(:,i),sig)
         enddo
 
       end subroutine calSigRss
-
-      function most_active_ss(tau,numSys) result(idx)
-        !============================================================
-        ! Calculate the most activated slip system by tau
-        !------------------------------------------------------------
-        ! input: 
-        ! tau(numSys)     - array of resolved shear stress
-        ! numSys          - num of slip plane
-        ! output:
-        ! idx             - index of the most activated slip system
-        !------------------------------------------------------------
-        implicit none
-        double precision tau(numSys)
-        double precision arr(numSys)
-        integer numSys
-        integer idx
-        integer l
-        integer array_maxidx
-
-        do l=1,numSys
-          arr(l)=abs(tau(l))
-        enddo
-
-        idx=array_maxidx(tau,numSys)
-
-      end function most_active_ss
-
-      subroutine cal_rns(sig,nf_v,num_sp,rns)
-        !============================================================
-        ! Calculate the resolved normal stress array
-        !------------------------------------------------------------
-        ! input: 
-        ! sig(6)          - array of the stress tensor
-        ! nf_v(6,numSys)  - normal schmid tensor in vogit notation 
-        !                   for each slip plane
-        ! numSys          - num of slip plane
-        ! output:
-        ! rns             - array of the resolved normal stress
-        !------------------------------------------------------------
-        implicit none
-        integer i
-        integer num_sp
-        double precision sig(6)
-        double precision nf_v(6,num_sp)
-        double precision rns(num_sp)
-
-        do i=1,num_sp
-            rns(i)=dot_product(nf_v(:,i),sig)
-        enddo
-
-      end subroutine cal_rns
-
-      subroutine cal_rr(num_sp,numSys,rns,tau,rr)
-        !============================================================
-        ! Calculate the resolved ratio array
-        !------------------------------------------------------------
-        ! input: 
-        ! rns(num_sp)     - array of the resolved normal stress
-        ! tau(numSys)     - array of the resolved shear stress 
-        ! num_sp          - num of slip plane
-        ! numSys          - num of slip system
-        ! output:
-        ! rr(numSys)      - array of the resolved ratio
-        !------------------------------------------------------------
-        implicit none
-        integer i,j,l
-        integer num_sp,numSys
-        double precision rns(num_sp)
-        double precision tau(numSys)
-        double precision rr(numSys)
-
-        do i=1,4
-          do j=1,3
-            l=3*(i-1)+j
-            rr(l)=rns(i)/abs(tau(l))
-          enddo
-        enddo
-
-      end subroutine
-
-    !   function cal_rr_ss_ut(sf,nf) 
-    !  1   result(rr)
-    !     implicit none
-    !     double precision sf(6)
-    !     double precision nf(6)
-    !     double precision sig(6)
-    !     double precision rr
-    !     double precision tau,rns
-        
-    !     data sig/0.0,1.0,0.0,0.0,0.0,0.0/
-
-    !     tau=dot_product(sf(:),sig)
-    !     rns=dot_product(nf(:),sig)
-    !     rr=rns/tau
-
-    !   end function cal_rr_ss_ut
 
       function calSigEq(sig) result(sig_eq)
         !============================================================
@@ -155,7 +60,7 @@
 
        end function calSigMean
 
-       subroutine cal_sig_dev(sig,sig_d)
+       subroutine calSigDev(sig,sig_d)
         !============================================================
         ! Calculate the deviatoric stress
         !------------------------------------------------------------
@@ -179,7 +84,7 @@
           sig_d(i)=sig_d(i)-sig_m
         enddo
 
-       end subroutine cal_sig_dev
+       end subroutine calSigDev
 
        function calSigTri(sig_m,sig_eq) result(st)
         !============================================================
@@ -200,7 +105,7 @@
 
        end function calSigTri
 
-       function cal_lode(sig,sig_m,sig_eq) result(lode)
+       function calSigLode(sig,sig_m,sig_eq) result(lode)
         !============================================================
         ! Calculate the lode parameters
         !------------------------------------------------------------
@@ -221,6 +126,6 @@
         lode=-(27./2.)*((sig(1)-sig_m)*(sig(2)-
      1            sig_m)*(sig(3)-sig_m))/sig_eq
 
-       end function cal_lode
+       end function calSigLode
 
 
