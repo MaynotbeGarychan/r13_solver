@@ -509,6 +509,10 @@ c
                   call umatCpPh(cm,eps,sig,
      1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
      2   nnpcrv,cma,qmat,elsiz,idele,reject)
+            else if(typeUmat.eq.1)then
+                  call umatCpHama(cm,eps,sig,
+     1     epsp,hsv,dt1,capa,etype,tt,temper,failel,crv,
+     2   nnpcrv,cma,qmat,elsiz,idele,reject)
             endif
       endif
       return

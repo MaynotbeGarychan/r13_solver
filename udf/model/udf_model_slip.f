@@ -1,4 +1,4 @@
-      subroutine calSlipRate(tau,g_crss,mval,dgamma_0,
+      subroutine calSlipRateVp(tau,g_crss,mval,dgamma_0,
      1   dgamma_lim,numSys,dgamma)
         !============================================================
         ! A power-law style visco-plasticity slip model 
@@ -37,43 +37,64 @@
             endif
         enddo
 
-      end subroutine calSlipRate
-      
-      subroutine calSlipRateHeatAct(tau,g_crss,tau0110,tau0112,
-     1   dgk0,dgamma_0,pval,qval,tval,kb,numSys,dgamma)
+      end subroutine calSlipRateVp
 
+      subroutine calSlipRateHeatAct(tau,g_crss,mval,dgamma_0,tau_0,
+     1    Delta_Gk0,p,q,T,k_B,dgamma_lim,numSys,dgamma)
+    !============================================================
+    ! A visco-plasticity slip model based on the provided formula
+    !------------------------------------------------------------
+    ! input:
+    ! tau(numSys)     - Stress at each slip system
+    ! g_crss(numSys)  - Critical resolved shear stress at each slip system
+    ! mval            - Sensitivity of slip rate
+    ! dgamma_0         - Reference slip rate
+    ! tau_0           - Reference stress
+    ! Delta_Gk0       - Reference change in Gibbs free energy
+    ! p, q            - Model parameters
+    ! T               - Temperature
+    ! k_B             - Boltzmann constant
+    ! numSys          - Number of slip systems
+    ! output:
+    ! dgamma(numSys)  - Slip rate at the current step
+    !------------------------------------------------------------
         implicit none
         include 'define_cp.inc'
-        integer i,numSys
-        double precision tau(maxSys),g_crss(maxSys)
-        double precision tauEff(maxSys),dgk(maxSys)
+        integer l
+        integer numSys
+        double precision tau(maxSys)
+        double precision g_crss(maxSys)
+        double precision mval,dgamma_0,tau_0,Delta_Gk0,p,q,T,k_B
+        double precision dgamma_lim
         double precision dgamma(maxSys)
-        double precision tau0110,tau0112
-        double precision dgk0,pval,qval,tval,dgamma_0
-        double precision kb
+        double precision tau_eff, delta_Gk
 
-        do i=1,numSys
-            tauEff(i)=abs(tau(i))-g_crss(i)
-        enddo
-
-c       1~12
-        do i=1,12
-            dgk(i)=dgk0*(1.-(tauEff(i)/tau0110)**pval)**qval
-        enddo
-c       13~24
-        do i=13,24
-            dgk(i)=dgk0*(1.-(tauEff(i)/tau0112)**pval)**qval
-        enddo
-
-        do i=1,numSys
-            if(tauEff(i).gt.0)then
-                dgamma(i)=dgamma_0*exp(0.-dgk(i)/(kb*tval))
+        do l = 1, numSys
+            tau_eff=abs(tau(l))-g_crss(l)
+            if (tau_eff.le.0) then
+                dgamma(l)=0.d0
+            elseif (tau_eff.ge.tau_0) then
+                dgamma(l)=dgamma_0*sign(1.d0, tau(l))
+                print *, 'Warning: Runs into athermal regime'
+                print *, 'but handled as thermal activation.'
+                print *, 'Slip system', l,' tau_eff >= tau_0'
             else
-                dgamma(i)=0.
+                delta_Gk=Delta_Gk0*(1.0-(tau_eff/tau_0)**p)**q
+                dgamma(l)=dgamma_0*exp(-delta_Gk/(k_B*T))
+     1            *sign(1.d0,tau(l))
+            endif
+        end do
+
+        do l=1,numSys
+            if(dgamma(l) .gt. dgamma_lim) then
+                  dgamma(l)=dgamma_lim
+            elseif(dgamma(l) .lt. -dgamma_lim) then
+                  dgamma(l)=-dgamma_lim
             endif
         enddo
 
-        end subroutine
+      end subroutine calSlipRateHeatAct
+
 
       subroutine updateCss(dgamma,numSys,dt1,
      1      dgamma_tol,gamma_slip,gamma_n1)

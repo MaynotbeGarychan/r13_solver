@@ -7,9 +7,9 @@ FC=ifort
 FFLAGS= 
 CLEAN=erase
 # object lists
-OBJS=udf_model_dislocation_vector.obj\
+OBJS=udf_model_dislocation.obj\
 	udf_model_elasticity.obj udf_model_eshelby_tensor.obj\
-	udf_model_hardening_dsl.obj udf_model_hardening.obj\
+	udf_model_hardening.obj\
 	udf_model_kinematics_configuration.obj udf_model_kinematics.obj\
 	udf_model_rotation.obj\
 	udf_model_schmid_tensor.obj\
@@ -23,10 +23,9 @@ OBJS=udf_model_dislocation_vector.obj\
 user:
 # model
 #	cd build && $(CLEAN) *.obj
-	$(FC) $(FFLAGS) -c ./model/udf_model_dislocation_vector.f -o ./build/udf_model_dislocation_vector.obj
+	$(FC) $(FFLAGS) -c ./model/udf_model_dislocation.f -o ./build/udf_model_dislocation.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_elasticity.f -o ./build/udf_model_elasticity.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_eshelby_tensor.f -o ./build/udf_model_eshelby_tensor.obj
-	$(FC) $(FFLAGS) -c ./model/udf_model_hardening_dsl.f -o ./build/udf_model_hardening_dsl.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_hardening.f -o ./build/udf_model_hardening.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_kinematics_configuration.f -o ./build/udf_model_kinematics_configuration.obj
 	$(FC) $(FFLAGS) -c ./model/udf_model_kinematics.f -o ./build/udf_model_kinematics.obj

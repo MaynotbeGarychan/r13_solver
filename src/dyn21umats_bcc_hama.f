@@ -112,9 +112,9 @@ c     Obtain CRSS from hsv
       call calSchmidTensor(s11,m11,numSys,
      1     Pa,Wa,eschmid,wschmid)
       call calSigRss(sig(1:6),eschmid,numSys,tau)
-c      call calSlipRate(tau,g_crss,mval,dgamma_0,
+c      call calSlipRateVp(tau,g_crss,mval,dgamma_0,
 c     1   dgamma_lim,numSys,dgamma)
-      call calSlipRateHeatAct(tau,g_crss,tau0110,tau0112,
+      call calSlipRateVpHeatAct(tau,g_crss,tau0110,tau0112,
      1   dgk0,dgamma_0,pval,qval,tval,kb,numSys,dgamma)
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)

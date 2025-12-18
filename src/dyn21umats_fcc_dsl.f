@@ -281,11 +281,11 @@ c     decompose velocity gradient
 
       call calSigRss(sig(1:6),eschmid,numSys,tau)
 
-      call edge_dsl_line_vec(m11,s11,numSys,l11)
-      call cal_crss_by_dsl_Lee(ga,sm,bv,rho,m11,s11,l11,
+      call calDslLineVec(m11,s11,numSys,l11)
+      call updateCrssDslLee(ga,sm,bv,rho,m11,s11,l11,
      1     numSys,g_crss)
 
-      call calSlipRate(tau,g_crss,mval,dgamma_0,
+      call calSlipRateVp(tau,g_crss,mval,dgamma_0,
      1   dgamma_lim,numSys,dgamma)
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
@@ -366,7 +366,7 @@ c     Extract the euler angle from the tranformation matrix
 !------------------------------------------------------------
 ! Note:
 !------------------------------------------------------------ 
-      call dsl_evolution_kocks(ka,kb,bv,dgamma,numSys,dt1,
+      call calDslEvolKocks(ka,kb,bv,dgamma,numSys,dt1,
      1       rho,rho_r,rho_tol)
 
 !============================================================

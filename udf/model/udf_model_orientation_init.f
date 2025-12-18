@@ -47,4 +47,3 @@ c       transform the ss,sp vector to materials coordinates
         call calSlipSys2Global(s1,m1,r,numSys,s11,m11)
 
         end subroutine initCrystal
-        

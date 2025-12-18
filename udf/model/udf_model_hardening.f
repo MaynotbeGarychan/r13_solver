@@ -1,3 +1,27 @@
+      subroutine updateCrss(dcrss,dt1,numSys,crss)
+        !============================================================
+        ! Update the crss by its rate
+        !------------------------------------------------------------
+        ! input: 
+        ! dcrss(numSys)   - crss rate
+        ! dt1             - time step
+        ! crss(numSys)    - crss for current step
+        ! output:
+        ! crss(numSys)    - crss for next step
+        !------------------------------------------------------------
+        implicit none
+        include 'define_cp.inc'
+        integer l
+        integer numSys
+        double precision dcrss(maxSys)
+        double precision dt1
+        double precision crss(maxSys)
+
+        do l=1,numSys
+            crss(l)=crss(l)+dcrss(l)*dt1
+        enddo
+        end subroutine updateCrss
+      
       subroutine updateCrssFcc(g0,gs,h0,hs,q,gamma_n1,dgamma,dt1,
      1      g_crss)
         !============================================================
@@ -130,3 +154,119 @@ c       compute hardening
         enddo
 
         end subroutine hardening_bcc
+
+        subroutine updateCrssDslLee(ga,sm,bv,rho,m11,s11,l11,numSys,
+     1       g_crss)
+        !============================================================
+        ! Calculate the current crss by SSD
+        ! A dislocation density-based single crystal constitutive 
+        ! equation, IJP, Lee, 2010
+        !------------------------------------------------------------
+        ! input: 
+        ! ga              - A=0.4
+        ! sm              - shear modulus
+        ! bv              - Burger vectors
+        ! rho             - SSD dislocation
+        ! m11(3,numSys)   - Slip plane vectors
+        ! s11(3,numSys)   - Slip system vectors
+        ! numSys          - Number of slip system
+        ! output:
+        ! g_crss(numSys)  - CRSS
+        !------------------------------------------------------------
+        implicit none
+        integer l,k
+        integer numSys
+        double precision rho(numSys)
+        double precision g_crss(numSys)
+        double precision m11(3,numSys),s11(3,numSys)
+        double precision l11(3,numSys)
+        double precision ga,sm,bv
+        double precision val
+
+        do l=1,numSys
+                val=0.
+                do k=1,numSys
+                        val=val+rho(k)*
+     1            abs(dot_product(m11(:,l),l11(:,k)))
+                enddo
+                g_crss(l)=ga*sm*bv*sqrt(val)
+        enddo
+
+        end subroutine updateCrssDslLee
+
+
+        subroutine calCrssRateDslHama(rho,dgamma,alpha,mu,cst_k,yc,
+     1         typeCry,numSys,dcrss)
+        !============================================================
+        ! Calculate the crss rate for Hama sensei's model
+        !------------------------------------------------------------
+        ! input:
+        ! alpha           - interaction coeffecient
+        ! mu              - shear modulus
+        ! cst_k           - constant k
+        ! yc              - coeffecient for dynamic recovery
+        ! typeCry        - crystal type
+        ! numSys          - number of slip system
+        ! rho(numSys)    - dislocation density of slip system
+        ! dgamma(numSys) - slip rate
+        ! output:
+        ! dcrss(numSys)  - crss rate
+        !------------------------------------------------------------
+        implicit none
+        include 'define_cp.inc'
+
+        integer l,k
+        integer numSys,typeCry
+        double precision alpha,mu,cst_k,yc
+        double precision dcrss(maxSys)
+        double precision dgamma(maxSys)
+        double precision h(maxSys,maxSys)
+        double precision matInteract(maxSys,maxSys)
+        double precision rho(maxSys)
+        double precision sumAll, sumExcel
+
+c       initialize h
+        do l=1,numSys
+           do k=1,numSys
+              h(l,k)=0.0d0
+           enddo
+        enddo
+
+        call getDslInteractionMatrix(typeCry,numSys,matInteract)
+
+c       calculation of h matrix
+        do l=1,numSys
+           sumAll   = 0.0d0
+           sumExcel= 0.0d0
+
+           do k=1,numSys
+              sumAll = sumAll + matInteract(l,k)*rho(k)
+              if(k.ne.l) then
+                 sumExcel = sumExcel + matInteract(l,k)*rho(k)
+              endif
+           enddo
+
+c          numerical safeguard
+           sumAll   = max(sumAll  ,1.0d-20)
+           sumExcel= max(sumExcel,1.0d-20)
+
+           do k=1,numSys
+              h(l,k) = (alpha*mu/2.0d0)*matInteract(l,k)
+     &               * sumAll**(-0.5d0)
+     &               * ( (1.0d0/cst_k)*(sumExcel**0.5d0)
+     &               - 2.0d0*yc*rho(k) )
+           enddo
+        enddo
+
+c       calculation of crss rate
+        do l=1,numSys
+           dcrss(l)=0.0d0
+           do k=1,numSys
+              dcrss(l)=dcrss(l)+h(l,k)*abs(dgamma(k))
+           enddo
+        enddo
+
+        return
+        end
+
+

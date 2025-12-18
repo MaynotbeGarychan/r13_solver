@@ -1,7 +1,7 @@
 #include "define.inc"
 #include "define2.inc"
-      subroutine getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
-     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+      subroutine umatCpPhGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
+     1     OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
       
       implicit none
       integer numSys
@@ -103,7 +103,7 @@ c     Init crystal orientation, slip system vectors
         call initCrystal(typeOri,typeCry,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
-            call umatCpPhInitHsv(g0,r,s11,m11,numSys,nhsv,
+      call umatCpPhInitHsv(g0,r,s11,m11,numSys,nhsv,
      1      hsv,sig)
       else
 !============================================================
@@ -127,7 +127,7 @@ c     Obtain CRSS from hsv
       call calSchmidTensor(s11,m11,numSys,
      1     Pa,Wa,eschmid,wschmid)
       call calSigRss(sig(1:6),eschmid,numSys,tau)
-      call calSlipRate(tau,g_crss,mval,dgamma_0,
+      call calSlipRateVp(tau,g_crss,mval,dgamma_0,
      1   dgamma_lim,numSys,dgamma)
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
@@ -214,8 +214,8 @@ c     cm(25 ~ 32) hardening
       integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
       integer OFF_GS, OFF_GN, OFF_EUL
 
-      call getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
-     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+      call umatCpPhGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
+     1     OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
 c     Initialize the hsv list
             do l=1,nhsv
                   hsv(l)=0.
@@ -255,13 +255,6 @@ c     Cauchy stress tensor
       end subroutine umatCpPhInitHsv
 
 C     Hsv List
-c     f(3,3)            <- hsv(1 ~ 9)
-c     g_crss(12)        <- hsv(10 ~ 21)
-c     r(3,3)            <- hsv(22 ~ 30)
-c     s11(3,12)         <- hsv(31 ~ 66)
-c     m11(3,12)         <- hsv(67 ~ 102)
-c     gamma_slip(12)    <- hsv(103 ~ 114)
-c     gamma_n1          <- hsv(115)
       subroutine umatCpPhGetHsv(hsv,numSys,g_crss,r,s11,m11,
      1       gamma_n1,gamma_slip)
       implicit none
@@ -275,8 +268,8 @@ c     gamma_n1          <- hsv(115)
       integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
       integer OFF_GS, OFF_GN, OFF_EUL
 c     Compute offsets
-      call getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
-     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+      call umatCpPhGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
+     1     OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
 c     Obtain CRSS from hsv
       do l=1,numSys
             g_crss(l)=hsv(OFF_CRSS + (l-1))
@@ -323,8 +316,8 @@ c     Obtain slip volume from hsv
       integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
       integer OFF_GS, OFF_GN, OFF_EUL
 c     Compute offsets
-      call getHsvOffsets(numSys,OFF_F,OFF_CRSS,OFF_R,OFF_S11,
-     1     OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+      call umatCpPhGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
+     1     OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
       sig(1)=sig_n1(1)
       sig(2)=sig_n1(2)
       sig(3)=sig_n1(3)
