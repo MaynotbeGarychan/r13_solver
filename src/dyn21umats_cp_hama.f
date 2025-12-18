@@ -156,10 +156,9 @@ c     Obtain CRSS from hsv
       cst_q=1.1
       cst_T=500.
       Delta_Gk0=3.6e-19
-      k_B=1.38e-20
 
       call calSlipRateHeatAct(tau,crss,mval,dgamma_0,tau_0,
-     1    Delta_Gk0,cst_p,cst_q,cst_T,k_B,dgamma_lim,numSys,
+     1    Delta_Gk0,cst_p,cst_q,cst_T,dgamma_lim,numSys,
      2    dgamma)
 
       ! do l=1,numSys
@@ -199,9 +198,8 @@ c     Extract the euler angle from the tranformation matrix
       ! bv=2.5e-7
       yc=2.5e-6
       km=20.0
-      bv=2.5e-7
 
-      call calDslRateHama(bv,yc,km,rho,typeCry,numSys,
+      call calDslRateHama(yc,km,rho,typeCry,numSys,
      1      dgamma,rho_r)
       call updateDsl(rho_r,numSys,dt1,rho)
 

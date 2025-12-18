@@ -40,7 +40,7 @@
       end subroutine calSlipRateVp
 
       subroutine calSlipRateHeatAct(tau,g_crss,mval,dgamma_0,tau_0,
-     1    Delta_Gk0,p,q,T,k_B,dgamma_lim,numSys,dgamma)
+     1    Delta_Gk0,p,q,T,dgamma_lim,numSys,dgamma)
     !============================================================
     ! A visco-plasticity slip model based on the provided formula
     !------------------------------------------------------------
@@ -53,7 +53,6 @@
     ! Delta_Gk0       - Reference change in Gibbs free energy
     ! p, q            - Model parameters
     ! T               - Temperature
-    ! k_B             - Boltzmann constant
     ! numSys          - Number of slip systems
     ! output:
     ! dgamma(numSys)  - Slip rate at the current step
@@ -80,7 +79,7 @@
                 print *, 'Slip system', l,' tau_eff >= tau_0'
             else
                 delta_Gk=Delta_Gk0*(1.0-(tau_eff/tau_0)**p)**q
-                dgamma(l)=dgamma_0*exp(-delta_Gk/(k_B*T))
+                dgamma(l)=dgamma_0*exp(-delta_Gk/(CST_BZ*T))
      1            *sign(1.d0,tau(l))
             endif
         end do

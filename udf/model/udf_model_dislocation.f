@@ -84,14 +84,13 @@
         enddo
         end subroutine calDslEvolKocks
 
-        subroutine calDslRateHama(bv,yc,km,rho,typeCry,numSys,
+        subroutine calDslRateHama(yc,km,rho,typeCry,numSys,
      1      dgamma,rho_r)
       !============================================================
       ! Calculate the dislocation glide rate
       ! for Hama sensei's model
       !------------------------------------------------------------
       ! input:
-      ! bv              - Burger vector
       ! dsl_L           - Dislocation mean free path
       ! yc              - Annihilation coefficient
       ! rho(numSys)     - Dislocation density of slip system
@@ -104,7 +103,7 @@
       include 'define_cp.inc'
       integer l,j
       integer numSys,typeCry
-      double precision bv,yc,km
+      double precision yc,km
       double precision rho(maxSys)
       double precision dgamma(maxSys)
       double precision rho_r(maxSys)
@@ -126,7 +125,7 @@
 
       do l=1,numSys
         val=(1/dsl_L(l))-2*yc*rho(l)
-        rho_r(l)=(1/bv)*val*abs(dgamma(l))
+        rho_r(l)=(1/CST_BV)*val*abs(dgamma(l))
       enddo
 
       end subroutine calDslRateHama
