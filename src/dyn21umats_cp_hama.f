@@ -118,7 +118,7 @@ c     Initialize the hsv list
      1      hsv,sig)
 
             do l=1,numSys
-                  hsv(200+(l-1))=55 ! crss
+                  ! hsv(200+(l-1))=55 ! crss
                   hsv(220+(l-1))=1.0e5 ! dislocation density
             enddo
       else
@@ -130,11 +130,11 @@ c     Obtain defromation gradient from hsv
 c     Obtain defromation gradient from hsv
       call getDispGradfromHsv(hsv,nhsv,f,f_n1)
 c     Obtain CRSS from hsv
-      call umatCpHamaGetHsv(hsv,numSys,g_crss,r,s11,m11,
+      call umatCpHamaGetHsv(hsv,numSys,crss,r,s11,m11,
      1       gamma_n1,gamma_slip)
       
       do l=1,numSys
-            crss(l)=hsv(200+(l-1))
+            ! crss(l)=hsv(200+(l-1))
             rho(l)=hsv(220+(l-1))
       enddo
 
@@ -148,24 +148,24 @@ c     Obtain CRSS from hsv
       call calSchmidTensor(s11,m11,numSys,
      1     Pa,Wa,eschmid,wschmid)
       call calSigRss(sig(1:6),eschmid,numSys,tau)
-      call calSlipRateVp(tau,g_crss,mval,dgamma_0,
-     1   dgamma_lim,numSys,dgamma)
+!       call calSlipRateVp(tau,g_crss,mval,dgamma_0,
+!      1   dgamma_lim,numSys,dgamma)
       
       tau_0=85.
       cst_p=0.7
       cst_q=1.1
-      cst_T=298.
-      k_B=1.380649e-23
+      cst_T=500.
       Delta_Gk0=3.6e-19
+      k_B=1.38e-20
 
       call calSlipRateHeatAct(tau,crss,mval,dgamma_0,tau_0,
      1    Delta_Gk0,cst_p,cst_q,cst_T,k_B,dgamma_lim,numSys,
-     2    dgammaHeat)
+     2    dgamma)
 
-      do l=1,numSys
-            hsv(240+(l-1))=dgamma(l)
-            hsv(260+(l-1))=dgammaHeat(l)
-      enddo
+      ! do l=1,numSys
+      !       hsv(240+(l-1))=dgamma(l)
+      !       hsv(260+(l-1))=dgammaHeat(l)
+      ! enddo
 
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
@@ -196,9 +196,10 @@ c     Extract the euler angle from the tranformation matrix
 !============================================================
 ! Dislocation update and Hardening model
 !------------------------------------------------------------
-      bv=2.5e-7
+      ! bv=2.5e-7
       yc=2.5e-6
       km=20.0
+      bv=2.5e-7
 
       call calDslRateHama(bv,yc,km,rho,typeCry,numSys,
      1      dgamma,rho_r)
@@ -221,21 +222,22 @@ c     Extract the euler angle from the tranformation matrix
       call calCrssRateDslHama(rho,dgammaHeat,alpha,mu,km,yc,
      1         typeCry,numSys,dcrss)
       
-      do l=1,numSys
-        crss(l)=crss(l)+dcrss(l)*dt1
-      enddo
+      ! do l=1,numSys
+      !   crss(l)=crss(l)+dcrss(l)*dt1
+      ! enddo
+      call updateCrss(dcrss,dt1,numSys,crss)
 
       do l=1,numSys
-            hsv(200+(l-1))=crss(l)
+            ! hsv(200+(l-1))=crss(l)
             hsv(220+(l-1))=rho(l)
       enddo
 
-      call updateCrssFcc(g0,gs,h0,hs,q,gamma_n1,dgamma,
-     1           dt1,g_crss)
+!       call updateCrssFcc(g0,gs,h0,hs,q,gamma_n1,dgamma,
+!      1           dt1,g_crss)
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv
 !------------------------------------------------------------
-      call umatCpHamaUpdateHsv(numSys,sig_n1,f_n1,g_crss,
+      call umatCpHamaUpdateHsv(numSys,sig_n1,f_n1,crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
      2       hsv,sig,euler_n1)
       endif
