@@ -194,16 +194,15 @@ c     Extract the euler angle from the tranformation matrix
       call calDslRcvyRateKohenert(rho, cst_T, mu,
      &     kappa1, kappa2, numSys, drho_recy)
 
-      ! do l=1,numSys
-      ! !     drho(l)=drho(l)-drho_recy(l)
-      !       hsv(200+(l-1))=drho(l)
-      !       hsv(220+(l-1))=drho_recy(l)
-      ! enddo
       call updateDsl(drho,numSys,dt1,rho)
 
-      call calCrssRateDslHama(rho,dgammaHeat,alpha,mu,km,yc,
+      call calCrssRateDslHama(rho,dgamma,alpha,mu,km,yc,
      1         typeCry,numSys,dcrss)
       call updateCrss(dcrss,dt1,numSys,crss)
+
+      do l=1,numSys
+            hsv(200+ l -1)=dgamma(l)
+      enddo
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv
 !------------------------------------------------------------

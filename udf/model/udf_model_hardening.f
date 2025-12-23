@@ -249,12 +249,12 @@ c       calculation of h matrix
 c          numerical safeguard
            sumAll   = max(sumAll  ,1.0d-20)
            sumExcel= max(sumExcel,1.0d-20)
-
            do k=1,numSys
               h(l,k) = (alpha*mu/2.0d0)*matInteract(l,k)
      &               * sumAll**(-0.5d0)
      &               * ( (1.0d0/cst_k)*(sumExcel**0.5d0)
      &               - 2.0d0*yc*rho(k) )
+                ! print *, "h(",l,",",k,")=",h(l,k)
            enddo
         enddo
 
