@@ -210,3 +210,68 @@
       return
       end subroutine getDslInteractionMatrix
 
+      subroutine calDslRcvyRateKohenert(rho, temp, mu,
+     &     kappa1, kappa2, numSys, drho)
+      !============================================================
+      ! Calculate the dislocation recovery rate, Kohenert
+      !------------------------------------------------------------
+      ! input:
+      ! rho        - dislocation density
+      ! T          - temperature
+      ! mu         - shear modulus
+      ! kappa1     - material parameter κ1
+      ! kappa2     - material parameter κ2
+      ! numSys     - number of slip systems
+      ! output:
+      ! drho       - recovery rate dρ/dt
+      !------------------------------------------------------------
+      implicit none
+      include 'define_cp.inc'
+      double precision rho(maxSys)   ! dislocation density
+      double precision temp          ! temperature
+      double precision mu         ! shear modulus
+      double precision diffCoef   ! diffusion coefficient
+      double precision kappa1     ! material parameter κ1
+      double precision kappa2     ! material parameter κ2
+      double precision drho(maxSys)    ! recovery rate dρ/dt
+      double precision expo, arg
+      integer numSys
+      integer l
+!------------------------------------------------------------
+! Safety check
+!------------------------------------------------------------
+      call calDslDiffCoeffArrhen(temp,diffCoef)
+      do l=1,numSys
+      if (rho(l) .le. 0.d0 .or. temp .le. 0.d0) then
+         drho(l) = 0.d0
+         continue
+      end if
+!------------------------------------------------------------
+! Exponential argument
+!------------------------------------------------------------
+      arg = kappa2*mu*(CST_BV**4)*sqrt(rho(l))/(CST_BZ*temp)
+! Optional: avoid overflow
+      arg = min(arg, 80.d0)
+      expo = exp(arg) - 1.d0
+      drho(l)=(kappa1*diffCoef/CST_BV)*(rho(l)**1.5d0)*expo
+      enddo
+      end subroutine calDslRcvyRateKohenert
+
+      subroutine calDslDiffCoeffArrhen(temp,diffCoef)
+      !============================================================
+      ! Calculate the diffusion coefficient
+      ! Arrhenius type
+      !------------------------------------------------------------
+      ! input:
+      ! temp          - Temperature
+      ! output:
+      ! diffCoef      - Diffusion coefficient
+      !------------------------------------------------------------
+        implicit none
+        include 'define_cp.inc'
+        double precision temp
+        double precision diffCoef
+        diffCoef = CST_DIFF0*exp(-CST_QFeCr/(CST_RGAS*temp))
+      end subroutine calDslDiffCoeffArrhen
+
+

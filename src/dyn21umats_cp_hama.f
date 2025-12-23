@@ -1,24 +1,26 @@
 #include "define.inc"
 #include "define2.inc"
       subroutine umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
-     1     OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
-      
+     1     OFF_RHO,OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+
       implicit none
       integer numSys
-      integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
-      integer OFF_GS, OFF_GN, OFF_EUL
+      integer OFF_F,OFF_CRSS,OFF_RHO,OFF_R
+      integer OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL
 
 c    compute offsets (1-based indexing)
-      OFF_F   = 1
-      OFF_CRSS= OFF_F + 9
-      OFF_R   = OFF_CRSS + numSys
-      OFF_S11 = OFF_R + 9
-      OFF_M11 = OFF_S11 + 3*numSys
-      OFF_GS  = OFF_M11 + 3*numSys
-      OFF_GN  = OFF_GS + numSys
-      OFF_EUL = OFF_GN + 1
-      
+      OFF_F    = 1
+      OFF_CRSS = OFF_F    + 9
+      OFF_RHO  = OFF_CRSS + numSys
+      OFF_R    = OFF_RHO  + numSys
+      OFF_S11  = OFF_R    + 9
+      OFF_M11  = OFF_S11  + 3*numSys
+      OFF_GS   = OFF_M11  + 3*numSys
+      OFF_GN   = OFF_GS   + numSys
+      OFF_EUL  = OFF_GN   + 1
+
       end subroutine
+
 
       subroutine umatCpHama(cm,eps,sig,epsp,hsv,dt1,capa,etype,tt,
      1   temper,failel,crv,nnpcrv,cma,qmat,elsiz,idele,reject)
@@ -82,9 +84,8 @@ c     Solid element variables
       double precision g,g2,gc,q1,q3,davg,p,deti,c22i,c23i,fac
       double precision temper,elsiz,epsp,capa,tt
 c Declaration of offset hsv indices
-      integer OFF_F,OFF_CRSS,OFF_R,OFF_S11
+      integer OFF_F,OFF_CRSS,OFF_RHO,OFF_R,OFF_S11
       integer OFF_M11,OFF_GS,OFF_GN,OFF_EUL
-      integer nhsv_min
 
 c     Variables for thermal activation slip rate
       double precision dgammaHeat(maxSys)
@@ -94,8 +95,10 @@ c     Variables for thermal activation slip rate
 c     Variables for dislocation evolution
       double precision bv,km,yc,alpha,mu
       double precision dcrss(maxSys),crss(maxSys)
-      double precision rho(maxSys),rho_r(maxSys)
+      double precision rho(maxSys),drho(maxSys)
+      double precision drho_recy(maxSys)
       double precision matInteract(maxSys,maxSys)
+      double precision kappa1,kappa2
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
@@ -116,11 +119,6 @@ c     Init crystal orientation, slip system vectors
 c     Initialize the hsv list
       call umatCpHamaInitHsv(g0,r,s11,m11,numSys,nhsv,
      1      hsv,sig)
-
-            do l=1,numSys
-                  ! hsv(200+(l-1))=55 ! crss
-                  hsv(220+(l-1))=1.0e5 ! dislocation density
-            enddo
       else
 !============================================================
 ! Calculation begins: ncycle > 0
@@ -131,13 +129,7 @@ c     Obtain defromation gradient from hsv
       call getDispGradfromHsv(hsv,nhsv,f,f_n1)
 c     Obtain CRSS from hsv
       call umatCpHamaGetHsv(hsv,numSys,crss,r,s11,m11,
-     1       gamma_n1,gamma_slip)
-      
-      do l=1,numSys
-            ! crss(l)=hsv(200+(l-1))
-            rho(l)=hsv(220+(l-1))
-      enddo
-
+     1       gamma_n1,gamma_slip,rho)
 !============================================================
 ! Kinetic model
 !------------------------------------------------------------
@@ -154,17 +146,12 @@ c     Obtain CRSS from hsv
       tau_0=85.
       cst_p=0.7
       cst_q=1.1
-      cst_T=500.
+      cst_T=773.
       Delta_Gk0=3.6e-19
 
       call calSlipRateHeatAct(tau,crss,mval,dgamma_0,tau_0,
      1    Delta_Gk0,cst_p,cst_q,cst_T,dgamma_lim,numSys,
      2    dgamma)
-
-      ! do l=1,numSys
-      !       hsv(240+(l-1))=dgamma(l)
-      !       hsv(260+(l-1))=dgammaHeat(l)
-      ! enddo
 
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
@@ -195,49 +182,35 @@ c     Extract the euler angle from the tranformation matrix
 !============================================================
 ! Dislocation update and Hardening model
 !------------------------------------------------------------
-      ! bv=2.5e-7
-      yc=2.5e-6
+      yc=3.0e-4
       km=20.0
-
-      call calDslRateHama(yc,km,rho,typeCry,numSys,
-     1      dgamma,rho_r)
-      call updateDsl(rho_r,numSys,dt1,rho)
-
-      ! do l=1,numSys
-      !       hsv(200+(l-1))=rho(l)
-      !       hsv(220+(l-1))=rho_r(l)
-      ! enddo
-
-      ! call getDslInteractionMatrix(typeCry,numSys,matInteract)
-
-      ! if(ncycle.eq.5) then
-      !     print *, matInteract(1,1),matInteract(1,2),matInteract(1,3)
-      !     print *, matInteract(1,4),matInteract(1,5),matInteract(1,6)
-      !     print *, matInteract(1,7),matInteract(1,8),matInteract(1,9)
-      ! endif
       mu=sm/(2.0*(1.0+pr))
       alpha=1.0d0
+      kappa1=20.0d0
+      kappa2=10.0d0
+
+      call calDslRateHama(yc,km,rho,typeCry,numSys,
+     1      dgamma,drho)
+      call calDslRcvyRateKohenert(rho, cst_T, mu,
+     &     kappa1, kappa2, numSys, drho_recy)
+
+      ! do l=1,numSys
+      ! !     drho(l)=drho(l)-drho_recy(l)
+      !       hsv(200+(l-1))=drho(l)
+      !       hsv(220+(l-1))=drho_recy(l)
+      ! enddo
+      call updateDsl(drho,numSys,dt1,rho)
+
       call calCrssRateDslHama(rho,dgammaHeat,alpha,mu,km,yc,
      1         typeCry,numSys,dcrss)
-      
-      ! do l=1,numSys
-      !   crss(l)=crss(l)+dcrss(l)*dt1
-      ! enddo
       call updateCrss(dcrss,dt1,numSys,crss)
-
-      do l=1,numSys
-            ! hsv(200+(l-1))=crss(l)
-            hsv(220+(l-1))=rho(l)
-      enddo
-
-!       call updateCrssFcc(g0,gs,h0,hs,q,gamma_n1,dgamma,
-!      1           dt1,g_crss)
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv
 !------------------------------------------------------------
       call umatCpHamaUpdateHsv(numSys,sig_n1,f_n1,crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
-     2       hsv,sig,euler_n1)
+     2       rho,hsv,sig,euler_n1)
+
       endif
       endif
 !============================================================
@@ -279,169 +252,169 @@ c     cm(25 ~ 32) hardening
 
       subroutine umatCpHamaInitHsv(g0,r,s11,m11,numSys,nhsv,hsv,sig)
       implicit none
+      include '../udf/model/define_cp.inc'
       integer nhsv,numSys
       integer i,l,k
       double precision g0,hsv(nhsv),r(3,3),sig(6)
-      double precision s11(3,numSys),m11(3,numSys)
+      double precision s11(3,maxSys),m11(3,maxSys)
 
-      integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
-      integer OFF_GS, OFF_GN, OFF_EUL
+      integer OFF_F,OFF_CRSS,OFF_RHO,OFF_R
+      integer OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL
 
       call umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
-     1     OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
-c     Initialize the hsv list
-            do l=1,nhsv
-                  hsv(l)=0.
-            enddo
-c     Diagonal part of deformation gradient
-            hsv(OFF_F+0)=1.
-            hsv(OFF_F+4)=1.
-            hsv(OFF_F+8)=1.
+     1     OFF_RHO,OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+
+c     clear hsv
+      do l=1,nhsv
+            hsv(l)=0.d0
+      enddo
+
+c     deformation gradient
+      hsv(OFF_F+0)=1.d0
+      hsv(OFF_F+4)=1.d0
+      hsv(OFF_F+8)=1.d0
+
 c     CRSS
-            do l=1,numSys
-                  hsv(OFF_CRSS+(l-1))=g0
-            enddo
-c     Transformation matrix for orientation
-            hsv(OFF_R+0)=r(1,1)
-            hsv(OFF_R+1)=r(2,1)
-            hsv(OFF_R+2)=r(3,1)
-            hsv(OFF_R+3)=r(1,2)
-            hsv(OFF_R+4)=r(2,2)
-            hsv(OFF_R+5)=r(3,2)
-            hsv(OFF_R+6)=r(1,3)
-            hsv(OFF_R+7)=r(2,3)
-            hsv(OFF_R+8)=r(3,3)
-c     Slip system vectors
-            do l=1,numSys
-                  k=(l-1)*3
-                  hsv(OFF_S11 + k    ) = s11(1,l)
-                  hsv(OFF_S11 + k + 1) = s11(2,l)
-                  hsv(OFF_S11 + k + 2) = s11(3,l)
-                  hsv(OFF_M11 + k    ) = m11(1,l)
-                  hsv(OFF_M11 + k + 1) = m11(2,l)
-                  hsv(OFF_M11 + k + 2) = m11(3,l)
-            enddo
-c     Cauchy stress tensor
-            do i=1,6
-                  sig(i)=0.
-            enddo
-      end subroutine umatCpHamaInitHsv
+      do l=1,numSys
+            hsv(OFF_CRSS+(l-1)) = g0
+      enddo
+
+c     dislocation density rho
+      do l=1,numSys
+            hsv(OFF_RHO+(l-1)) = 1.0d5
+      enddo
+
+c     orientation matrix
+      hsv(OFF_R+0)=r(1,1)
+      hsv(OFF_R+1)=r(2,1)
+      hsv(OFF_R+2)=r(3,1)
+      hsv(OFF_R+3)=r(1,2)
+      hsv(OFF_R+4)=r(2,2)
+      hsv(OFF_R+5)=r(3,2)
+      hsv(OFF_R+6)=r(1,3)
+      hsv(OFF_R+7)=r(2,3)
+      hsv(OFF_R+8)=r(3,3)
+
+c     slip systems
+      do l=1,numSys
+            k=(l-1)*3
+            hsv(OFF_S11+k  ) = s11(1,l)
+            hsv(OFF_S11+k+1) = s11(2,l)
+            hsv(OFF_S11+k+2) = s11(3,l)
+            hsv(OFF_M11+k  ) = m11(1,l)
+            hsv(OFF_M11+k+1) = m11(2,l)
+            hsv(OFF_M11+k+2) = m11(3,l)
+      enddo
+
+      do i=1,6
+            sig(i)=0.d0
+      enddo
+      end subroutine
+
 
 C     Hsv List
       subroutine umatCpHamaGetHsv(hsv,numSys,g_crss,r,s11,m11,
-     1       gamma_n1,gamma_slip)
+     1       gamma_n1,gamma_slip,rho)
       implicit none
-      integer numSys
-      integer l,k
+      include '../udf/model/define_cp.inc'
+      integer numSys,l,k
       double precision hsv(*)
-      double precision g_crss(numSys),r(3,3)
-      double precision s11(3,numSys),m11(3,numSys)
-      double precision gamma_n1
-      double precision gamma_slip(numSys)
-      integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
-      integer OFF_GS, OFF_GN, OFF_EUL
-c     Compute offsets
+      double precision g_crss(maxSys),rho(maxSys)
+      double precision r(3,3)
+      double precision s11(3,maxSys),m11(3,maxSys)
+      double precision gamma_n1,gamma_slip(maxSys)
+
+      integer OFF_F,OFF_CRSS,OFF_RHO,OFF_R
+      integer OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL
+
       call umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
-     1     OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
-c     Obtain CRSS from hsv
+     1     OFF_RHO,OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+
+c     CRSS
       do l=1,numSys
-            g_crss(l)=hsv(OFF_CRSS + (l-1))
+            g_crss(l)=hsv(OFF_CRSS+(l-1))
+            rho(l)   =hsv(OFF_RHO +(l-1))
       enddo
-c     Obtain slip volume from hsv
-c     Obtain orientation info
-      r(1,1)=hsv(OFF_R + 0)
-      r(2,1)=hsv(OFF_R + 1)
-      r(3,1)=hsv(OFF_R + 2)
-      r(1,2)=hsv(OFF_R + 3)
-      r(2,2)=hsv(OFF_R + 4)
-      r(3,2)=hsv(OFF_R + 5)
-      r(1,3)=hsv(OFF_R + 6)
-      r(2,3)=hsv(OFF_R + 7)
-      r(3,3)=hsv(OFF_R + 8)
+
+c     orientation
+      r(1,1)=hsv(OFF_R+0)
+      r(2,1)=hsv(OFF_R+1)
+      r(3,1)=hsv(OFF_R+2)
+      r(1,2)=hsv(OFF_R+3)
+      r(2,2)=hsv(OFF_R+4)
+      r(3,2)=hsv(OFF_R+5)
+      r(1,3)=hsv(OFF_R+6)
+      r(2,3)=hsv(OFF_R+7)
+      r(3,3)=hsv(OFF_R+8)
+
       do l=1,numSys
             k=(l-1)*3
-            s11(1,l)=hsv(OFF_S11 + k    )
-            s11(2,l)=hsv(OFF_S11 + k + 1)
-            s11(3,l)=hsv(OFF_S11 + k + 2)
-            m11(1,l)=hsv(OFF_M11 + k    )
-            m11(2,l)=hsv(OFF_M11 + k + 1)
-            m11(3,l)=hsv(OFF_M11 + k + 2)
+            s11(1,l)=hsv(OFF_S11+k  )
+            s11(2,l)=hsv(OFF_S11+k+1)
+            s11(3,l)=hsv(OFF_S11+k+2)
+            m11(1,l)=hsv(OFF_M11+k  )
+            m11(2,l)=hsv(OFF_M11+k+1)
+            m11(3,l)=hsv(OFF_M11+k+2)
       enddo
-c     Obtain slip volume from hsv
+
       gamma_n1=hsv(OFF_GN)
       do l=1,numSys
-            gamma_slip(l)=hsv(OFF_GS + (l-1))
+            gamma_slip(l)=hsv(OFF_GS+(l-1))
       enddo
-      end subroutine umatCpHamaGetHsv
+      end subroutine
+
       
       subroutine umatCpHamaUpdateHsv(numSys,sig_n1,f_n1,g_crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
-     2       hsv,sig,euler_n1)
+     2       rho,hsv,sig,euler_n1)
       implicit none
-      integer l,k
-      integer numSys
-      double precision hsv(*)
+      integer l,k,numSys
+      include '../udf/model/define_cp.inc'
+      double precision hsv(*),rho(maxSys)
       double precision sig(6),sig_n1(6)
-      double precision f_n1(3,3),g_crss(numSys),r_n1(3,3)
-      double precision s11_n1(3,numSys),m11_n1(3,numSys)
-      double precision gamma_slip(numSys),gamma_n1
+      double precision f_n1(3,3),g_crss(maxSys),r_n1(3,3)
+      double precision s11_n1(3,maxSys),m11_n1(3,maxSys)
+      double precision gamma_slip(maxSys),gamma_n1
       double precision euler_n1(3)
-      integer OFF_F, OFF_CRSS, OFF_R, OFF_S11, OFF_M11
-      integer OFF_GS, OFF_GN, OFF_EUL
-c     Compute offsets
-      call umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
-     1     OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
-      sig(1)=sig_n1(1)
-      sig(2)=sig_n1(2)
-      sig(3)=sig_n1(3)
-      sig(4)=sig_n1(4)
-      sig(5)=sig_n1(5)
-      sig(6)=sig_n1(6)
-c    update f_n1 into hsv
-      hsv(OFF_F + 0)=f_n1(1,1)
-      hsv(OFF_F + 1)=f_n1(2,1)
-      hsv(OFF_F + 2)=f_n1(3,1)
-      hsv(OFF_F + 3)=f_n1(1,2)
-      hsv(OFF_F + 4)=f_n1(2,2)
-      hsv(OFF_F + 5)=f_n1(3,2)
-      hsv(OFF_F + 6)=f_n1(1,3)
-      hsv(OFF_F + 7)=f_n1(2,3)
-      hsv(OFF_F + 8)=f_n1(3,3)
 
-c    update CRSS
+      integer OFF_F,OFF_CRSS,OFF_RHO,OFF_R
+      integer OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL
+
+      call umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
+     1     OFF_RHO,OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
+
+      sig = sig_n1
+
+c     F
+      hsv(OFF_F:OFF_F+8) = reshape(f_n1,(/9/))
+
+c     CRSS + rho
       do l=1,numSys
-            hsv(OFF_CRSS + (l-1)) = g_crss(l)
+            hsv(OFF_CRSS+(l-1)) = g_crss(l)
+            hsv(OFF_RHO +(l-1)) = rho(l)
       enddo
 
-c    update orientation r_n1
-      hsv(OFF_R + 0)=r_n1(1,1)
-      hsv(OFF_R + 1)=r_n1(2,1)
-      hsv(OFF_R + 2)=r_n1(3,1)
-      hsv(OFF_R + 3)=r_n1(1,2)
-      hsv(OFF_R + 4)=r_n1(2,2)
-      hsv(OFF_R + 5)=r_n1(3,2)
-      hsv(OFF_R + 6)=r_n1(1,3)
-      hsv(OFF_R + 7)=r_n1(2,3)
-      hsv(OFF_R + 8)=r_n1(3,3)
+c     orientation
+      hsv(OFF_R:OFF_R+8) = reshape(r_n1,(/9/))
 
-c    update slip systems
+c     slip systems
       do l=1,numSys
             k=(l-1)*3
-            hsv(OFF_S11 + k    ) = s11_n1(1,l)
-            hsv(OFF_S11 + k + 1) = s11_n1(2,l)
-            hsv(OFF_S11 + k + 2) = s11_n1(3,l)
-            hsv(OFF_M11 + k    ) = m11_n1(1,l)
-            hsv(OFF_M11 + k + 1) = m11_n1(2,l)
-            hsv(OFF_M11 + k + 2) = m11_n1(3,l)
+            hsv(OFF_S11+k  ) = s11_n1(1,l)
+            hsv(OFF_S11+k+1) = s11_n1(2,l)
+            hsv(OFF_S11+k+2) = s11_n1(3,l)
+            hsv(OFF_M11+k  ) = m11_n1(1,l)
+            hsv(OFF_M11+k+1) = m11_n1(2,l)
+            hsv(OFF_M11+k+2) = m11_n1(3,l)
       enddo
 
-c    update gamma_slip and gamma_n1
       do l=1,numSys
-            hsv(OFF_GS + (l-1)) = gamma_slip(l)
+            hsv(OFF_GS+(l-1)) = gamma_slip(l)
       enddo
-      hsv(OFF_GN) = gamma_n1
+      hsv(OFF_GN)=gamma_n1
 
-      hsv(OFF_EUL + 0)=euler_n1(1)
-      hsv(OFF_EUL + 1)=euler_n1(2)
-      hsv(OFF_EUL + 2)=euler_n1(3)
-      end subroutine umatCpHamaUpdateHsv
+      hsv(OFF_EUL+0)=euler_n1(1)
+      hsv(OFF_EUL+1)=euler_n1(2)
+      hsv(OFF_EUL+2)=euler_n1(3)
+      end subroutine
+
