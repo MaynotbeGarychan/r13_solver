@@ -136,6 +136,10 @@ c     as plastic corrector
       call calStrainRateBySlip(dgamma,eschmid,numSys,Dp)
       call calSpinRateBySlip(dgamma,wschmid,numSys,Wp)
 
+      do l=1,numSys
+            hsv(200+l-1)=dgamma(l)
+      enddo
+
 !============================================================
 ! Update cauchy stress
 !------------------------------------------------------------

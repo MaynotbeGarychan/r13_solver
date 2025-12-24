@@ -147,7 +147,7 @@ c     Obtain CRSS from hsv
       cst_p=0.7
       cst_q=1.1
       cst_T=773.
-      Delta_Gk0=3.6e-19
+      Delta_Gk0=3.6e-17
 
       call calSlipRateHeatAct(tau,crss,mval,dgamma_0,tau_0,
      1    Delta_Gk0,cst_p,cst_q,cst_T,dgamma_lim,numSys,
@@ -193,7 +193,9 @@ c     Extract the euler angle from the tranformation matrix
      1      dgamma,drho)
       call calDslRcvyRateKohenert(rho, cst_T, mu,
      &     kappa1, kappa2, numSys, drho_recy)
-
+      ! do l=1,numSys
+      !       drho(l)=drho(l)-drho_recy(l)
+      ! enddo
       call updateDsl(drho,numSys,dt1,rho)
 
       call calCrssRateDslHama(rho,dgamma,alpha,mu,km,yc,
@@ -201,7 +203,8 @@ c     Extract the euler angle from the tranformation matrix
       call updateCrss(dcrss,dt1,numSys,crss)
 
       do l=1,numSys
-            hsv(200+ l -1)=dgamma(l)
+            hsv(200+ l -1)=drho(l)
+            ! hsv(220+ l -1)=drho_recy(l)
       enddo
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv
