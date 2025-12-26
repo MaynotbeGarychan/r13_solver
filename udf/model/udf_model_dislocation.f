@@ -20,6 +20,9 @@
       do l=1,numSys
           val= rho_r(l)*dt1
           rho(l)=rho(l)+val
+          if (rho(l) .lt. 0.d0) then
+              rho(l)=0.d0 ! safeguard
+          endif
       enddo
       end subroutine updateDsl
       

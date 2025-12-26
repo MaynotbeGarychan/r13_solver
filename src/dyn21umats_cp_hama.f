@@ -93,7 +93,7 @@ c     Variables for thermal activation slip rate
       double precision Delta_Gk0,cst_p,cst_q,cst_T,k_B
 
 c     Variables for dislocation evolution
-      double precision bv,km,yc,alpha,mu
+      double precision bv,km,yc,alpha,mu,rho0
       double precision dcrss(maxSys),crss(maxSys)
       double precision rho(maxSys),drho(maxSys)
       double precision drho_recy(maxSys)
@@ -105,7 +105,7 @@ c     Variables for dislocation evolution
       call  umatCpHamaGetMc(cm,ym,pr,bk,sm,
      1       typeUmat,dgamma_0,mval,dgamma_lim,
      2       typeOri,euler,
-     3       hardType,g0,gs,h0,hs,q)
+     3       hardType,g0,gs,h0,hs,q,rho0)
 
       if (.not.failel) then
 !============================================================
@@ -117,7 +117,7 @@ c     Init crystal orientation, slip system vectors
         call initCrystal(typeOri,typeCry,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
-      call umatCpHamaInitHsv(g0,r,s11,m11,numSys,nhsv,
+      call umatCpHamaInitHsv(g0,rho0,r,s11,m11,numSys,nhsv,
      1      hsv,sig)
       else
 !============================================================
@@ -193,9 +193,9 @@ c     Extract the euler angle from the tranformation matrix
      1      dgamma,drho)
       call calDslRcvyRateKohenert(rho, cst_T, mu,
      &     kappa1, kappa2, numSys, drho_recy)
-      ! do l=1,numSys
-      !       drho(l)=drho(l)-drho_recy(l)
-      ! enddo
+      do l=1,numSys
+            drho(l)=drho(l)-drho_recy(l)
+      enddo
       call updateDsl(drho,numSys,dt1,rho)
 
       call calCrssRateDslHama(rho,dgamma,alpha,mu,km,yc,
@@ -204,8 +204,11 @@ c     Extract the euler angle from the tranformation matrix
 
       do l=1,numSys
             hsv(200+ l -1)=drho(l)
-            ! hsv(220+ l -1)=drho_recy(l)
+            hsv(220+ l -1)=drho_recy(l)
+            hsv(240+ l -1)=dgamma(l)
       enddo
+      hsv(260)=dt1
+      hsv(261)=ncycle
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv
 !------------------------------------------------------------
@@ -223,13 +226,14 @@ c     Extract the euler angle from the tranformation matrix
       subroutine umatCpHamaGetMc(cm,ym,pr,bk,sm,
      1       typeUmat,dgamma_0,mval,dgamma_lim,
      2       typeOri,euler,
-     3       hardType,g0,gs,h0,hs,q)
+     3       hardType,g0,gs,h0,hs,q,rho0)
       implicit none
       double precision cm(*)
       double precision ym,pr,bk,sm
       double precision typeUmat,dgamma_0,mval,dgamma_lim
       double precision typeOri,euler(3)
       double precision hardType,g0,gs,h0,hs,q
+      double precision rho0
 c     cm(1 ~ 8)   Constitutive parameters
       ym=cm(1)
       pr=cm(2)
@@ -250,14 +254,16 @@ c     cm(25 ~ 32) hardening
       h0=cm(28)
       hs=cm(29)
       q=cm(30)
+      rho0=cm(31)
       end subroutine umatCpHamaGetMc
 
-      subroutine umatCpHamaInitHsv(g0,r,s11,m11,numSys,nhsv,hsv,sig)
+      subroutine umatCpHamaInitHsv(g0,rho0,r,s11,m11,numSys,nhsv,
+     &      hsv,sig)
       implicit none
       include '../udf/model/define_cp.inc'
       integer nhsv,numSys
       integer i,l,k
-      double precision g0,hsv(nhsv),r(3,3),sig(6)
+      double precision g0,rho0,hsv(nhsv),r(3,3),sig(6)
       double precision s11(3,maxSys),m11(3,maxSys)
 
       integer OFF_F,OFF_CRSS,OFF_RHO,OFF_R
@@ -283,7 +289,7 @@ c     CRSS
 
 c     dislocation density rho
       do l=1,numSys
-            hsv(OFF_RHO+(l-1)) = 1.0d5
+            hsv(OFF_RHO+(l-1)) = rho0
       enddo
 
 c     orientation matrix
