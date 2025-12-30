@@ -26,8 +26,8 @@
       enddo
 
       do l=1,numSys
-        call vector_normalize(s11e(:,l),3,s11e(:,l))
-        call vector_normalize(m11e(:,l),3,m11e(:,l))
+        call vecNormalize(s11e(:,l),3,s11e(:,l))
+        call vecNormalize(m11e(:,l),3,m11e(:,l))
       enddo
       
       end subroutine ss_vec_to_configuration

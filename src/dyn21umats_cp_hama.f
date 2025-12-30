@@ -45,7 +45,7 @@ c
 c     IO
       integer typeOri
 c     Define the crystal
-      integer,parameter:: typeCry=0
+      integer,parameter:: typeCry=2
       integer numSys
     !   integer,parameter:: numSys=12
 c     Intermedia variables
@@ -105,7 +105,7 @@ c     Variables for dislocation evolution
       call  umatCpHamaGetMc(cm,ym,pr,bk,sm,
      1       typeUmat,dgamma_0,mval,dgamma_lim,
      2       typeOri,euler,
-     3       hardType,g0,gs,h0,hs,q,rho0)
+     3       hardType,g0,gs,h0,hs,q,rho0,yc)
 
       if (.not.failel) then
 !============================================================
@@ -182,7 +182,7 @@ c     Extract the euler angle from the tranformation matrix
 !============================================================
 ! Dislocation update and Hardening model
 !------------------------------------------------------------
-      yc=3.0e-4
+      ! yc=3.0e-4
       km=20.0
       mu=sm/(2.0*(1.0+pr))
       alpha=1.0d0
@@ -205,10 +205,11 @@ c     Extract the euler angle from the tranformation matrix
       do l=1,numSys
             hsv(200+ l -1)=drho(l)
             hsv(220+ l -1)=drho_recy(l)
-            hsv(240+ l -1)=dgamma(l)
+            hsv(240+ l -1)=dcrss(l)
+            hsv(260+ l -1)=dgamma(l)
       enddo
-      hsv(260)=dt1
-      hsv(261)=ncycle
+      ! hsv(260)=dt1
+      ! hsv(261)=ncycle
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv
 !------------------------------------------------------------
@@ -226,14 +227,15 @@ c     Extract the euler angle from the tranformation matrix
       subroutine umatCpHamaGetMc(cm,ym,pr,bk,sm,
      1       typeUmat,dgamma_0,mval,dgamma_lim,
      2       typeOri,euler,
-     3       hardType,g0,gs,h0,hs,q,rho0)
+     3       hardType,g0,gs,h0,hs,q,
+     4       rho0,yc)
       implicit none
       double precision cm(*)
       double precision ym,pr,bk,sm
       double precision typeUmat,dgamma_0,mval,dgamma_lim
       double precision typeOri,euler(3)
       double precision hardType,g0,gs,h0,hs,q
-      double precision rho0
+      double precision rho0,yc
 c     cm(1 ~ 8)   Constitutive parameters
       ym=cm(1)
       pr=cm(2)
@@ -255,6 +257,7 @@ c     cm(25 ~ 32) hardening
       hs=cm(29)
       q=cm(30)
       rho0=cm(31)
+      yc=cm(32)
       end subroutine umatCpHamaGetMc
 
       subroutine umatCpHamaInitHsv(g0,rho0,r,s11,m11,numSys,nhsv,

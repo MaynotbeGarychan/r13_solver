@@ -103,14 +103,40 @@
      1            -1.00,1.00,-1.00, -1.00,1.00,-1.00/
       
       do l=1,48
-            call vector_normalize(m(:,l),3,m1(:,l))
-            call vector_normalize(s(:,l),3,s1(:,l))
+            call vecNormalize(m(:,l),3,m1(:,l))
+            call vecNormalize(s(:,l),3,s1(:,l))
       enddo
             
       end subroutine
 
+      subroutine getSlipSysVecBcc12(m1,s1)
+            implicit none
+            integer l
+            double precision m(3,12),s(3,12)
+            double precision m1(3,12),s1(3,12)
 
-      subroutine getSlipSysVecBcc_24(m1,s1)
+            data m/1.00,1.00,0.00, 1.00,1.00,0.00,
+     &        -1.00,1.00,0.00, -1.00,1.00,0.00,
+     &        1.00,0.00,1.00, 1.00,0.00,1.00,
+     &        -1.00,0.00,1.00, -1.00,0.00,1.00,
+     &        0.00,1.00,1.00, 0.00,1.00,1.00,
+     &        0.00,-1.00,1.00, 0.00,-1.00,1.00/
+
+            data s/-1.00,1.00,1.00, 1.00,-1.00,1.00,
+     &        1.00,1.00,-1.00, 1.00,1.00,1.00,
+     &        1.00,1.00,-1.00, -1.00,1.00,1.00,
+     &        1.00,-1.00,1.00, 1.00,1.00,1.00,
+     &        1.00,1.00,-1.00, 1.00,-1.00,1.00,
+     &        1.00,1.00,1.00, -1.00,1.00,1.00/
+      
+      do l=1,12
+            call vecNormalize(m(:,l),3,m1(:,l))
+            call vecNormalize(s(:,l),3,s1(:,l))
+      enddo
+            
+      end subroutine
+
+      subroutine getSlipSysVecBcc24(m1,s1)
             implicit none
             integer l
             double precision m(3,24),s(3,24)
@@ -144,8 +170,8 @@
      1            -1.00,-1.00,-1.00, -1.00,1.00,-1.00/
       
       do l=1,24
-            call vector_normalize(m(:,l),3,m1(:,l))
-            call vector_normalize(s(:,l),3,s1(:,l))
+            call vecNormalize(m(:,l),3,m1(:,l))
+            call vecNormalize(s(:,l),3,s1(:,l))
       enddo
             
       end subroutine

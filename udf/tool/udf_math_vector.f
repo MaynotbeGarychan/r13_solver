@@ -42,7 +42,7 @@
 
         end function vector_norm
 
-        subroutine vector_normalize(v,n,v11)
+        subroutine vecNormalize(v,n,v11)
         !============================================================
         ! calculate the normalized vector
         !------------------------------------------------------------
@@ -64,7 +64,7 @@
             v11(i)=v(i)/val
         enddo
 
-        end subroutine vector_normalize
+        end subroutine vecNormalize
 
         subroutine vector_dyadic_product(a,b,n,mat)
         !============================================================

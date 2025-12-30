@@ -176,7 +176,7 @@
          double precision c,s
          double precision ux,uy,uz
 
-         call vector_normalize(axis,3,axis)
+         call vecNormalize(axis,3,axis)
          ux = axis(1)
          uy = axis(2)
          uz = axis(3)

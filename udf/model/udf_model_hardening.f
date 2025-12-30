@@ -254,7 +254,6 @@ c          numerical safeguard
      &               * sumAll**(-0.5d0)
      &               * ( (1.0d0/cst_k)*(sumExcel**0.5d0)
      &               - 2.0d0*yc*rho(k) )
-                ! print *, "h(",l,",",k,")=",h(l,k)
            enddo
         enddo
 
