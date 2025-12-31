@@ -46,7 +46,7 @@
         double precision m11(3,maxSys),s11(3,maxSys)
         double precision l11(3,maxSys)
         do l=1,numSys
-            call vector_cross_product(m11(:,l),
+            call vecCrossProd(m11(:,l),
      1   s11(:,l),l11(:,l))
         enddo
       end subroutine calDslLineVec
@@ -135,82 +135,58 @@
 
       end subroutine calDslRateHama
 
-      subroutine getDslInteractionMatrix(typeCry,numSys,matInteract)
-      !============================================================
-      ! Get dislocation (latent) hardening interaction matrix
-      ! For BCC {110}<111> slip systems (12 systems)
-      !
-      ! matInteract(i,j) = h( ih(i,j) )
-      !
-      !============================================================
+      subroutine getDslInteractionMatrix(typeCry, numSys, matInteract)
       implicit none
       include 'define_cp.inc'
-      integer typeCry
-      integer numSys
-      double precision matInteract(maxSys,maxSys)
+
+      integer typeCry, numSys
       integer i, j
+      double precision matInteract(maxSys,maxSys)
       double precision h(17)
-      integer ih(12,12)
-!============================================================
-! 1. Latent hardening parameters h(k)
-!    (from the table you provided)
-!============================================================
-      data h / 
-     & 0.1d0,    ! h(1)
-     & 0.1d0,    ! h(2)
-     & 0.45d0,   ! h(3)
-     & 5.5d0,    ! h(4)
-     & 0.4d0,    ! h(5)
-     & 0.6d0,    ! h(6)
-     & 1.5d0,    ! h(7)
-     & 0.1d0,    ! h(8)
-     & 0.01d0,   ! h(9)
-     & 3.5d0,    ! h(10)
-     & 1.0d0,    ! h(11)
-     & 1.0d0,    ! h(12)
-     & 0.1d0,    ! h(13)
-     & 0.08d0,   ! h(14)
-     & 0.05d0,   ! h(15)
-     & 0.1d0,    ! h(16)
-     & 1.0d0     ! h(17)
-     & /
+      integer ih(maxSys,maxSys)
 
-!============================================================
-! 2. Interaction index matrix ih(i,j)
-!    Corresponds exactly to the {110}<111> table
-!============================================================
-            data ih /
-!        1  2  3  4  5  6  7  8  9 10 11 12
-     &  1, 2, 3, 3, 5, 4, 5, 6, 6, 5, 5, 4,   ! 1
-     &  2, 1, 3, 3, 6, 5, 4, 5, 5, 4, 6, 5,   ! 2
-     &  3, 3, 1, 2, 4, 5, 6, 5, 4, 5, 5, 6,   ! 3
-     &  3, 3, 2, 1, 5, 6, 5, 4, 5, 6, 4, 5,   ! 4
-     &  5, 6, 4, 5, 1, 2, 3, 3, 4, 5, 6, 5,   ! 5
-     &  4, 5, 5, 6, 2, 1, 3, 3, 5, 6, 5, 4,   ! 6
-     &  5, 4, 6, 5, 3, 3, 1, 2, 5, 4, 5, 6,   ! 7
-     &  6, 5, 5, 4, 3, 3, 2, 1, 6, 5, 4, 5,   ! 8
-     &  6, 5, 4, 5, 4, 5, 5, 6, 1, 2, 3, 3,   ! 9
-     &  5, 4, 5, 6, 5, 6, 4, 5, 2, 1, 3, 3,   ! 10
-     &  5, 6, 5, 4, 6, 5, 5, 4, 3, 3, 1, 2,   ! 11
-     &  4, 5, 6, 5, 5, 4, 6, 5, 3, 3, 2, 1    ! 12
-     & /
+!==================== 1. latent hardening parameters ====================
+      data h /
+     & 0.1d0, 0.1d0, 0.45d0, 5.5d0, 0.4d0, 0.6d0, 1.5d0, 0.1d0, 0.01d0,
+     & 3.5d0, 1.0d0, 1.0d0, 0.1d0, 0.08d0, 0.05d0, 0.1d0, 1.0d0 /
 
-!============================================================
-! 3. Build interaction matrix
-!============================================================
-      if (numSys .ne. 12) then
-          print *, 'Error: BCC {110}<111> requires numSys = 12'
-          stop
+!==================== 2. initialize ====================
+      ih(:,:) = 0
+      matInteract(:,:) = 0.d0
+
+!==================== 3. BCC {110}<111> ====================
+      if (typeCry .eq. 2 .and. numSys .eq. 12) then
+
+         ih(1:12,1:12) = reshape( (/ 
+     &  1,2,3,3,5,4,5,6,6,5,5,4, 
+     &  2,1,3,3,6,5,4,5,5,4,6,5, 
+     &  3,3,1,2,4,5,6,5,4,5,5,6, 
+     &  3,3,2,1,5,6,5,4,5,6,4,5, 
+     &  5,6,4,5,1,2,3,3,4,5,6,5, 
+     &  4,5,5,6,2,1,3,3,5,6,5,4, 
+     &  5,4,6,5,3,3,1,2,5,4,5,6, 
+     &  6,5,5,4,3,3,2,1,6,5,4,5, 
+     &  6,5,4,5,4,5,5,6,1,2,3,3, 
+     &  5,4,5,6,5,6,4,5,2,1,3,3, 
+     &  5,6,5,4,6,5,5,4,3,3,1,2, 
+     &  4,5,6,5,5,4,6,5,3,3,2,1  
+     & /), (/12,12/) )
+
+      else
+         print *, 'ERROR: Unsupported slip system configuration'
+         print *, 'typeCry=', typeCry, ' numSys=', numSys
+         stop
       endif
 
+!==================== 4. build interaction matrix ====================
       do i = 1, numSys
-          do j = 1, numSys
-              matInteract(i,j) = h( ih(i,j) )
-          end do
+         do j = 1, numSys
+            matInteract(i,j) = h( ih(i,j) )
+         end do
       end do
 
-      return
       end subroutine getDslInteractionMatrix
+
 
       subroutine calDslRcvyRateKohenert(rho, temp, mu,
      &     kappa1, kappa2, numSys, drho)

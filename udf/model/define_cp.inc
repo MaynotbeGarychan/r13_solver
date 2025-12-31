@@ -4,3 +4,8 @@
       double precision,parameter:: CST_DIFF0=134.0d0
       double precision,parameter:: CST_RGAS=8.314d0
       double precision,parameter:: CST_QFeCr=233.0d3
+      double precision,parameter:: CST_NSFSS=0.0544
+      double precision,parameter:: CST_NSFMM=-0.0293
+      double precision,parameter:: CST_NSFZZ=-0.0267
+      double precision,parameter:: CST_NSFSZ=0.0d0
+      double precision,parameter:: CST_NSFMZ=0.0d0

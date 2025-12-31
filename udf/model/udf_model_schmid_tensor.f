@@ -40,6 +40,56 @@
 
       end subroutine calSchmidTensor
 
+      subroutine calNonSchmidTensor(s11e, m11e, numSys, nsfve)
+      !============================================================
+      ! Calculate Non-Schmid tensor η for each slip system
+      ! based on slip systems vectors in reference scheme
+      !------------------------------------------------------------
+      ! input:
+      ! m11e(3,numSys),s11e(3,numSys) - local slip system vectors
+      ! numSys        - num of slip systems
+      ! output:
+      ! nschmid(3,3,numSys) - Non-Schmid tensor for each slip sys
+      !============================================================
+      implicit none
+      include 'define_cp.inc'
+      integer numSys
+      integer i, j, l
+      double precision s11e(3,maxSys), m11e(3,maxSys)
+      double precision nsfmate(3,3,maxSys) 
+      double precision nsfve(6,maxSys)
+      double precision z(3)
+! =================== build tensor for each slip system ===================
+      do l = 1, numSys
+
+! ---- compute z = s x m
+         z(1) = s11e(2,l)*m11e(3,l) - s11e(3,l)*m11e(2,l)
+         z(2) = s11e(3,l)*m11e(1,l) - s11e(1,l)*m11e(3,l)
+         z(3) = s11e(1,l)*m11e(2,l) - s11e(2,l)*m11e(1,l)
+
+! ---- assemble η tensor
+         do i = 1, 3
+            do j = 1, 3
+               nsfmate(i,j,l) =
+     &           CST_NSFSS * s11e(i,l)*s11e(j,l)
+     &         + CST_NSFMM * m11e(i,l)*m11e(j,l)
+     &         + CST_NSFZZ * z(i)*z(j)
+     &         + CST_NSFSZ * ( s11e(i,l)*z(j) + z(i)*s11e(j,l) )
+     &         + CST_NSFMZ * ( m11e(i,l)*z(j) + z(i)*m11e(j,l) )
+            end do
+         end do
+! ---- convert to Vogit notation
+         nsfve(1,l) = nsfmate(1,1,l)
+         nsfve(2,l) = nsfmate(2,2,l)
+         nsfve(3,l) = nsfmate(3,3,l)
+         nsfve(4,l) = nsfmate(1,2,l)*2.0d0
+         nsfve(5,l) = nsfmate(2,3,l)*2.0d0
+         nsfve(6,l) = nsfmate(3,1,l)*2.0d0
+      end do
+
+      end subroutine calNonSchmidTensor
+
+
       SUBROUTINE CALSF(SLPDIR,SLPNOR,NUMSS,SLPDEF)
       !============================================================
       ! Calculate Schmid factor (Vogit)

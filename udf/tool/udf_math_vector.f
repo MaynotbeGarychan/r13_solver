@@ -1,4 +1,4 @@
-        subroutine vector_cross_product(a,b,n)
+        subroutine vecCrossProd(a,b,n)
         !============================================================
         ! calculate the cross product of two vectors
         !------------------------------------------------------------
@@ -16,9 +16,9 @@
         n(2)=a(3)*b(1)-a(1)*b(3)
         n(3)=a(1)*b(2)-a(2)*b(1)
 
-        end subroutine vector_cross_product
+        end subroutine vecCrossProd
 
-        function vector_norm(v,n) result(val)
+        function vecNorm(v,n) result(val)
         !============================================================
         ! calculate the norm of the vectors
         !------------------------------------------------------------
@@ -40,7 +40,7 @@
         enddo
         val=sqrt(tol)
 
-        end function vector_norm
+        end function vecNorm
 
         subroutine vecNormalize(v,n,v11)
         !============================================================
@@ -57,16 +57,16 @@
         integer n
         double precision v(n),v11(n)
         double precision val
-        double precision vector_norm
+        double precision vecNorm
 
-        val=vector_norm(v,n)
+        val=vecNorm(v,n)
         do i=1,n
             v11(i)=v(i)/val
         enddo
 
         end subroutine vecNormalize
 
-        subroutine vector_dyadic_product(a,b,n,mat)
+        subroutine vecDyadicProd(a,b,n,mat)
         !============================================================
         ! calculate the dyadic product of vector
         !------------------------------------------------------------
@@ -88,4 +88,26 @@
             enddo
         enddo
 
-        end subroutine vector_dyadic_product
+        end subroutine vecDyadicProd
+
+        subroutine vecAdd(a,b,n,c)
+        !============================================================  
+        ! calculate the addition of two vectors
+        !------------------------------------------------------------
+        ! input:
+        ! a(n),b(n)      - input vectors
+        ! n              - dim of the vector
+        ! output:
+        ! c(n)           - sum of the two vectors
+        !------------------------------------------------------------
+        implicit none
+        integer n
+        double precision a(n),b(n)
+        double precision c(n)
+        integer i
+
+        do i=1,n
+            c(i)=a(i)+b(i)
+        enddo
+
+        end subroutine vecAdd

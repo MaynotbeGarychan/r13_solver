@@ -39,7 +39,7 @@
 
       end subroutine calSlipRateVp
 
-      subroutine calSlipRateHeatAct(tau,g_crss,mval,dgamma_0,tau_0,
+      subroutine calSlipRateHeatAct(tau,g_crss,dgamma_0,tau_0,
      1    Delta_Gk0,p,q,T,dgamma_lim,numSys,dgamma)
     !============================================================
     ! A visco-plasticity slip model based on the provided formula
@@ -47,7 +47,6 @@
     ! input:
     ! tau(numSys)     - Stress at each slip system
     ! g_crss(numSys)  - Critical resolved shear stress at each slip system
-    ! mval            - Sensitivity of slip rate
     ! dgamma_0         - Reference slip rate
     ! tau_0           - Reference stress
     ! Delta_Gk0       - Reference change in Gibbs free energy
@@ -63,7 +62,7 @@
         integer numSys
         double precision tau(maxSys)
         double precision g_crss(maxSys)
-        double precision mval,dgamma_0,tau_0,Delta_Gk0,p,q,T,k_B
+        double precision dgamma_0,tau_0,Delta_Gk0,p,q,T
         double precision dgamma_lim
         double precision dgamma(maxSys)
         double precision tau_eff, delta_Gk

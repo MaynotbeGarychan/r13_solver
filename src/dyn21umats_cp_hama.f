@@ -65,10 +65,12 @@ c     Kinematic variables
       double precision r(3,3),RL(6,6),r_n1(3,3)
       double precision Pa(3,3,maxSys),eschmid(6,maxSys)
       double precision Wa(3,3,maxSys),wschmid(3,maxSys)
+      double precision nschmid(6,maxSys)
       double precision euler(3),euler_n1(3)
       double precision Dp(6),Wp(3)
 c     Slip system constitutive model variables
-      double precision tau(maxSys),dgamma(maxSys)
+      double precision tau(maxSys),tauNsf(maxSys)
+      double precision dgamma(maxSys)
       double precision gamma_slip(maxSys)
       double precision dgamma_tol,gamma_n1
       double precision g_crss(maxSys)
@@ -97,7 +99,6 @@ c     Variables for dislocation evolution
       double precision dcrss(maxSys),crss(maxSys)
       double precision rho(maxSys),drho(maxSys)
       double precision drho_recy(maxSys)
-      double precision matInteract(maxSys,maxSys)
       double precision kappa1,kappa2
 !============================================================
 ! Obtain variables from materials constants
@@ -140,6 +141,9 @@ c     Obtain CRSS from hsv
       call calSchmidTensor(s11,m11,numSys,
      1     Pa,Wa,eschmid,wschmid)
       call calSigRss(sig(1:6),eschmid,numSys,tau)
+      call calNonSchmidTensor(s11,m11,numSys,nschmid)
+      call calSigRss(sig(1:6),nschmid,numSys,tauNsf)
+      call vecAdd(tau,tauNsf,numSys,tau)
 !       call calSlipRateVp(tau,g_crss,mval,dgamma_0,
 !      1   dgamma_lim,numSys,dgamma)
       
@@ -149,7 +153,7 @@ c     Obtain CRSS from hsv
       cst_T=773.
       Delta_Gk0=3.6e-17
 
-      call calSlipRateHeatAct(tau,crss,mval,dgamma_0,tau_0,
+      call calSlipRateHeatAct(tau,crss,dgamma_0,tau_0,
      1    Delta_Gk0,cst_p,cst_q,cst_T,dgamma_lim,numSys,
      2    dgamma)
 
@@ -244,6 +248,7 @@ c     cm(1 ~ 8)   Constitutive parameters
 c     cm(9 ~ 16) basic crystal plasticity model
       typeUmat=cm(9)
       dgamma_0=cm(10)
+
       mval=cm(11)
       dgamma_lim=cm(12)
 c     cm(17 ~ 24) orientation information
