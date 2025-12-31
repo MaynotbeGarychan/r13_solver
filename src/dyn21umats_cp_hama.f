@@ -111,8 +111,7 @@ c     Variables for dislocation evolution
      &       typeUmat,dgamma0,tau0,thmSlpCstP,
      &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
      &       typeOri,euler,
-     &       hardType,g0,gs,h0,hs,q,
-     &       rho0,yc)
+     &       hardType,rho0,g0,yc,km,alpha,kappa1,kappa2)
 
       if (.not.failel) then
 !============================================================
@@ -150,19 +149,10 @@ c     Obtain CRSS from hsv
       call calNonSchmidTensor(s11,m11,numSys,nschmid)
       call calSigRss(sig(1:6),nschmid,numSys,tauNsf)
       call vecAdd(tau,tauNsf,numSys,tau)
-!       call calSlipRateVp(tau,g_crss,mval,dgamma0,
-!      1   dgamma_lim,numSys,dgamma)
-      
-      ! tau0=85.
-      ! thmSlpCstP=0.7
-      ! thmSlpCstQ=1.1
-      ! thmSlpCstT=773.
-      ! DeltaGk0=3.6e-17
 
       call calSlipRateHeatAct(tau,crss,dgamma0,tau0,
      &    DeltaGk0,thmSlpCstP,thmSlpCstQ,thmSlpCstT,
      &    numSys,dgamma)
-
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
 c     Project the slip deformation into macro deformation and spin
@@ -192,20 +182,12 @@ c     Extract the euler angle from the tranformation matrix
 !============================================================
 ! Dislocation update and Hardening model
 !------------------------------------------------------------
-      ! yc=3.0e-4
-      km=20.0
       mu=sm/(2.0*(1.0+pr))
-      alpha=1.0d0
-      kappa1=20.0d0
-      kappa2=10.0d0
-
       call calDslRateHama(yc,km,rho,typeCry,numSys,
      1      dgamma,drho)
       call calDslRcvyRateKohenert(rho, thmSlpCstT, mu,
      &     kappa1, kappa2, numSys, drho_recy)
-      do l=1,numSys
-            drho(l)=drho(l)-drho_recy(l)
-      enddo
+      call vecMinus(drho,drho_recy,numSys,drho)
       call updateDsl(drho,numSys,dt1,rho)
 
       call calCrssRateDslHama(rho,dgamma,alpha,mu,km,yc,
@@ -218,8 +200,7 @@ c     Extract the euler angle from the tranformation matrix
             hsv(240+ l -1)=dcrss(l)
             hsv(260+ l -1)=dgamma(l)
       enddo
-      ! hsv(260)=dt1
-      ! hsv(261)=ncycle
+
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv
 !------------------------------------------------------------
@@ -238,8 +219,7 @@ c     Extract the euler angle from the tranformation matrix
      &       typeUmat,dgamma0,tau0,thmSlpCstP,
      &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
      &       typeOri,euler,
-     &       hardType,g0,gs,h0,hs,q,
-     &       rho0,yc)
+     &       hardType,rho0,g0,yc,km,alpha,kappa1,kappa2)
       implicit none
       double precision cm(*)
       double precision ym,pr,bk,sm
@@ -247,8 +227,8 @@ c     Extract the euler angle from the tranformation matrix
       double precision tau0,thmSlpCstP,thmSlpCstQ
       double precision thmSlpCstT,DeltaGk0
       double precision typeOri,euler(3)
-      double precision hardType,g0,gs,h0,hs,q
-      double precision rho0,yc
+      double precision hardType,g0,rho0,yc,km,alpha
+      double precision kappa1,kappa2
 c     cm(1 ~ 8)   Constitutive parameters
       ym=cm(1)
       pr=cm(2)
@@ -262,24 +242,18 @@ c     cm(9 ~ 16) basic crystal plasticity model
       thmSlpCstQ=cm(13)
       thmSlpCstT=cm(14)
       DeltaGk0=cm(15)
-      ! tau0=85.
-      ! thmSlpCstP=0.7
-      ! thmSlpCstQ=1.1
-      ! thmSlpCstT=773.
-      ! DeltaGk0=3.6e-17
-
 c     cm(17 ~ 24) orientation information
       typeOri=cm(17)
       euler=cm(18:20)
 c     cm(25 ~ 32) hardening 
       hardType=cm(25)
-      g0=cm(26)
-      gs=cm(27)
-      h0=cm(28)
-      hs=cm(29)
-      q=cm(30)
-      rho0=cm(31)
-      yc=cm(32)
+      rho0=cm(26)
+      g0=cm(27)
+      yc=cm(28)
+      km=cm(29)
+      alpha=cm(30)
+      kappa1=cm(31)
+      kappa2=cm(32)
       end subroutine umatCpHamaGetMc
 
       subroutine umatCpHamaInitHsv(g0,rho0,r,s11,m11,numSys,nhsv,

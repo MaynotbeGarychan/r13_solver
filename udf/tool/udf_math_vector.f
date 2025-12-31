@@ -105,9 +105,27 @@
         double precision a(n),b(n)
         double precision c(n)
         integer i
-
         do i=1,n
             c(i)=a(i)+b(i)
         enddo
-
         end subroutine vecAdd
+
+        subroutine vecMinus(a,b,n,c)
+        !============================================================  
+        ! calculate the subtraction of two vectors
+        !------------------------------------------------------------
+        ! input:
+        ! a(n),b(n)      - input vectors
+        ! n              - dim of the vector
+        ! output:
+        ! c(n)           - difference of the two vectors
+        !------------------------------------------------------------
+        implicit none
+        integer n
+        double precision a(n),b(n)
+        double precision c(n)
+        integer i
+        do i=1,n
+            c(i)=a(i)-b(i)
+        enddo
+        end subroutine vecMinus
