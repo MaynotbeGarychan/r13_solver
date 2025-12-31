@@ -70,7 +70,7 @@ c     Slip system constitutive model variables
       double precision gamma_slip(maxSys)
       double precision dgamma_tol,gamma_n1
       double precision g_crss(maxSys)
-      double precision dgamma_0,mval,dgamma_lim
+      double precision dgamma0,mval,dgamma_lim
 c     Stress Update model variables
       double precision ym,pr,bk,sm
       double precision L_ela(6,6),L_ela_cry(6,6)
@@ -89,7 +89,7 @@ c Declaration of offset hsv indices
 ! Obtain variables from materials constants
 !------------------------------------------------------------
       call  umatCpPhGetMc(cm,ym,pr,bk,sm,
-     1       typeUmat,dgamma_0,mval,dgamma_lim,
+     1       typeUmat,dgamma0,mval,dgamma_lim,
      2       typeOri,euler,
      3       hardType,g0,gs,h0,hs,q)
 
@@ -127,7 +127,7 @@ c     Obtain CRSS from hsv
       call calSchmidTensor(s11,m11,numSys,
      1     Pa,Wa,eschmid,wschmid)
       call calSigRss(sig(1:6),eschmid,numSys,tau)
-      call calSlipRateVp(tau,g_crss,mval,dgamma_0,
+      call calSlipRateVp(tau,g_crss,mval,dgamma0,
      1   dgamma_lim,numSys,dgamma)
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
@@ -177,13 +177,13 @@ c     Extract the euler angle from the tranformation matrix
       end subroutine umatCpPh
 
       subroutine umatCpPhGetMc(cm,ym,pr,bk,sm,
-     1       typeUmat,dgamma_0,mval,dgamma_lim,
+     1       typeUmat,dgamma0,mval,dgamma_lim,
      2       typeOri,euler,
      3       hardType,g0,gs,h0,hs,q)
       implicit none
       double precision cm(*)
       double precision ym,pr,bk,sm
-      double precision typeUmat,dgamma_0,mval,dgamma_lim
+      double precision typeUmat,dgamma0,mval,dgamma_lim
       double precision typeOri,euler(3)
       double precision hardType,g0,gs,h0,hs,q
 c     cm(1 ~ 8)   Constitutive parameters
@@ -193,7 +193,7 @@ c     cm(1 ~ 8)   Constitutive parameters
       sm=cm(4)
 c     cm(9 ~ 16) basic crystal plasticity model
       typeUmat=cm(9)
-      dgamma_0=cm(10)
+      dgamma0=cm(10)
       mval=cm(11)
       dgamma_lim=cm(12)
 c     cm(17 ~ 24) orientation information

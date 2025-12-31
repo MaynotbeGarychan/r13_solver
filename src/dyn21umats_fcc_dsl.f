@@ -56,7 +56,7 @@ c     Slip system constitutive model variables
       double precision gamma_slip(numSys)
       double precision dgamma_tol,gamma_n1
       double precision g_crss(numSys)
-      double precision dgamma_0,mval,dgamma_lim
+      double precision dgamma0,mval,dgamma_lim
 c     Stress Update model variables
       double precision ym,pr,bk
 c      double precision ec11,ec12,ec44
@@ -107,7 +107,7 @@ c     cm(1 ~ 8)   Constitutive parameters
       sm=cm(4)       ! Shear modulus
 c     cm(9 ~ 16) basic crystal plasticity model
       umatType=cm(9)
-      dgamma_0=cm(10)
+      dgamma0=cm(10)
       mval=cm(11)
       dgamma_lim=cm(12)
 c     cm(17 ~ 24) orientation information
@@ -285,7 +285,7 @@ c     decompose velocity gradient
       call updateCrssDslLee(ga,sm,bv,rho,m11,s11,l11,
      1     numSys,g_crss)
 
-      call calSlipRateVp(tau,g_crss,mval,dgamma_0,
+      call calSlipRateVp(tau,g_crss,mval,dgamma0,
      1   dgamma_lim,numSys,dgamma)
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)

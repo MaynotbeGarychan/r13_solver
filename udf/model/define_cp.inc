@@ -9,3 +9,4 @@
       double precision,parameter:: CST_NSFZZ=-0.0267
       double precision,parameter:: CST_NSFSZ=0.0d0
       double precision,parameter:: CST_NSFMZ=0.0d0
+      double precision,parameter:: CST_SLPLIM=0.1d0

@@ -74,7 +74,7 @@ c     Slip system constitutive model variables
       double precision gamma_slip(maxSys)
       double precision dgamma_tol,gamma_n1
       double precision g_crss(maxSys)
-      double precision dgamma_0,mval,dgamma_lim
+      double precision dgamma0,mval,dgamma_lim
 c     Stress Update model variables
       double precision ym,pr,bk,sm
       double precision L_ela(6,6),L_ela_cry(6,6)
@@ -90,9 +90,8 @@ c Declaration of offset hsv indices
       integer OFF_M11,OFF_GS,OFF_GN,OFF_EUL
 
 c     Variables for thermal activation slip rate
-      double precision dgammaHeat(maxSys)
-      double precision tau_0
-      double precision Delta_Gk0,cst_p,cst_q,cst_T,k_B
+      double precision tau0,DeltaGk0
+      double precision thmSlpCstP,thmSlpCstQ,thmSlpCstT
 
 c     Variables for dislocation evolution
       double precision bv,km,yc,alpha,mu,rho0
@@ -103,10 +102,17 @@ c     Variables for dislocation evolution
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
-      call  umatCpHamaGetMc(cm,ym,pr,bk,sm,
-     1       typeUmat,dgamma_0,mval,dgamma_lim,
-     2       typeOri,euler,
-     3       hardType,g0,gs,h0,hs,q,rho0,yc)
+!       call  umatCpHamaGetMc(cm,ym,pr,bk,sm,
+!      1       typeUmat,dgamma0,mval,
+!      2       typeOri,euler,
+!      3       hardType,g0,gs,h0,hs,q,rho0,yc)
+
+      call umatCpHamaGetMc(cm,ym,pr,bk,sm,
+     &       typeUmat,dgamma0,tau0,thmSlpCstP,
+     &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
+     &       typeOri,euler,
+     &       hardType,g0,gs,h0,hs,q,
+     &       rho0,yc)
 
       if (.not.failel) then
 !============================================================
@@ -144,18 +150,18 @@ c     Obtain CRSS from hsv
       call calNonSchmidTensor(s11,m11,numSys,nschmid)
       call calSigRss(sig(1:6),nschmid,numSys,tauNsf)
       call vecAdd(tau,tauNsf,numSys,tau)
-!       call calSlipRateVp(tau,g_crss,mval,dgamma_0,
+!       call calSlipRateVp(tau,g_crss,mval,dgamma0,
 !      1   dgamma_lim,numSys,dgamma)
       
-      tau_0=85.
-      cst_p=0.7
-      cst_q=1.1
-      cst_T=773.
-      Delta_Gk0=3.6e-17
+      ! tau0=85.
+      ! thmSlpCstP=0.7
+      ! thmSlpCstQ=1.1
+      ! thmSlpCstT=773.
+      ! DeltaGk0=3.6e-17
 
-      call calSlipRateHeatAct(tau,crss,dgamma_0,tau_0,
-     1    Delta_Gk0,cst_p,cst_q,cst_T,dgamma_lim,numSys,
-     2    dgamma)
+      call calSlipRateHeatAct(tau,crss,dgamma0,tau0,
+     &    DeltaGk0,thmSlpCstP,thmSlpCstQ,thmSlpCstT,
+     &    numSys,dgamma)
 
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
@@ -195,7 +201,7 @@ c     Extract the euler angle from the tranformation matrix
 
       call calDslRateHama(yc,km,rho,typeCry,numSys,
      1      dgamma,drho)
-      call calDslRcvyRateKohenert(rho, cst_T, mu,
+      call calDslRcvyRateKohenert(rho, thmSlpCstT, mu,
      &     kappa1, kappa2, numSys, drho_recy)
       do l=1,numSys
             drho(l)=drho(l)-drho_recy(l)
@@ -229,14 +235,17 @@ c     Extract the euler angle from the tranformation matrix
       end subroutine umatCpHama
 
       subroutine umatCpHamaGetMc(cm,ym,pr,bk,sm,
-     1       typeUmat,dgamma_0,mval,dgamma_lim,
-     2       typeOri,euler,
-     3       hardType,g0,gs,h0,hs,q,
-     4       rho0,yc)
+     &       typeUmat,dgamma0,tau0,thmSlpCstP,
+     &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
+     &       typeOri,euler,
+     &       hardType,g0,gs,h0,hs,q,
+     &       rho0,yc)
       implicit none
       double precision cm(*)
       double precision ym,pr,bk,sm
-      double precision typeUmat,dgamma_0,mval,dgamma_lim
+      double precision typeUmat,dgamma0
+      double precision tau0,thmSlpCstP,thmSlpCstQ
+      double precision thmSlpCstT,DeltaGk0
       double precision typeOri,euler(3)
       double precision hardType,g0,gs,h0,hs,q
       double precision rho0,yc
@@ -247,10 +256,18 @@ c     cm(1 ~ 8)   Constitutive parameters
       sm=cm(4)
 c     cm(9 ~ 16) basic crystal plasticity model
       typeUmat=cm(9)
-      dgamma_0=cm(10)
+      dgamma0=cm(10)
+      tau0=cm(11)
+      thmSlpCstP=cm(12)
+      thmSlpCstQ=cm(13)
+      thmSlpCstT=cm(14)
+      DeltaGk0=cm(15)
+      ! tau0=85.
+      ! thmSlpCstP=0.7
+      ! thmSlpCstQ=1.1
+      ! thmSlpCstT=773.
+      ! DeltaGk0=3.6e-17
 
-      mval=cm(11)
-      dgamma_lim=cm(12)
 c     cm(17 ~ 24) orientation information
       typeOri=cm(17)
       euler=cm(18:20)

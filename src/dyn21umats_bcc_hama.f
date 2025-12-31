@@ -51,7 +51,7 @@ c     Slip system constitutive model variables
       double precision gamma_slip(numSys)
       double precision dgamma_tol,gamma_n1
       double precision g_crss(numSys)
-      double precision dgamma_0,mval,dgamma_lim
+      double precision dgamma0,mval,dgamma_lim
 c     Stress Update model variables
       double precision ym,pr,bk,sm
       double precision L_ela(6,6),L_ela_cry(6,6)
@@ -77,7 +77,7 @@ c     Strain variables
 ! Obtain variables from materials constants
 !------------------------------------------------------------
       call      umatBccHamaGetMc(cm,ym,pr,bk,sm,
-     1       umatType,dgamma_0,mval,dgamma_lim,
+     1       umatType,dgamma0,mval,dgamma_lim,
      2       oriType,euler,
      3       hardType,g0,gs,h0,hs,q)
 !============================================================
@@ -112,10 +112,10 @@ c     Obtain CRSS from hsv
       call calSchmidTensor(s11,m11,numSys,
      1     Pa,Wa,eschmid,wschmid)
       call calSigRss(sig(1:6),eschmid,numSys,tau)
-c      call calSlipRateVp(tau,g_crss,mval,dgamma_0,
+c      call calSlipRateVp(tau,g_crss,mval,dgamma0,
 c     1   dgamma_lim,numSys,dgamma)
       call calSlipRateVpHeatAct(tau,g_crss,tau0110,tau0112,
-     1   dgk0,dgamma_0,pval,qval,tval,kb,numSys,dgamma)
+     1   dgk0,dgamma0,pval,qval,tval,kb,numSys,dgamma)
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
 c     Project the slip deformation into macro deformation and spin
@@ -177,13 +177,13 @@ c     Calculate strain state
       end subroutine umatBccHama
 
       subroutine umatBccHamaGetMc(cm,ym,pr,bk,sm,
-     1       umatType,dgamma_0,mval,dgamma_lim,
+     1       umatType,dgamma0,mval,dgamma_lim,
      2       oriType,euler,
      3       hardType,g0,gs,h0,hs,q)
       implicit none
       double precision cm(*)
       double precision ym,pr,bk,sm
-      double precision umatType,dgamma_0,mval,dgamma_lim
+      double precision umatType,dgamma0,mval,dgamma_lim
       double precision oriType,euler(3)
       double precision hardType,g0,gs,h0,hs,q
 c     cm(1 ~ 8)   Constitutive parameters
@@ -193,7 +193,7 @@ c     cm(1 ~ 8)   Constitutive parameters
       sm=cm(4)       ! Shear modulus
 c     cm(9 ~ 16) basic crystal plasticity model
       umatType=cm(9)
-      dgamma_0=cm(10)
+      dgamma0=cm(10)
       mval=cm(11)
       dgamma_lim=cm(12)
 c     cm(17 ~ 24) orientation information
