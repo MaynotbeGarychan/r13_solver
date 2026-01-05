@@ -90,7 +90,7 @@ c Declaration of offset hsv indices
       integer OFF_M11,OFF_GS,OFF_GN,OFF_EUL
 
 c     Variables for thermal activation slip rate
-      double precision tau0,DeltaGk0
+      double precision tau0,DeltaGk0,rhoInfi
       double precision thmSlpCstP,thmSlpCstQ,thmSlpCstT
 
 c     Variables for dislocation evolution
@@ -111,7 +111,7 @@ c     Variables for dislocation evolution
      &       typeUmat,dgamma0,tau0,thmSlpCstP,
      &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
      &       typeOri,euler,
-     &       hardType,rho0,g0,yc,km,alpha,kappa1,kappa2)
+     &   hardType,rho0,g0,yc,km,alpha,kappa1,kappa2,rhoInfi)
 
       if (.not.failel) then
 !============================================================
@@ -183,10 +183,13 @@ c     Extract the euler angle from the tranformation matrix
 ! Dislocation update and Hardening model
 !------------------------------------------------------------
       mu=sm/(2.0*(1.0+pr))
+      if(yc.lt.0.d0) then ! determine yc if not given
+            call calDslYcHama(thmSlpCstT,yc)
+      endif
       call calDslRateHama(yc,km,rho,typeCry,numSys,
      1      dgamma,drho)
-      call calDslRcvyRateKohenert(rho, thmSlpCstT, mu,
-     &     kappa1, kappa2, numSys, drho_recy)
+      call calDslRcvyRateKohenert(rho,thmSlpCstT,mu,
+     &     kappa1,kappa2,numSys,drho_recy,rhoInfi)
       call vecMinus(drho,drho_recy,numSys,drho)
       call updateDsl(drho,numSys,dt1,rho)
 
@@ -195,10 +198,9 @@ c     Extract the euler angle from the tranformation matrix
       call updateCrss(dcrss,dt1,numSys,crss)
 
       do l=1,numSys
-            hsv(200+ l -1)=drho(l)
-            hsv(220+ l -1)=drho_recy(l)
-            hsv(240+ l -1)=dcrss(l)
-            hsv(260+ l -1)=dgamma(l)
+            hsv(200+ l -1)=dgamma(l)
+            hsv(220+ l -1)=tau(l)
+            hsv(240+ l -1)=rho(l)
       enddo
 
 !============================================================
@@ -219,7 +221,7 @@ c     Extract the euler angle from the tranformation matrix
      &       typeUmat,dgamma0,tau0,thmSlpCstP,
      &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
      &       typeOri,euler,
-     &       hardType,rho0,g0,yc,km,alpha,kappa1,kappa2)
+     &  hardType,rho0,g0,yc,km,alpha,kappa1,kappa2,rhoInfi)
       implicit none
       double precision cm(*)
       double precision ym,pr,bk,sm
@@ -228,7 +230,7 @@ c     Extract the euler angle from the tranformation matrix
       double precision thmSlpCstT,DeltaGk0
       double precision typeOri,euler(3)
       double precision hardType,g0,rho0,yc,km,alpha
-      double precision kappa1,kappa2
+      double precision kappa1,kappa2,rhoInfi
 c     cm(1 ~ 8)   Constitutive parameters
       ym=cm(1)
       pr=cm(2)
@@ -245,7 +247,8 @@ c     cm(9 ~ 16) basic crystal plasticity model
 c     cm(17 ~ 24) orientation information
       typeOri=cm(17)
       euler=cm(18:20)
-c     cm(25 ~ 32) hardening 
+c     cm(25 ~ 32) hardening
+      rhoInfi=cm(24)
       hardType=cm(25)
       rho0=cm(26)
       g0=cm(27)

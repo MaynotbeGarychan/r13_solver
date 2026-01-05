@@ -135,6 +135,22 @@
 
       end subroutine calDslRateHama
 
+      subroutine calDslYcHama(temp,yc)
+      !============================================================
+      ! Calculate the annihilation coefficient yc
+      ! for Hama sensei's model
+      !------------------------------------------------------------
+      ! input:
+      ! temp          - Temperature
+      ! output:
+      ! yc              - Annihilation coefficient
+      !---------------------------------------------------------
+      implicit none
+      double precision temp
+      double precision yc
+      yc=6.4d-5*tanh(0.02d0*(temp-811.d0 ) ) + 6.65d-5
+      end subroutine calDslYcHama
+
       subroutine getDslInteractionMatrix(typeCry, numSys, matInteract)
       implicit none
       include 'define_cp.inc'
@@ -189,7 +205,7 @@
 
 
       subroutine calDslRcvyRateKohenert(rho, temp, mu,
-     &     kappa1, kappa2, numSys, drho)
+     &     kappa1, kappa2, numSys, drho, rhoInfi)
       !============================================================
       ! Calculate the dislocation recovery rate, Kohenert
       !------------------------------------------------------------
@@ -200,6 +216,7 @@
       ! kappa1     - material parameter κ1
       ! kappa2     - material parameter κ2
       ! numSys     - number of slip systems
+      ! rhoInfi    - saturation dislocation density
       ! output:
       ! drho       - recovery rate dρ/dt
       !------------------------------------------------------------
@@ -211,8 +228,9 @@
       double precision diffCoef   ! diffusion coefficient
       double precision kappa1     ! material parameter κ1
       double precision kappa2     ! material parameter κ2
+      double precision rhoInfi    ! saturation dislocation density
       double precision drho(maxSys)    ! recovery rate dρ/dt
-      double precision expo, arg
+      double precision expo, arg, scalar
       integer numSys
       integer l
 !------------------------------------------------------------
@@ -231,7 +249,8 @@
 ! Optional: avoid overflow
       arg = min(arg, 80.d0)
       expo = exp(arg) - 1.d0
-      drho(l)=(kappa1*diffCoef/CST_BV)*(rho(l)**1.5d0)*expo
+      scalar = kappa1*diffCoef/CST_BV
+      drho(l)=scalar*((rho(l)-rhoInfi)**1.5d0)*expo
       enddo
       end subroutine calDslRcvyRateKohenert
 
