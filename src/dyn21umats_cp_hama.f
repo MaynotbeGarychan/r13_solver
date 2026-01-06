@@ -198,13 +198,13 @@ c     Extract the euler angle from the tranformation matrix
      1         typeCry,numSys,dcrss)
       call updateCrss(dcrss,dt1,numSys,crss)
 
-      do l=1,numSys
-            hsv(200+ l -1)=dgamma(l)
-            hsv(220+ l -1)=dcrss(l)
-            hsv(240+ l -1)=rho(l)
-            hsv(260+ l -1)=drho(l)
-            hsv(280+ l -1)=drhoRecy(l)
-      enddo
+      ! do l=1,numSys
+      !       hsv(200+ l -1)=dgamma(l)
+      !       hsv(220+ l -1)=dcrss(l)
+      !       hsv(240+ l -1)=rho(l)
+      !       hsv(260+ l -1)=drho(l)
+      !       hsv(280+ l -1)=drhoRecy(l)
+      ! enddo
 
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv

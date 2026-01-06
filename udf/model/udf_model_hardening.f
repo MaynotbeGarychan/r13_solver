@@ -214,7 +214,6 @@ c       compute hardening
         !------------------------------------------------------------
         implicit none
         include 'define_cp.inc'
-
         integer l,k
         integer numSys,typeCry
         double precision alpha,mu,cst_k,yc
