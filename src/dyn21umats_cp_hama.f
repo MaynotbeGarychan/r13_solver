@@ -45,7 +45,7 @@ c
 c     IO
       integer typeOri
 c     Define the crystal
-      integer,parameter:: typeCry=2
+      integer,parameter:: typeCry=3
       integer numSys
     !   integer,parameter:: numSys=12
 c     Intermedia variables
@@ -102,16 +102,14 @@ c     Variables for dislocation evolution
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
-!       call  umatCpHamaGetMc(cm,ym,pr,bk,sm,
-!      1       typeUmat,dgamma0,mval,
-!      2       typeOri,euler,
-!      3       hardType,g0,gs,h0,hs,q,rho0,yc)
-
       call umatCpHamaGetMc(cm,ym,pr,bk,sm,
      &       typeUmat,dgamma0,tau0,thmSlpCstP,
      &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
      &       typeOri,euler,
      &   hardType,rho0,g0,yc,km,alpha,kappa1,kappa2,rhoInfi)
+c     Init hsv offsets to avoid outer loop mistake
+!       call umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
+!      & OFF_RHO,OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
 
       if (.not.failel) then
 !============================================================
@@ -125,6 +123,9 @@ c     Init crystal orientation, slip system vectors
 c     Initialize the hsv list
       call umatCpHamaInitHsv(g0,rho0,r,s11,m11,numSys,nhsv,
      1      hsv,sig)
+
+      call umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
+     & OFF_RHO,OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
       else
 !============================================================
 ! Calculation begins: ncycle > 0
