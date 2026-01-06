@@ -32,7 +32,7 @@ c       init slip system vectors
         elseif(typeCry.eq.1)then
                 call getSlipSysVecBcc(m1,s1)
         elseif(typeCry.eq.2)then
-                call getSlipSysVecBcc12(m1,s1)
+                call getSlipSysVecBcc12(m1,s1,numSys)
         endif
 c       Obtain orientation from ori array
         phi1=ori_arr(1)

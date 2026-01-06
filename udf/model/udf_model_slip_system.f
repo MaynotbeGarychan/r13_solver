@@ -109,11 +109,13 @@
             
       end subroutine
 
-      subroutine getSlipSysVecBcc12(m1,s1)
+      subroutine getSlipSysVecBcc12(m1,s1,numSys)
             implicit none
             integer l
-            double precision m(3,12),s(3,12)
-            double precision m1(3,12),s1(3,12)
+            include 'define_cp.inc'
+            integer numSys
+            double precision m(3,maxSys),s(3,maxSys)
+            double precision m1(3,maxSys),s1(3,maxSys)
 
             data m/1.00,1.00,0.00, 1.00,1.00,0.00,
      &        -1.00,1.00,0.00, -1.00,1.00,0.00,
@@ -129,7 +131,7 @@
      &        1.00,1.00,-1.00, 1.00,-1.00,1.00,
      &        1.00,1.00,1.00, -1.00,1.00,1.00/
       
-      do l=1,12
+      do l=1,numSys
             call vecNormalize(m(:,l),3,m1(:,l))
             call vecNormalize(s(:,l),3,s1(:,l))
       enddo

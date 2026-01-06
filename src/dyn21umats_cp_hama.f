@@ -97,7 +97,7 @@ c     Variables for dislocation evolution
       double precision bv,km,yc,alpha,mu,rho0
       double precision dcrss(maxSys),crss(maxSys)
       double precision rho(maxSys),drho(maxSys)
-      double precision drho_recy(maxSys)
+      double precision drhoRecy(maxSys)
       double precision kappa1,kappa2
 !============================================================
 ! Obtain variables from materials constants
@@ -189,8 +189,9 @@ c     Extract the euler angle from the tranformation matrix
       call calDslRateHama(yc,km,rho,typeCry,numSys,
      1      dgamma,drho)
       call calDslRcvyRateKohenert(rho,thmSlpCstT,mu,
-     &     kappa1,kappa2,numSys,drho_recy,rhoInfi)
-      call vecMinus(drho,drho_recy,numSys,drho)
+     &     kappa1,kappa2,numSys,drhoRecy,rhoInfi)
+      ! drhoRecy=drhoRecy*10000000
+      call vecMinus(drho,drhoRecy,numSys,drho)
       call updateDsl(drho,numSys,dt1,rho)
 
       call calCrssRateDslHama(rho,dgamma,alpha,mu,km,yc,
@@ -199,8 +200,10 @@ c     Extract the euler angle from the tranformation matrix
 
       do l=1,numSys
             hsv(200+ l -1)=dgamma(l)
-            hsv(220+ l -1)=tau(l)
+            hsv(220+ l -1)=dcrss(l)
             hsv(240+ l -1)=rho(l)
+            hsv(260+ l -1)=drho(l)
+            hsv(280+ l -1)=drhoRecy(l)
       enddo
 
 !============================================================
