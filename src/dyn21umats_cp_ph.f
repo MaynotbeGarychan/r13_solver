@@ -105,6 +105,9 @@ c     Init crystal orientation, slip system vectors
 c     Initialize the hsv list
       call umatCpPhInitHsv(g0,r,s11,m11,numSys,nhsv,
      1      hsv,sig)
+
+      call umatCpPhGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
+     1     OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
       else
 !============================================================
 ! Calculation begins: ncycle > 0

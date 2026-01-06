@@ -107,9 +107,6 @@ c     Variables for dislocation evolution
      &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
      &       typeOri,euler,
      &   hardType,rho0,g0,yc,km,alpha,kappa1,kappa2,rhoInfi)
-c     Init hsv offsets to avoid outer loop mistake
-!       call umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
-!      & OFF_RHO,OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
 
       if (.not.failel) then
 !============================================================
