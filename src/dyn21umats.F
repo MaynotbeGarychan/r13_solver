@@ -469,7 +469,7 @@ c     Solid element variables
       double precision temper,elsiz,epsp,capa,tt
 c     Euler angles
       integer oriType,umatType
-      double precision euler(3),euler_f(1000,3)
+      double precision euler(3),euler_f(1100,3)
       character*50 fname
       character*5 fidxchar
       integer fidx,ridx
@@ -486,23 +486,40 @@ c
 ! Note:
 !------------------------------------------------------------  
 c     Obtain euler angles if fine grains
-      if(ncycle.eq.0)then
-      if(typeOri.eq.1)then
-            ridx=mod(idele,1000)+1
-            fidx=idele/1000+1
-            write(fidxchar,"(I4)") fidx ! character index to integer
-            fname='./Euler_angle/set_'//trim(adjustL(fidxchar))
-     1                  //'.csv'
+!       if(ncycle.eq.0)then
+!       if(typeOri.eq.1)then
+!             ridx=mod(idele,1000)+1
+!             fidx=idele/1000+1
+!             write(fidxchar,"(I4)") fidx ! character index to integer
+!             fname='./Euler_angle/set_'//trim(adjustL(fidxchar))
+!      1                  //'.csv'
+!             open(18,file=fname,status='old')
+!             do i=1,1000
+!                   read(18,*) euler_f(i,1),euler_f(i,2),euler_f(i,3)
+!             enddo
+!             close(18)
+!             cm(18)=euler_f(ridx,1)
+!             cm(19)=euler_f(ridx,2)
+!             cm(20)=euler_f(ridx,3)
+!       endif
+!       endif
+
+      if(typeOri.eq.1 .and. ncycle.eq.0)then
+            print *, 'Reading euler angles for element id:', idele
+            fname='./Euler_angle/set_1.csv'
             open(18,file=fname,status='old')
-            do i=1,1000
+            do i=1,1100
                   read(18,*) euler_f(i,1),euler_f(i,2),euler_f(i,3)
             enddo
             close(18)
+            print *, 'Finished reading euler angles from csv file.'
+            ridx=mod(idele,1000)+1
             cm(18)=euler_f(ridx,1)
             cm(19)=euler_f(ridx,2)
             cm(20)=euler_f(ridx,3)
+            print *, 'Finished distributing euler angles.'
       endif
-      endif
+!============================================================
 c
       if (.not.failel) then
             if(typeUmat.eq.0)then

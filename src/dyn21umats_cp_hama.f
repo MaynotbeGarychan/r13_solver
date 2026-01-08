@@ -99,6 +99,9 @@ c     Variables for dislocation evolution
       double precision rho(maxSys),drho(maxSys)
       double precision drhoRecy(maxSys)
       double precision kappa1,kappa2
+
+      double precision euler_f(1200,3)
+      integer ridx
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
@@ -107,12 +110,21 @@ c     Variables for dislocation evolution
      &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
      &       typeOri,euler,
      &   hardType,rho0,g0,yc,km,alpha,kappa1,kappa2,rhoInfi)
-
+!============================================================
       if (.not.failel) then
 !============================================================
 ! Initial step: ncrycle = 0
 !------------------------------------------------------------  
       if(ncycle==0) then
+      open(18,file='./Euler_angle/set_1.csv',status='old')
+      do i=1,1200
+            read(18,*) euler_f(i,1),euler_f(i,2),euler_f(i,3)
+      enddo
+      ridx=mod(idele,1000)+1
+      euler(1)=euler_f(ridx,1)
+      euler(2)=euler_f(ridx,2)
+      euler(3)=euler_f(ridx,3)
+      close(18)
 c     Init crystal orientation, slip system vectors
         call getSlipSysNum(typeCry,numSys)
         call initCrystal(typeOri,typeCry,euler,

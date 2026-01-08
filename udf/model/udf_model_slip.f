@@ -75,6 +75,7 @@
                 print *, 'Warning: Runs into athermal regime'
                 print *, 'but handled as thermal activation.'
                 print *, 'Slip system', l,' tau_eff >= tau0'
+                print *, 'tau_eff=', tau_eff,' tau0=', tau0
             else
                 delta_Gk=DeltaGk0*(1.0-(tau_eff/tau0)**p)**q
                 dgamma(l)=dgamma0*exp(-delta_Gk/(CST_BZ*T))
