@@ -503,22 +503,6 @@ c     Obtain euler angles if fine grains
 !             cm(20)=euler_f(ridx,3)
 !       endif
 !       endif
-
-      if(typeOri.eq.1 .and. ncycle.eq.0)then
-            print *, 'Reading euler angles for element id:', idele
-            fname='./Euler_angle/set_1.csv'
-            open(18,file=fname,status='old')
-            do i=1,1100
-                  read(18,*) euler_f(i,1),euler_f(i,2),euler_f(i,3)
-            enddo
-            close(18)
-            print *, 'Finished reading euler angles from csv file.'
-            ridx=mod(idele,1000)+1
-            cm(18)=euler_f(ridx,1)
-            cm(19)=euler_f(ridx,2)
-            cm(20)=euler_f(ridx,3)
-            print *, 'Finished distributing euler angles.'
-      endif
 !============================================================
 c
       if (.not.failel) then

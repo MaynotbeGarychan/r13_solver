@@ -49,3 +49,24 @@ c       transform the ss,sp vector to materials coordinates
         call calSlipSys2Global(s1,m1,r,numSys,s11,m11)
 
         end subroutine initCrystal
+
+        subroutine initCrystalOri(idele,euler)
+        
+        implicit none
+        integer idele
+        integer i
+        integer ridx
+        double precision euler(3)
+        double precision fileData(1200,3)
+        
+        open(18,file='./Euler_angle/set_1.csv',status='old')
+        do i=1,1200
+                read(18,*) fileData(i,1),fileData(i,2),fileData(i,3)
+        enddo
+        ridx=mod(idele,1000)+1
+        euler(1)=fileData(ridx,1)
+        euler(2)=fileData(ridx,2)
+        euler(3)=fileData(ridx,3)
+        close(18)
+
+        end subroutine

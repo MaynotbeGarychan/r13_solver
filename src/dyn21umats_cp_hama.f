@@ -125,6 +125,7 @@ c     Variables for dislocation evolution
       euler(2)=euler_f(ridx,2)
       euler(3)=euler_f(ridx,3)
       close(18)
+      ! call initCrystalOri(idele,euler)
 c     Init crystal orientation, slip system vectors
         call getSlipSysNum(typeCry,numSys)
         call initCrystal(typeOri,typeCry,euler,
