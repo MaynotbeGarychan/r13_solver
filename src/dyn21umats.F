@@ -481,29 +481,6 @@ c
       typeOri=cm(17)
       typeUmat=cm(9)
 !============================================================
-! Initialize Crystal orientation here, if fine grain model
-!------------------------------------------------------------
-! Note:
-!------------------------------------------------------------  
-c     Obtain euler angles if fine grains
-!       if(ncycle.eq.0)then
-!       if(typeOri.eq.1)then
-!             ridx=mod(idele,1000)+1
-!             fidx=idele/1000+1
-!             write(fidxchar,"(I4)") fidx ! character index to integer
-!             fname='./Euler_angle/set_'//trim(adjustL(fidxchar))
-!      1                  //'.csv'
-!             open(18,file=fname,status='old')
-!             do i=1,1000
-!                   read(18,*) euler_f(i,1),euler_f(i,2),euler_f(i,3)
-!             enddo
-!             close(18)
-!             cm(18)=euler_f(ridx,1)
-!             cm(19)=euler_f(ridx,2)
-!             cm(20)=euler_f(ridx,3)
-!       endif
-!       endif
-!============================================================
 c
       if (.not.failel) then
             if(typeUmat.eq.0)then
