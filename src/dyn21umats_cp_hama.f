@@ -41,9 +41,9 @@ c     UMAT variables
       logical failel,reject
       INTEGER idele
 c     
-      integer typeUmat
+      double precision typeUmat,typeOri
 c     IO
-      integer typeOri
+      ! integer typeOri
 c     Define the crystal
       integer,parameter:: typeCry=3
       integer numSys
