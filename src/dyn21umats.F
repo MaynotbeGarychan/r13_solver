@@ -468,20 +468,15 @@ c     Solid element variables
       double precision g,g2,gc,q1,q3,davg,p,deti,c22i,c23i,fac
       double precision temper,elsiz,epsp,capa,tt
 c     Euler angles
-      integer oriType,umatType
-      double precision euler(3),euler_f(1100,3)
-      character*50 fname
-      character*5 fidxchar
-      integer fidx,ridx
+      integer typeUmat
 c
 c      if (ncycle.eq.1) then
 c        call usermsg('mat43')
 c      endif
 c     
-      typeOri=cm(17)
-      typeUmat=cm(9)
 !============================================================
 c
+      typeUmat=cm(9)
       if (.not.failel) then
             if(typeUmat.eq.0)then
                   call umatCpPh(cm,eps,sig,
