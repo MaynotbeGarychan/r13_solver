@@ -35,19 +35,15 @@ c     UMAT variables
       double precision cm(*),eps(*),sig(*),hsv(*),crv(lq1,2,*)
       double precision cma(*),qmat(3,3)
       integer nnpcrv(*)
-      integer ::nhsv=500
+      integer ::nhsv=700
       double precision dt1
       character*5 etype
       logical failel,reject
       INTEGER idele
 c     
       double precision typeUmat,typeOri
-c     IO
-      ! integer typeOri
-c     Define the crystal
       integer,parameter:: typeCry=3
       integer numSys
-    !   integer,parameter:: numSys=12
 c     Intermedia variables
       integer i,j,k,l
 c     Kinetic model variables
