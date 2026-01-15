@@ -42,7 +42,7 @@ c     UMAT variables
       INTEGER idele
 c     
       double precision typeUmat,typeOri
-      integer,parameter:: typeCry=3
+      integer,parameter:: typeCry=3 ! 2: BCC12, 3: BCC24
       integer numSys
 c     Intermedia variables
       integer i,j,k,l
@@ -128,7 +128,7 @@ c     Initialize the hsv list
 !============================================================
 ! Calculation begins: ncycle > 0
 !------------------------------------------------------------ 
-c     Obtain defromation gradient from hsv
+c     Obtain slip system number
       call  getSlipSysNum(typeCry,numSys)
 c     Obtain defromation gradient from hsv
       call getDispGradfromHsv(hsv,nhsv,f,f_n1)
@@ -189,7 +189,6 @@ c     Extract the euler angle from the tranformation matrix
      1      dgamma,drho)
       call calDslRcvyRateKohenert(rho,thmSlpCstT,mu,
      &     kappa1,kappa2,numSys,drhoRecy,rhoInfi)
-      ! drhoRecy=drhoRecy*10000000
       call vecMinus(drho,drhoRecy,numSys,drho)
       call updateDsl(drho,numSys,dt1,rho)
 
@@ -198,11 +197,7 @@ c     Extract the euler angle from the tranformation matrix
       call updateCrss(dcrss,dt1,numSys,crss)
 
       ! do l=1,numSys
-      !       hsv(200+ l -1)=dgamma(l)
-      !       hsv(220+ l -1)=dcrss(l)
-      !       hsv(240+ l -1)=rho(l)
-      !       hsv(260+ l -1)=drho(l)
-      !       hsv(280+ l -1)=drhoRecy(l)
+      !       hsv(300+ l-1)=crss(l)
       ! enddo
 
 !============================================================
@@ -210,7 +205,7 @@ c     Extract the euler angle from the tranformation matrix
 !------------------------------------------------------------
       call umatCpHamaUpdateHsv(numSys,sig_n1,f_n1,crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
-     2       rho,hsv,sig,euler_n1)
+     2       rho,hsv,sig,euler_n1,dgamma)
 
       endif
       endif
@@ -378,7 +373,7 @@ c     orientation
       
       subroutine umatCpHamaUpdateHsv(numSys,sig_n1,f_n1,g_crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
-     2       rho,hsv,sig,euler_n1)
+     2       rho,hsv,sig,euler_n1,dgamma)
       implicit none
       integer l,k,numSys
       include '../udf/model/define_cp.inc'
@@ -388,6 +383,7 @@ c     orientation
       double precision s11_n1(3,maxSys),m11_n1(3,maxSys)
       double precision gamma_slip(maxSys),gamma_n1
       double precision euler_n1(3)
+      double precision dgamma(maxSys)
 
       integer OFF_F,OFF_CRSS,OFF_RHO,OFF_R
       integer OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL
@@ -428,5 +424,9 @@ c     slip systems
       hsv(OFF_EUL+0)=euler_n1(1)
       hsv(OFF_EUL+1)=euler_n1(2)
       hsv(OFF_EUL+2)=euler_n1(3)
+
+      do l=1,numSys
+            hsv(300 + (l-1)) = dgamma(l)
+      enddo
       end subroutine
 

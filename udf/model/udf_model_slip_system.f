@@ -112,6 +112,13 @@
       end subroutine
 
       subroutine getSlipSysVecBcc12(m1,s1)
+      ! ============================================================
+      ! Get the slip system vectors for BCC with 12 slip systems
+      ! {110}<111>
+      ! ------------------------------------------------------------
+      ! output:
+      ! m1(3,12),s1(3,12) - slip plane and slip system vectors
+      ! ------------------------------------------------------------
             implicit none
             integer l
             double precision m(3,12),s(3,12)
@@ -139,6 +146,13 @@
       end subroutine
 
       subroutine getSlipSysVecBcc24(m1,s1)
+      ! ============================================================
+      ! Get the slip system vectors for BCC with 24 slip systems
+      ! {110}<111> and {112}<111>
+      ! ------------------------------------------------------------
+      ! output:
+      ! m1(3,24),s1(3,24) - slip plane and slip system vectors
+      ! ------------------------------------------------------------
       implicit none
       integer l
       double precision m(3,24),s(3,24)
