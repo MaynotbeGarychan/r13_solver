@@ -35,7 +35,7 @@ c     UMAT variables
       double precision cm(*),eps(*),sig(*),hsv(*),crv(lq1,2,*)
       double precision cma(*),qmat(3,3)
       integer nnpcrv(*)
-      integer ::nhsv=700
+      integer ::nhsv=300
       double precision dt1
       character*5 etype
       logical failel,reject
@@ -196,16 +196,12 @@ c     Extract the euler angle from the tranformation matrix
      1         typeCry,numSys,dcrss)
       call updateCrss(dcrss,dt1,numSys,crss)
 
-      ! do l=1,numSys
-      !       hsv(300+ l-1)=crss(l)
-      ! enddo
-
 !============================================================
 ! Give constitutive and non-constitutive variables to hsv
 !------------------------------------------------------------
       call umatCpHamaUpdateHsv(numSys,sig_n1,f_n1,crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
-     2       rho,hsv,sig,euler_n1,dgamma)
+     2       rho,hsv,sig,euler_n1)
 
       endif
       endif
@@ -244,7 +240,7 @@ c     cm(9 ~ 16) basic crystal plasticity model
 c     cm(17 ~ 24) orientation information
       typeOri=cm(17)
       euler=cm(18:20)
-c     cm(25 ~ 32) hardening
+c     cm(25 ~ 32) hardening and dislocation parameters
       rhoInfi=cm(24)
       hardType=cm(25)
       rho0=cm(26)
@@ -373,7 +369,7 @@ c     orientation
       
       subroutine umatCpHamaUpdateHsv(numSys,sig_n1,f_n1,g_crss,
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
-     2       rho,hsv,sig,euler_n1,dgamma)
+     2       rho,hsv,sig,euler_n1)
       implicit none
       integer l,k,numSys
       include '../udf/model/define_cp.inc'
@@ -383,7 +379,6 @@ c     orientation
       double precision s11_n1(3,maxSys),m11_n1(3,maxSys)
       double precision gamma_slip(maxSys),gamma_n1
       double precision euler_n1(3)
-      double precision dgamma(maxSys)
 
       integer OFF_F,OFF_CRSS,OFF_RHO,OFF_R
       integer OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL
@@ -424,9 +419,5 @@ c     slip systems
       hsv(OFF_EUL+0)=euler_n1(1)
       hsv(OFF_EUL+1)=euler_n1(2)
       hsv(OFF_EUL+2)=euler_n1(3)
-
-      do l=1,numSys
-            hsv(300 + (l-1)) = dgamma(l)
-      enddo
       end subroutine
 
