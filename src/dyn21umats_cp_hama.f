@@ -96,6 +96,8 @@ c     Variables for dislocation evolution
       double precision drhoRecy(maxSys)
       double precision kappa1,kappa2
 
+      double precision yval,slope
+      real tempCurId
 !============================================================
 ! Obtain variables from materials constants
 !------------------------------------------------------------
@@ -104,18 +106,23 @@ c     Variables for dislocation evolution
      &       thmSlpCstQ,thmSlpCstT,DeltaGk0,
      &       typeOri,euler,
      &   hardType,rho0,g0,yc,km,alpha,kappa1,kappa2,rhoInfi)
+
+      call getSlipSysNum(typeCry,numSys)
+
+      tempCurId=2
 !============================================================
       if (.not.failel) then
 !============================================================
 ! Initial step: ncrycle = 0
 !------------------------------------------------------------  
       if(ncycle==0) then
+      call crvval(crv,nnpcrv,tempCurId,tt,yval,slope)
+      print *, 'Temperature from curve:', tt,yval
 c     Initialize crystal orientation from csv file
       if(typeOri.eq.1)then
       call getCrystalOriCsv(idele,euler)
       endif
 c     Init crystal orientation, slip system vectors
-        call getSlipSysNum(typeCry,numSys)
         call initCrystal(typeOri,typeCry,euler,
      1           numSys,r,s11,m11)
 c     Initialize the hsv list
@@ -124,12 +131,12 @@ c     Initialize the hsv list
 
       call umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
      & OFF_RHO,OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
-      else
 !============================================================
 ! Calculation begins: ncycle > 0
-!------------------------------------------------------------ 
-c     Obtain slip system number
-      call  getSlipSysNum(typeCry,numSys)
+!------------------------------------------------------------
+      else
+      call crvval(crv,nnpcrv,tempCurId,tt,yval,slope)
+      print *, 'Temperature from curve:', tt,yval
 c     Obtain defromation gradient from hsv
       call getDispGradfromHsv(hsv,nhsv,f,f_n1)
 c     Obtain CRSS from hsv
