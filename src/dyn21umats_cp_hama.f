@@ -117,7 +117,9 @@ c     Variables for dislocation evolution
 !------------------------------------------------------------  
       if(ncycle==0) then
       call crvval(crv,nnpcrv,tempCurId,tt,yval,slope)
+      if(idele.eq.1)then
       print *, 'Temperature from curve:', tt,yval
+      endif
 c     Initialize crystal orientation from csv file
       if(typeOri.eq.1)then
       call getCrystalOriCsv(idele,euler)
@@ -136,7 +138,9 @@ c     Initialize the hsv list
 !------------------------------------------------------------
       else
       call crvval(crv,nnpcrv,tempCurId,tt,yval,slope)
+      if(idele.eq.1.and.mod(ncycle,1000).eq.0)then
       print *, 'Temperature from curve:', tt,yval
+      endif
 c     Obtain defromation gradient from hsv
       call getDispGradfromHsv(hsv,nhsv,f,f_n1)
 c     Obtain CRSS from hsv
