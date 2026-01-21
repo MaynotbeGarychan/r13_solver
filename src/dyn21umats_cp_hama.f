@@ -221,6 +221,7 @@ c     Extract the euler angle from the tranformation matrix
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
      2       rho,hsv,sig,euler_n1)
 
+      hsv(300)=temperature
       endif
       endif
 !============================================================
