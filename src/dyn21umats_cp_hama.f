@@ -96,7 +96,7 @@ c     Variables for dislocation evolution
       double precision drhoRecy(maxSys)
       double precision kappa1,kappa2
 
-      double precision yval,slope
+      double precision temperature,slope
       real tempCurId
 !============================================================
 ! Obtain variables from materials constants
@@ -116,9 +116,13 @@ c     Variables for dislocation evolution
 ! Initial step: ncrycle = 0
 !------------------------------------------------------------  
       if(ncycle==0) then
-      call crvval(crv,nnpcrv,tempCurId,tt,yval,slope)
+      if(thmSlpCstT.lt.0)then
+      call crvval(crv,nnpcrv,tempCurId,tt,temperature,slope)
       if(idele.eq.1)then
-      print *, 'Temperature from curve:', tt,yval
+      ! print *, 'Temperature from curve:', tt,temperature
+      endif
+      else
+      temperature=thmSlpCstT
       endif
 c     Initialize crystal orientation from csv file
       if(typeOri.eq.1)then
@@ -130,16 +134,19 @@ c     Init crystal orientation, slip system vectors
 c     Initialize the hsv list
       call umatCpHamaInitHsv(g0,rho0,r,s11,m11,numSys,nhsv,
      1      hsv,sig)
-
       call umatCpHamaGetHsvOffsets(numSys,OFF_F,OFF_CRSS,
      & OFF_RHO,OFF_R,OFF_S11,OFF_M11,OFF_GS,OFF_GN,OFF_EUL)
 !============================================================
 ! Calculation begins: ncycle > 0
 !------------------------------------------------------------
       else
-      call crvval(crv,nnpcrv,tempCurId,tt,yval,slope)
-      if(idele.eq.1.and.mod(ncycle,1000).eq.0)then
-      print *, 'Temperature from curve:', tt,yval
+      if(thmSlpCstT.lt.0)then
+      call crvval(crv,nnpcrv,tempCurId,tt,temperature,slope)
+      if(idele.eq.1)then
+      ! print *, 'Temperature from curve:', tt,temperature
+      endif
+      else
+      temperature=thmSlpCstT
       endif
 c     Obtain defromation gradient from hsv
       call getDispGradfromHsv(hsv,nhsv,f,f_n1)
@@ -161,7 +168,7 @@ c     Obtain CRSS from hsv
       call vecAdd(tau,tauNsf,numSys,tau)
 
       call calSlipRateHeatAct(tau,crss,dgamma0,tau0,
-     &    DeltaGk0,thmSlpCstP,thmSlpCstQ,thmSlpCstT,
+     &    DeltaGk0,thmSlpCstP,thmSlpCstQ,temperature,
      &    numSys,dgamma)
       call updateCss(dgamma,numSys,dt1,
      1     dgamma_tol,gamma_slip,gamma_n1)
@@ -194,11 +201,11 @@ c     Extract the euler angle from the tranformation matrix
 !------------------------------------------------------------
       mu=sm/(2.0*(1.0+pr))
       if(yc.lt.0.d0) then ! determine yc if not given
-            call calDslYcHama(thmSlpCstT,yc)
+            call calDslYcHama(temperature,yc)
       endif
       call calDslRateHama(yc,km,rho,typeCry,numSys,
      1      dgamma,drho)
-      call calDslRcvyRateKohenert(rho,thmSlpCstT,mu,
+      call calDslRcvyRateKohenert(rho,temperature,mu,
      &     kappa1,kappa2,numSys,drhoRecy,rhoInfi)
       call vecMinus(drho,drhoRecy,numSys,drho)
       call updateDsl(drho,numSys,dt1,rho)
