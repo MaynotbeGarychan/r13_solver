@@ -95,6 +95,7 @@ c     Variables for dislocation evolution
       double precision rho(maxSys),drho(maxSys)
       double precision drhoRecy(maxSys)
       double precision kappa1,kappa2
+      double precision rhoTol
 
       double precision temperature,slope
       real tempCurId
@@ -221,6 +222,12 @@ c     Extract the euler angle from the tranformation matrix
      1       r_n1,s11_n1,m11_n1,gamma_slip,gamma_n1,
      2       rho,hsv,sig,euler_n1)
 
+c     Store some variables for output
+      rhoTol=0.0
+      do l=1,numSys
+            rhoTol=rhoTol+rho(l)
+      enddo
+      hsv(299)=rhoTol
       hsv(300)=temperature
       endif
       endif
