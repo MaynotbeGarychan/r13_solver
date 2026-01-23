@@ -93,9 +93,11 @@ c     Variables for dislocation evolution
       double precision bv,km,yc,alpha,mu,rho0
       double precision dcrss(maxSys),crss(maxSys)
       double precision rho(maxSys),drho(maxSys)
+      double precision drhoSlip(maxSys)
       double precision drhoRecy(maxSys)
       double precision kappa1,kappa2
-      double precision rhoTol
+      double precision rhoTol,rhoMean
+      double precision drhoSlipTol,drhoRecyTol
 
       double precision temperature,slope
       real tempCurId
@@ -117,11 +119,13 @@ c     Variables for dislocation evolution
 ! Initial step: ncrycle = 0
 !------------------------------------------------------------  
       if(ncycle==0) then
-      if(thmSlpCstT.lt.0)then
+      if(thmSlpCstT.lt.-0.5.and.thmSlpCstT.gt.-1.5)then
       call crvval(crv,nnpcrv,tempCurId,tt,temperature,slope)
       if(idele.eq.1)then
       ! print *, 'Temperature from curve:', tt,temperature
       endif
+      else if(thmSlpCstT.lt.-1.5.and.thmSlpCstT.gt.-2.5)then
+      temperature=temper
       else
       temperature=thmSlpCstT
       endif
@@ -141,11 +145,13 @@ c     Initialize the hsv list
 ! Calculation begins: ncycle > 0
 !------------------------------------------------------------
       else
-      if(thmSlpCstT.lt.0)then
+      if(thmSlpCstT.lt.-0.5.and.thmSlpCstT.gt.-1.5)then
       call crvval(crv,nnpcrv,tempCurId,tt,temperature,slope)
       if(idele.eq.1)then
       ! print *, 'Temperature from curve:', tt,temperature
       endif
+      else if(thmSlpCstT.lt.-1.5.and.thmSlpCstT.gt.-2.5)then
+      temperature=temper
       else
       temperature=thmSlpCstT
       endif
@@ -205,10 +211,10 @@ c     Extract the euler angle from the tranformation matrix
             call calDslYcHama(temperature,yc)
       endif
       call calDslRateHama(yc,km,rho,typeCry,numSys,
-     1      dgamma,drho)
+     1      dgamma,drhoSlip)
       call calDslRcvyRateKohenert(rho,temperature,mu,
      &     kappa1,kappa2,numSys,drhoRecy,rhoInfi)
-      call vecMinus(drho,drhoRecy,numSys,drho)
+      call vecMinus(drhoSlip,drhoRecy,numSys,drho)
       call updateDsl(drho,numSys,dt1,rho)
 
       call calCrssRateDslHama(rho,dgamma,alpha,mu,km,yc,
@@ -223,11 +229,24 @@ c     Extract the euler angle from the tranformation matrix
      2       rho,hsv,sig,euler_n1)
 
 c     Store some variables for output
+
+c     Store dislocation density and rate average
       rhoTol=0.0
+      drhoSlipTol=0.0
+      drhoRecyTol=0.0
       do l=1,numSys
             rhoTol=rhoTol+rho(l)
+            drhoSlipTol=drhoSlipTol+drhoSlip(l)
+            drhoRecyTol=drhoRecyTol+drhoRecy(l)
       enddo
-      hsv(299)=rhoTol
+      rhoMean=rhoTol/numSys
+      ! drhoSlipTol=drhoSlipTol/numSys
+      ! drhoRecyTol=drhoRecyTol/numSys
+      hsv(296)=rhoTol
+      hsv(297)=rhoMean
+      hsv(298)=drhoSlipTol
+      hsv(299)=drhoRecyTol
+c     Store temperature to check temperature input
       hsv(300)=temperature
       endif
       endif
